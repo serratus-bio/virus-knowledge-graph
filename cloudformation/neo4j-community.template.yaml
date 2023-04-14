@@ -7,6 +7,7 @@ Metadata:
           default: "Neo4j Configuration"
         Parameters:
           - Password
+          - InstallGraphDataScience
       - Label:
           default: "Infrastructure Configuration"
         Parameters:
@@ -22,6 +23,8 @@ Metadata:
         default: Disk Size
       SSHCIDR:
         default: SSH CIDR
+      InstallGraphDataScience:
+        default: Install Graph Data Science
 
 Parameters:
   Password:
@@ -63,6 +66,14 @@ Parameters:
     MaxLength: 18
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
     ConstraintDescription: "must be a valid CIDR range of the form x.x.x.x/x."
+
+  InstallGraphDataScience:
+    Description: Install Graph Data Science
+    Type: String
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
 
 Resources:
   Neo4jVPC:
@@ -192,6 +203,10 @@ Resources:
             - Ref: AWS::Region
             - "\n"
 
+            - "installGraphDataScience="
+            - Ref: InstallGraphDataScience
+            - "\n"
+
             - "install_neo4j_from_yum() {\n"
             - "  echo \"Installing Graph Database...\"\n"
             - "   PACKAGE_VERSION=$(curl --fail http://versions.neo4j-templates.com/target.json | jq -r '.aws.\"5\"' || echo \"\")\n"
@@ -219,9 +234,9 @@ Resources:
             - "extension_config() {\n"
             - "  echo Configuring extensions and security in neo4j.conf...\n"
             - "  sed -i s~#server.unmanaged_extension_classes=org.neo4j.examples.server.unmanaged=/examples/unmanaged~server.unmanaged_extension_classes=com.neo4j.bloom.server=/bloom,semantics.extension=/rdf~g /etc/neo4j/neo4j.conf\n"
-            - "  sed -i s/#dbms.security.procedures.unrestricted=my.extensions.example,my.procedures.*/dbms.security.procedures.unrestricted=apoc.*,bloom.*/g /etc/neo4j/neo4j.conf\n"
+            - "  sed -i s/#dbms.security.procedures.unrestricted=my.extensions.example,my.procedures.*/dbms.security.procedures.unrestricted=gds.*,apoc.*,bloom.*/g /etc/neo4j/neo4j.conf\n"
             - "  echo \"dbms.security.http_auth_allowlist=/,/browser.*,/bloom.*\" >> /etc/neo4j/neo4j.conf\n"
-            - "  echo \"dbms.security.procedures.allowlist=apoc.*,bloom.*\" >> /etc/neo4j/neo4j.conf\n"
+            - "  echo \"dbms.security.procedures.allowlist=apoc.*,gds.*,bloom.*\" >> /etc/neo4j/neo4j.conf\n"
             - "}\n"
 
             - "build_neo4j_conf_file() {\n"
@@ -240,6 +255,14 @@ Resources:
             - "  neo4j-admin server memory-recommendation | grep -v ^# >> /etc/neo4j/neo4j.conf\n"
             - "}\n"
 
+            - "configure_graph_data_science() {\n"
+            - "  if [[ \"${installGraphDataScience}\" == Yes ]]; then\n"
+            - "    echo \"Installing Graph Data Science...\"\n"
+            - "    wget \"https://graphdatascience.ninja/neo4j-graph-data-science-2.3.2.zip\" -P /tmp/ \n"
+            - "    unzip /tmp/neo4j-graph-data-science-*.zip  -d /var/lib/neo4j/plugins"
+            - "  fi\n"
+            - "}\n"
+
             - "start_neo4j() {\n"
             - "  echo \"Starting Neo4j...\"\n"
             - "  systemctl start neo4j\n"
@@ -254,6 +277,7 @@ Resources:
             - "install_apoc_plugin\n"
             - "extension_config\n"
             - "build_neo4j_conf_file\n"
+            - "configure_graph_data_science\n"
             - "start_neo4j && /opt/aws/bin/cfn-signal -e $? --stack \"${stackName}\" --resource Neo4jEC2Instance --region \"${region}\"\n"
 
 Outputs:
@@ -280,50 +304,58 @@ Outputs:
 Mappings:
   Neo4j:
     us-east-1:
-      BYOL: ami-0d4345c4eda92cf0d
+      BYOL: ami-0c294e345e6805dcb
     us-east-2:
-      BYOL: ami-08f4e727ca7002eb2
+      BYOL: ami-05038a3e125b7df3a
     us-west-1:
-      BYOL: ami-09b061154a9512835
+      BYOL: ami-0e7a8a9679c1817a4
     us-west-2:
-      BYOL: ami-05203927886e2d30a
-    us-gov-east-1:
-      BYOL: ami-0198d56bba3cb2370
-    us-gov-west-1:
-      BYOL: ami-049e2a18beab88f8a
+      BYOL: ami-074ed489538b51da8
     ca-central-1:
-      BYOL: ami-009be38856076a61c
+      BYOL: ami-075db64eda038f82b
     eu-central-1:
-      BYOL: ami-0cb274e70de7c7e73
+      BYOL: ami-09092d35db718b055
+    eu-central-2:
+      BYOL: ami-071377daae60922e4
     eu-west-1:
-      BYOL: ami-06e82cde97832d21e
+      BYOL: ami-09d676e4307830d70
     eu-west-2:
-      BYOL: ami-0cdf2f30323cc3229
+      BYOL: ami-06a2a429e87a20a68
     eu-west-3:
-      BYOL: ami-0d42adc7c4cccbdb9
+      BYOL: ami-08bcfa52773db1fd2
     eu-north-1:
-      BYOL: ami-0dd674f1ce2fe0bba
+      BYOL: ami-0af96f237767c5428
     eu-south-1:
-      BYOL: ami-0654fffc7416df5e3
-    ap-southeast-1:
-      BYOL: ami-0157e30d5e3684ad7
-    ap-southeast-2:
-      BYOL: ami-03c6b78465e4a087a
-    ap-southeast-3:
-      BYOL: ami-0f686d51981a84386
-    ap-south-1:
-      BYOL: ami-02d75632a4cfc6740
-    ap-northeast-1:
-      BYOL: ami-085256ec7f72c34d9
-    ap-northeast-2:
-      BYOL: ami-0ca3ecc56ad03e3e7
-    ap-northeast-3:
-      BYOL: ami-0f38478a0bcd36643
-    ap-east-1:
-      BYOL: ami-0f169e23f42a3cdb2
-    sa-east-1:
-      BYOL: ami-0faa2ca6ee6443065
-    me-south-1:
-      BYOL: ami-022e85c3f05f54650
+      BYOL: ami-041b66543f0d5324f
+    eu-south-2:
+      BYOL: ami-0f87bb9592598b8fa
     af-south-1:
-      BYOL: ami-040f969b620301ba7
+      BYOL: ami-083480c3dae18a181
+    ap-southeast-1:
+      BYOL: ami-005032ae22c5801c4
+    ap-southeast-2:
+      BYOL: ami-0e4d0d9fb74ea6009
+    ap-southeast-3:
+      BYOL: ami-0c59b8250f5c7237b
+    ap-south-1:
+      BYOL: ami-06642bc1142715002
+    ap-south-2:
+      BYOL: ami-09f9dade53df2417b
+    ap-northeast-1:
+      BYOL: ami-0c857a14024f4d313
+    ap-northeast-2:
+      BYOL: ami-06543f53c2a96d279
+    ap-northeast-3:
+      BYOL: ami-077f21674a6caf3c0
+    ap-east-1:
+      BYOL: ami-0a04bba840b8d23ce
+    sa-east-1:
+      BYOL: ami-0df67ac1d3e5ee0f7
+    me-south-1:
+      BYOL: ami-0de2a901625c4f706
+    me-central-1:
+      BYOL: ami-0b479b11eef88207f
+    us-gov-east-1:
+      BYOL: ami-096e06a1d110c087a
+    us-gov-west-1:
+      BYOL: ami-083245c5a432d6e78
