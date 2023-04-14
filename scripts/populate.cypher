@@ -16,7 +16,7 @@ CALL {
     taxGenus: row.tax_genus,
     taxSpecies: row.tax_species,
     nickname: row.nickname,
-    palmprint: row.palmprint,
+    palmprint: row.palmprint
   })
 } IN TRANSACTIONS OF 10000 ROWS
 
@@ -25,12 +25,12 @@ CALL apoc.periodic.iterate(
 "
   LOAD CSV WITH HEADERS FROM 'https://serratus-public.s3.amazonaws.com/graph/palmdb_edges.csv' AS row
   WITH row WHERE toFloat(row.distance) > 0
-  RETURN row
-","
   MATCH
     (s:Palmprint),
     (t:Palmprint)
   WHERE s.palmId = row.source AND t.palmId = row.target
+  RETURN row, s, t
+","
   MERGE (s)-[r:GLOBAL_ALIGNMENT]->(t)
   SET r.distance = toFloat(row.distance)
 ",

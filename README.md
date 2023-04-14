@@ -1,14 +1,20 @@
 # Neo4j Virus-Host Graph Database
 
-## Accessing Neo4j
+## Accessing Neo4j on web browser
 
 ### URL
 
-[http://44.201.81.84:7474](http://44.201.81.84:7474) (See [Cloudformation output](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/outputs?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A797308887321%3Astack%2FNeo4j-Graph%2Fac06ebb0-d94c-11ed-9d22-0e56430d81ed&filteringText=&filteringStatus=active&viewNested=true))
+Find URL under `Neo4j-Graph` [Cloudformation stack outputs](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/).
 
 ### Credentials
 
 Admin user credentials are stored in [AWS secrets - Neo4j-Graph](https://us-east-1.console.aws.amazon.com/secretsmanager/secret?name=Neo4j-Graph&region=us-east-1). Click "Retrieve secret value" in AWS Console.
+
+<!-- ## Accessing Neo4j on desktop app
+
+### Download
+
+[https://neo4j.com/download/](https://neo4j.com/download/) -->
 
 ## PalmDB data source
 
@@ -35,6 +41,18 @@ Admin user credentials are stored in [AWS secrets - Neo4j-Graph](https://us-east
 - [Reference](https://github.com/neo4j-partners/amazon-cloud-formation-neo4j)
 
 ![architecture diagram](./aws-community.png)
+
+## Neo4j DB management
+
+- There are issues with updating the cloudformation stack since it creates new resources without updating relevant IP config values. For now, to make changes to the neo4j config it's easiest to ssh directly into the instance
+- Use "EC2 Instance Connect" to ssh into server instance, this may requiring adding necessary IAM permissions
+- Edit config file: `/etc/neo4j/neo4j.conf`
+- Download plugins: `/var/lib/neo4j/plugins`
+- After making changes, you will need to restart the instance. Some useful commands:
+  - Log files: `/var/log/neo4j/`
+  - Restart instance: `neo4j stop && neo4j start` or `sudo service neo4j restart`
+  - `neo4j status` or `sudo service neo4j status`
+  - `curl http://localhost:7474/`
 
 ## Future work
 
