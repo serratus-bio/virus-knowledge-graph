@@ -33,15 +33,15 @@ Find URL under `Neo4j-Graph` [Cloudformation stack outputs](https://us-east-1.co
 
 Labels:
 
-| Label                                 | Properties                                                                                                                                                                                 |
+| Labels                                | Properties                                                                                                                                                                                 |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `SRA`                                 | `runId` <br /> `releaseDate` <br /> `avgLength` <br /> `experiment` <br /> `sraStudy` <br /> `projectId` <br /> etc                                                                        |
 | `Palmprint` <br /> `SOTU` if centroid | `palmId`<br />`sotu`<br />`centroid`<br />`taxPhylum`<br />`taxPhylum`<br />`taxClass`<br />`taxOrder`<br />`taxFamily`<br />`taxGenus`<br />`taxSpecies`<br />`nickname`<br />`palmprint` |
 | `Taxon` <br /> `Host` if host of SRA  | `scientificName` <br /> `taxId`                                                                                                                                                            |
 
-### Edges
+### Relationships
 
-| Label                 | Properties |
+| Types                 | Properties |
 | --------------------- | ---------- |
 | `SEQUENCE_ALIGNMENT`  | `distance` |
 | `HAS_HOST`            |            |
@@ -49,15 +49,17 @@ Labels:
 | `HAS_PARENT`          |            |
 | `HAS_POTENTIAL_TAXON` |            |
 
-## Cloudformation
+## System ops
+
+### Cloudformation
 
 - [Reference](https://github.com/neo4j-partners/amazon-cloud-formation-neo4j)
 
 ![architecture diagram](./aws-community.png)
 
-## Neo4j DB config management
+### Neo4j DB config management
 
-- There are issues with updating the cloudformation stack since it creates new resources without updating relevant IP config values. For now, to make changes to the neo4j config it's easiest to ssh directly into the instance
+- Updating cloudformation may cause issues since it new resources do not use updated IP config values. For now, to make changes to the neo4j config it's easiest to ssh directly into the instance
 - Use "EC2 Instance Connect" to ssh into server instance, this may require adding necessary IAM permissions
 - Edit config file: `/etc/neo4j/neo4j.conf`
 - Download plugins: `/var/lib/neo4j/plugins`
@@ -67,9 +69,7 @@ Labels:
   - `neo4j status` or `sudo service neo4j status`
   - `curl http://localhost:7474/`
 
-## Future work
-
-### Neo4j community edition
+## Neo4j community edition
 
 - Role-based security is an Enterprise Edition feature, high-availability clusters are also enterprise only
 - In the future, we may want to upgrade to enterprise or rely on infrastructure as code (IaC) + GH actions (CI/CD) to write updates to the database while allowing users read-only access when writing is completed
