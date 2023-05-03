@@ -86,15 +86,28 @@ def add_sotu_labels(rows, batch_size=10000):
     return batch_insert_data(query, rows, batch_size)
 
 
-def add_palmprint_edges(rows, batch_size=10000):
+def add_palmprint_msa_edges(rows, batch_size=10000):
     query = '''
             MATCH
                 (s:Palmprint),
                 (t:Palmprint)
-            WHERE s.palmId = row.source AND t.palmId = row.target
+            WHERE s.palmId = row.source AND t.palmId = row.target AND toFloat(row.distance) > 0
             MERGE (s)-[r:SEQUENCE_ALIGNMENT]->(t)
+            SET r.distance = toFloat(row.distance)
             '''
     return batch_insert_data(query, rows, batch_size)
+
+
+def add_palmprint_sotu_edges(batch_size=10000):
+    query = '''
+            MATCH
+                (s:Palmprint),
+                (t:Palmprint)
+            WHERE s.centroid = false AND t.palmId = s.sotu
+            MERGE (s)-[r:HAS_SOTU]->(t)
+            '''
+    return batch_insert_data(query, None, batch_size)
+
 
 def add_sra_palmprint_edges(rows, batch_size=10000):
     query = '''

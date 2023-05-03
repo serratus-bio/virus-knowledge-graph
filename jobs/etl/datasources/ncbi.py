@@ -22,9 +22,7 @@ def parse_tax_dump():
   with open(f'{EXTRACT_DIR}/nodes.dmp', mode='r') as in_file:
       for line in in_file:
           tax_id, parent_tax_id, rank, *other = line.split('|')
-          tax_id = tax_id.strip()
-          parent_tax_id = parent_tax_id.strip()
-          rank = rank.strip()
+          tax_id, parent_tax_id, rank = tax_id.strip(), parent_tax_id.strip(), rank.strip()
           taxon_nodes[tax_id] = {'tax_id': tax_id, 'parent_tax_id': parent_tax_id, 'rank': rank }
 
   with open(f'{EXTRACT_DIR}/host.dmp', mode='r') as in_file:
@@ -36,8 +34,7 @@ def parse_tax_dump():
   with open(f'{EXTRACT_DIR}/merged.dmp', mode='r') as in_file:
       for line in in_file:
           old_tax_id, new_tax_id, *other = line.split('|')
-          old_tax_id = old_tax_id.strip()
-          new_tax_id = new_tax_id.strip()
+          old_tax_id, new_tax_id  = old_tax_id.strip(), new_tax_id.strip()
           merged_nodes[old_tax_id] = new_tax_id
 
   with open(f'{EXTRACT_DIR}/names.dmp', mode='r') as in_file:

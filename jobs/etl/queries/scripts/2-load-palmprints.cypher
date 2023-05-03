@@ -45,6 +45,21 @@ CALL apoc.periodic.iterate(
 YIELD batches, total, errorMessages
 RETURN batches, total, errorMessages
 
+// Create Palmprint->Palmprint HAS_SOTU relationships
+CALL apoc.periodic.iterate(
+"
+  MATCH
+    (s:Palmprint),
+    (t:Palmprint)
+  WHERE s.centroid = false AND t.palmId = s.sotu
+  RETURN s, t
+","
+  MERGE (s)-[r:HAS_SOTU]->(t)
+",
+{batchSize:10000, parallel:True, retries: 3})
+YIELD batches, total, errorMessages
+RETURN batches, total, errorMessages
+
 // Create SRA -> Palmprint HAS_PALMPRINT relationships
 CALL apoc.periodic.iterate(
 "
