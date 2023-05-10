@@ -87,7 +87,7 @@ def add_palmprint_msa_edges(rows):
     return batch_insert_data(query, rows)
 
 
-def add_palmprint_sotu_edge():
+def add_palmprint_sotu_edges():
     query = '''
             MATCH (s:Palmprint), (t:Palmprint)
             WHERE s.centroid = false AND t.palmId = s.sotu
@@ -153,7 +153,7 @@ def add_palmprint_taxon_edges(rows):
             MERGE (p)-[r:HAS_POTENTIAL_TAXON]->(t)
             SET r += {
                 percentIdentity: toFloat(row.percent_identity),
-                palmPrintCoverage: toFloat(row.pp_cov)
+                palmprintCoverage: toFloat(row.pp_cov)
             }
             SET p += {
                 taxKingdom: row.tax_kingdom,

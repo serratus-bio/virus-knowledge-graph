@@ -258,7 +258,7 @@ Resources:
             - "configure_graph_data_science() {\n"
             - "  if [[ \"${installGraphDataScience}\" == Yes ]]; then\n"
             - "    echo \"Installing Graph Data Science...\"\n"
-            - "    wget \"https://graphdatascience.ninja/neo4j-graph-data-science-2.3.2.zip\" -P /tmp/ \n"
+            - "    wget \"https://graphdatascience.ninja/neo4j-graph-data-science-2.3.4.zip\" -P /tmp/ \n"
             - "    unzip /tmp/neo4j-graph-data-science-*.zip  -d /var/lib/neo4j/plugins"
             - "  fi\n"
             - "}\n"

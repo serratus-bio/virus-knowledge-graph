@@ -24,7 +24,7 @@ def main(args):
         graph_queries.add_taxon_nodes(df_taxon)
         graph_queries.add_taxon_edges(df_taxon)
 
-    if args.type == 'all':
+    if args.type == 'all' or args.type == 'edges':
         df_sra_palmprint = serratus_queries.get_sra_palmprint_df()
         graph_queries.add_sra_palmprint_edges(df_sra_palmprint)
 

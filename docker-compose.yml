@@ -6,7 +6,7 @@ services:
       context: ./jobs/etl
       dockerfile: Dockerfile
       args:
-        TYPE: edges
+        TYPE: all
     deploy:
       resources:
         limits:
@@ -24,4 +24,3 @@ services:
       - ./jobs/etl/.env
     volumes:
       - /mnt/graphdata/:/app/graph_learning/data
-
