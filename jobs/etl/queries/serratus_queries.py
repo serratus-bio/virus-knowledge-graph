@@ -31,17 +31,17 @@ def get_query_results(query='', cache_filename=''):
     # reading directly from PSQL to a pandas dataframe with read_sql_query is memory intensive
     # instead, write to EBS disk then read csv into a partitioned dataframe with dask:
     # https://dask.pydata.org/en/latest/dataframe.html
-    
+
     if not os.path.exists(EXTRACT_DIR):
         os.mkdir(EXTRACT_DIR)
-    
+
     cache_file_path = EXTRACT_DIR + cache_filename
     if not os.path.exists(cache_file_path):
         write_query_to_disk(query, cache_file_path)
 
     df = read_df_from_disk(cache_file_path)
-    if not USE_LOCAL_CACHE: 
-        os.remove(cache_file_path) 
+    if not USE_LOCAL_CACHE:
+        os.remove(cache_file_path)
     return df
 
 
@@ -54,7 +54,7 @@ def get_sra_df():
 
 
 def get_palmprint_df():
-    query = "SELECT * FROM public.palmdb"
+    query = "SELECT * FROM public.palmdb2"
     return get_query_results(
         query=query,
         cache_filename='palmprint_nodes.csv'
@@ -72,7 +72,7 @@ def get_palmprint_msa_df():
 
 def get_sra_palmprint_df():
     query = ("SELECT srarun.run as run_id, palm_id "
-        "FROM palm_sra INNER JOIN srarun ON palm_sra.run_id = srarun.run")
+        "FROM palm_sra2 INNER JOIN srarun ON palm_sra2.run_id = srarun.run")
     return get_query_results(
         query=query,
         cache_filename='sra_palmprint_edges.csv'

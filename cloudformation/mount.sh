@@ -6,6 +6,7 @@ MOUNT_DIR=graphdata
 
 file -s /dev/$DEVICE_NAME
 mkdir -p /mnt/$MOUNT_DIR
+sudo chown ec2-user /mnt/$MOUNT_DIR
 mount /dev/$DEVICE_NAME /mnt/$MOUNT_DIR -t ext4
 df -h /mnt/$MOUNT_DIR
 
