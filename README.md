@@ -49,13 +49,19 @@ Labels:
 | `HAS_PARENT`          |            |
 | `HAS_POTENTIAL_TAXON` |            |
 
-## System ops
+## Infrastructure and system management
+
+### Running jobs
+
+Install Make if not already installed, then run `make install`. See [Makefile](./Makefile) for available commands.
+
 
 ### Cloudformation
 
 - [Reference](https://github.com/neo4j-partners/amazon-cloud-formation-neo4j)
 
-![architecture diagram](./aws-community.png)
+![architecture diagram](./cloudformation/aws-community.png)
+
 
 ### Neo4j DB config management
 
@@ -64,22 +70,11 @@ Labels:
 - Edit config file: `/etc/neo4j/neo4j.conf`
 - Download plugins: `/var/lib/neo4j/plugins`
 - After making changes, you will need to restart the instance. Some useful commands:
-  - Log files: `/var/log/neo4j/`
+  - Check status: `neo4j status`, `sudo service neo4j status` or `curl http://localhost:7474/`
+  - Rveiw log files: `/var/log/neo4j/`
   - Restart instance: `neo4j stop && neo4j start` or `sudo service neo4j restart`
-  - `neo4j status` or `sudo service neo4j status`
-  - `curl http://localhost:7474/`
 
-## Neo4j community edition
+### Neo4j community edition
 
 - Role-based security is an Enterprise Edition feature, high-availability clusters are also enterprise only
 - In the future, we may want to upgrade to enterprise or rely on infrastructure as code (IaC) + GH actions (CI/CD) to write updates to the database while allowing users read-only access when writing is completed
-- A possible workaround is described below:
-  - To write to Neo4j, we rely on GH actions and `.cypher` script files
-    - 1. Suspend `neo4j-public` user account from access
-    - 2. Remove readonly constraint from config file
-    - 3. Restart Neo4j instance
-    - 4. Use `neo4j-private` to run write cypher queries contained in .cypher script files
-  - To read from Neo4j, i.e. after write scripts are completed
-    - 1. Add readonly constraint to config file
-    - 2. Restart Neo4j instance
-    - 2. Activate `neo4j-public` user account
