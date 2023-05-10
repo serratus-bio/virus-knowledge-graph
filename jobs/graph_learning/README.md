@@ -23,7 +23,7 @@ The general process for using GDS:
 
 ### Overview
 
-- We may require more granular control over our graph learning pipeline and models. In that case, we can pull data from neo4j and psql and then use PyG for training graph models.
+- We may require more granular control over our graph learning pipeline and models. In that case, we can pull data from neo4j or psql and then use PyG for training graph models.
 
 ### Useful References
 

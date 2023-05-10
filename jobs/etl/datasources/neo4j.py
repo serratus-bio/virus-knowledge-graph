@@ -1,26 +1,28 @@
+import os
+
 from neo4j import GraphDatabase
 
 class Neo4jConnection:
     def __init__(self, uri, user, pwd):
-        self.__uri = uri
-        self.__user = user
-        self.__pwd = pwd
-        self.__driver = None
+        self._uri = uri
+        self._user = user
+        self._pwd = pwd
+        self._driver = None
         try:
-            self.__driver = GraphDatabase.driver(self.__uri, auth=(self.__user, self.__pwd))
+            self._driver = GraphDatabase.driver(self._uri, auth=(self._user, self._pwd))
         except Exception as e:
             print("Failed to create the driver:", e)
 
     def close(self):
-        if self.__driver is not None:
-            self.__driver.close()
+        if self._driver is not None:
+            self._driver.close()
 
     def query(self, query, parameters=None, db=None):
-        assert self.__driver is not None, "Driver not initialized!"
+        assert self._driver is not None, "Driver not initialized!"
         session = None
         response = None
         try:
-            session = self.__driver.session(database=db) if db is not None else self.__driver.session()
+            session = self._driver.session(database=db) if db is not None else self._driver.session()
             response = list(session.run(query, parameters))
         except Exception as e:
             print("Query failed:", e)
@@ -29,3 +31,9 @@ class Neo4jConnection:
                 session.close()
         return response
 
+def get_connection(): 
+    return Neo4jConnection(
+        uri=os.environ.get('NEO4J_URI'),
+        user=os.environ.get('NEO4J_USER'),
+        pwd=os.environ.get('NEO4J_PASSWORD')
+    )

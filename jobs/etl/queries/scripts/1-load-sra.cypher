@@ -14,7 +14,7 @@ CALL apoc.periodic.iterate(
     bases: toInteger(row.bases),
     spots: toInteger(row.spots),
     spotsWithMates: toInteger(row.spots_with_mates),
-    releaseDate: datetime(replace(row.release_date, ' ', 'T'))
+    releaseDate: datetime(replace(row.release_date, ' ', 'T')),
     experiment: row.experiment,
     sraStudy: row.sra_study,
     bioProject: row.bio_project,

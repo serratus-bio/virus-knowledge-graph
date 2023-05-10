@@ -1,0 +1,27 @@
+version: "3.4"
+services:
+  etl:
+    container_name: etl_container
+    build:
+      context: ./jobs/etl
+      dockerfile: Dockerfile
+      args:
+        TYPE: edges
+    deploy:
+      resources:
+        limits:
+          memory: 8000M
+    env_file:
+      - ./jobs/etl/.env
+    volumes:
+      - /mnt/graphdata:/app/etl/data
+  graph_learning:
+    container_name: graph_learning_container
+    build:
+      context: ./jobs/graph_learning
+      dockerfile: Dockerfile
+    env_file:
+      - ./jobs/etl/.env
+    volumes:
+      - /mnt/graphdata/:/app/graph_learning/data
+
