@@ -1,30 +1,29 @@
-setup: install env
+## Commands for machine setup
+
+setup: install mount-vol env-etl env-ml docker-start
 
 install:
-	{ \
-	sudo yum install make ;\
-	sudo yum install docker -y ;\
-	sudo curl -L "https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-$(uname -s)-$(uname -m)"  -o /usr/local/bin/docker-compose ;\
-	sudo mv /usr/local/bin/docker-compose /usr/bin/docker-compose ;\
-	sudo chmod +x /usr/bin/docker-compose ;\
-	sudo chmod 666 /var/run/docker.sock ;\
-	sudo systemctl start docker ;\
-	}
+	./machines/install.sh
 
 mount-vol:
-	{ \
-	DEVICE_NAME=nvme1n1 ;\
-	MOUNT_DIR=graphdata ;\
-	mkdir -p /mnt/graphdata ;\
-	mount /dev/nvme1n1 /mnt/graphdata -t ext4 ;\
-	sudo chown `whoami` /mnt/graphdata/* ;\
-	}
+	./machines/mount-volume.sh
 
-clean:
-	docker system prune -a -f 
+neo4j-backup:
+	./machines/neo4j-backup.sh
+
+neo4j-restore:
+	./machines/neo4j-restore.sh
+
+## Commands for jobs
+
+docker-start:
+	sudo service docker start && sudo chmod 666 /var/run/docker.sock
+
+docker-clean:
+	docker system prune -a -f
 
 env-etl:
-	printf '%s\n' 'NEO4J_USER=""' 'NEO4J_PASSWORD=""' 'NEO4J_URI=""' > ./jobs/etl/.env
+	printf '%s\n' 'NEO4J_USER="neo4j"' 'NEO4J_PASSWORD=""' 'NEO4J_URI="bolt://:7687"' > ./jobs/etl/.env
 
 run-etl-all:
 	docker-compose up --build etl
@@ -34,3 +33,6 @@ clear-etl-cache:
 
 connect-etl:
 	docker exec -it $(docker ps -aqf "name=etl")  /bin/bash
+
+env-ml:
+	printf '%s\n' 'NEO4J_USER="neo4j"' 'NEO4J_PASSWORD=""' 'NEO4J_URI="bolt://:7687"' > ./jobs/graph_learning/.env

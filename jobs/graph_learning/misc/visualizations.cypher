@@ -3,7 +3,6 @@ CALL db.schema.visualization()
 
 MATCH q1 = (t:Taxon)<-[:HAS_HOST]-(s:SRA)-[:HAS_PALMPRINT]->(p:Palmprint)-[:HAS_SOTU]->(:SOTU), 
   q2=(t:Taxon)-[:HAS_PARENT]->(t2)
-  
 RETURN q1, q2
 LIMIT 25
 

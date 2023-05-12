@@ -10,7 +10,7 @@ Admin user credentials are stored in [AWS secrets - Neo4j-Graph](https://us-east
 
 Find URL under `Neo4j-Graph` [Cloudformation stack outputs](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/).
 
-### Desktop app
+### (Optional) Desktop app
 
 - Download [https://neo4j.com/download/](https://neo4j.com/download/)
 - Create new project with remote connection DBMS connection `neo4j@neo4j://{URL}:7687`
@@ -53,15 +53,14 @@ Labels:
 
 ### Running jobs
 
-Install Make if not already installed, then run `make install`. See [Makefile](./Makefile) for available commands.
-
+See [Machines README](./machines/README) for machine setup.
+See [Makefile](./Makefile) for available commands to run jobs.
 
 ### Cloudformation
 
 - [Reference](https://github.com/neo4j-partners/amazon-cloud-formation-neo4j)
 
-![architecture diagram](./cloudformation/aws-community.png)
-
+![architecture diagram](./machines/cloudformation/aws-community.png)
 
 ### Neo4j DB config management
 

@@ -173,9 +173,9 @@ CALL gds.graph.drop(
   'palmprintHost'
 )
 
-CALL gds.beta.pipeline.drop('pipe')
+CALL gds.beta.pipeline.drop('lp-pipeline')
 
-CALL gds.beta.model.drop('my-model')
+CALL gds.beta.model.drop('lp-pipeline-model')
 
 CALL gds.graph.list()
 

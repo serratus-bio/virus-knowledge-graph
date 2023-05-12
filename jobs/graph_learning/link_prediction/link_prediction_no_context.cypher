@@ -26,8 +26,8 @@ RETURN graph.nodeCount AS nodeCount, graph.relationshipCount AS relationshipCoun
 CALL gds.graph.relationshipProperty.stream('palmprintHost', 'countOfReads')
 YIELD sourceNodeId, targetNodeId, propertyValue AS countOfReads
 RETURN
-  gds.util.asNode(sourceNodeId).name AS palmId,
-  gds.util.asNode(targetNodeId).name AS taxId,
+  gds.util.asNode(sourceNodeId).palmId AS palmId,
+  gds.util.asNode(targetNodeId).taxId AS taxId,
   countOfReads
 ORDER BY countOfReads DESC
 LIMIT 10
@@ -50,8 +50,8 @@ CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
 
 // Configure the data splits
 CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
-  testFraction: 0.25, // 0.2
-  trainFraction: 0.6, // 0.2
+  testFraction: 0.0625,
+  trainFraction: 0.25,
   validationFolds: 3
 })
 
@@ -60,7 +60,8 @@ CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
 // gds.beta.model.list()
 // CALL gds.alpha.pipeline.linkPrediction.configureAutoTuning()
 CALL gds.alpha.pipeline.linkPrediction.addMLP('lp-pipeline',
-{hiddenLayerSizes: [4, 2], penalty: 1, patience: 2})
+  {hiddenLayerSizes: [4, 2], penalty: 1, patience: 2}
+)
 
 
 // Estimate memory for pipeline
@@ -69,7 +70,7 @@ CALL gds.beta.pipeline.linkPrediction.train.estimate('palmprintHost', {
   modelName: 'lp-pipeline-model',
   targetRelationshipType: 'UNDIRECTED_HOST'
 })
-YIELD requiredMemory
+
 
 // Training
 CALL gds.beta.pipeline.linkPrediction.train('palmprintHost', {
@@ -87,7 +88,6 @@ RETURN
   modelInfo.metrics.AUCPR.outerTrain AS outerTrainScore,
   modelInfo.metrics.AUCPR.test AS testScore,
   [cand IN modelSelectionStats.modelCandidates | cand.metrics.AUCPR.validation.avg] AS validationScores
-
 
 
 // Output top 5 approx predictions

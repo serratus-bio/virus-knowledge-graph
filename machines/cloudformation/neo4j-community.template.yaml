@@ -1,3 +1,5 @@
+# Reference: https://github.com/neo4j-partners/amazon-cloud-formation-neo4j/blob/main/marketplace/neo4j-community/neo4j.template.yaml
+
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Neo4j 5 Community Edition
 Metadata:
@@ -7,7 +9,7 @@ Metadata:
           default: "Neo4j Configuration"
         Parameters:
           - Password
-          - InstallGraphDataScience
+          - IsMLWorker
       - Label:
           default: "Infrastructure Configuration"
         Parameters:
@@ -23,8 +25,8 @@ Metadata:
         default: Disk Size
       SSHCIDR:
         default: SSH CIDR
-      InstallGraphDataScience:
-        default: Install Graph Data Science
+      IsMLWorker:
+        default: Uses ML config and plugins (install GDS, limit page cache)
 
 Parameters:
   Password:
@@ -55,9 +57,9 @@ Parameters:
   DiskSize:
     Description: Size in GB of the EBS volume on each node
     Type: Number
-    Default: 100
-    MinValue: 100
-    ConstraintDescription: "Minimum disk size should be 100"
+    Default: 30
+    MinValue: 30
+    ConstraintDescription: "Minimum disk size should be 30"
 
   SSHCIDR:
     Description: SSH CIDR (Specify an address range from which ec2 instances are accessible on port 22. You can use 0.0.0.0/0 to allow access from any IP address)
@@ -65,15 +67,19 @@ Parameters:
     MinLength: 9
     MaxLength: 18
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
-    ConstraintDescription: "must be a valid CIDR range of the form x.x.x.x/x."
+    ConstraintDescription: "Must be a valid CIDR range of the form x.x.x.x/x."
 
-  InstallGraphDataScience:
-    Description: Install Graph Data Science
+  IsMLWorker:
+    Description: Use ML config and plugins (install GDS, limit page cache)
     Type: String
-    Default: "Yes"
+    Default: "No"
     AllowedValues:
       - "Yes"
       - "No"
+
+  KeyName:
+    Description: EC2 KeyPair to enable SSH access to the instance
+    Type: "AWS::EC2::KeyPair::KeyName"
 
 Resources:
   Neo4jVPC:
@@ -160,6 +166,17 @@ Resources:
           ToPort: 7687
           CidrIp: 0.0.0.0/0
 
+  Neo4jElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  Neo4jIPAssoc:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      EIP: !Ref Neo4jElasticIP
+      InstanceId: !Ref Neo4jEC2Instance
+
   Neo4jEC2Instance:
     Type: AWS::EC2::Instance
     CreationPolicy:
@@ -184,6 +201,8 @@ Resources:
               Ref: DiskSize
             VolumeType: gp3
             Encrypted: true
+      KeyName:
+        Ref: KeyName
       UserData:
         Fn::Base64: !Join
           - ""
@@ -203,8 +222,12 @@ Resources:
             - Ref: AWS::Region
             - "\n"
 
-            - "installGraphDataScience="
-            - Ref: InstallGraphDataScience
+            - "isMLWorker="
+            - Ref: IsMLWorker
+            - "\n"
+
+            - "elasticIp="
+            - Ref: Neo4jElasticIP
             - "\n"
 
             - "install_neo4j_from_yum() {\n"
@@ -232,7 +255,7 @@ Resources:
             - "}\n"
 
             - "extension_config() {\n"
-            - "  echo Configuring extensions and security in neo4j.conf...\n"
+            - "  echo \"Configuring extensions and security in neo4j.conf...\"\n"
             - "  sed -i s~#server.unmanaged_extension_classes=org.neo4j.examples.server.unmanaged=/examples/unmanaged~server.unmanaged_extension_classes=com.neo4j.bloom.server=/bloom,semantics.extension=/rdf~g /etc/neo4j/neo4j.conf\n"
             - "  sed -i s/#dbms.security.procedures.unrestricted=my.extensions.example,my.procedures.*/dbms.security.procedures.unrestricted=gds.*,apoc.*,bloom.*/g /etc/neo4j/neo4j.conf\n"
             - "  echo \"dbms.security.http_auth_allowlist=/,/browser.*,/bloom.*\" >> /etc/neo4j/neo4j.conf\n"
@@ -241,7 +264,7 @@ Resources:
 
             - "build_neo4j_conf_file() {\n"
             - "  privateIP=\"$(hostname -i | awk '{print $NF}')\"\n"
-            - "  publicIP=\"$(wget -O - -q http://169.254.169.254/latest/meta-data/public-ipv4)\"\n"
+            - "  publicIP=\"${elasticIp}\"\n"
             - "  echo \"Configuring network in neo4j.conf...\"\n"
             - "  sed -i 's/#server.default_listen_address=0.0.0.0/server.default_listen_address=0.0.0.0/g' /etc/neo4j/neo4j.conf\n"
             - "  sed -i s/#server.default_advertised_address=localhost/server.default_advertised_address=\"${publicIP}\"/g /etc/neo4j/neo4j.conf\n"
@@ -255,11 +278,14 @@ Resources:
             - "  neo4j-admin server memory-recommendation | grep -v ^# >> /etc/neo4j/neo4j.conf\n"
             - "}\n"
 
-            - "configure_graph_data_science() {\n"
-            - "  if [[ \"${installGraphDataScience}\" == Yes ]]; then\n"
+            - "configure_ml_worker() {\n"
+            - "  if [[ \"${isMLWorker}\" == Yes ]]; then\n"
             - "    echo \"Installing Graph Data Science...\"\n"
             - "    wget \"https://graphdatascience.ninja/neo4j-graph-data-science-2.3.4.zip\" -P /tmp/ \n"
-            - "    unzip /tmp/neo4j-graph-data-science-*.zip  -d /var/lib/neo4j/plugins"
+            - "    unzip /tmp/neo4j-graph-data-science-*.zip  -d /var/lib/neo4j/plugins \n"
+            - "    echo \"Disable page cache requirements\"\n"
+            - "    sed -i s/server.memory.pagecache.size=10g/#server.memory.pagecache.size=10g/g /etc/neo4j/neo4j.conf\n"
+            - "    sed -i s|server.directories.data=/var/lib/neo4j/data|server.directories.data=/mnt/graphdata/neo4j/data|g /etc/neo4j/neo4j.conf\n"
             - "  fi\n"
             - "}\n"
 
@@ -277,7 +303,7 @@ Resources:
             - "install_apoc_plugin\n"
             - "extension_config\n"
             - "build_neo4j_conf_file\n"
-            - "configure_graph_data_science\n"
+            - "configure_ml_worker\n"
             - "start_neo4j && /opt/aws/bin/cfn-signal -e $? --stack \"${stackName}\" --resource Neo4jEC2Instance --region \"${region}\"\n"
 
 Outputs:
@@ -286,7 +312,7 @@ Outputs:
     Value: !Join
       - ""
       - - "http://"
-        - !GetAtt Neo4jEC2Instance.PublicIp
+        - Ref: Neo4jElasticIP
         - ":"
         - "7474"
   Neo4jURI:
@@ -294,7 +320,7 @@ Outputs:
     Value: !Join
       - ""
       - - "neo4j://"
-        - !GetAtt Neo4jEC2Instance.PublicIp
+        - Ref: Neo4jElasticIP
         - ":"
         - "7687"
   Neo4jUsername:
