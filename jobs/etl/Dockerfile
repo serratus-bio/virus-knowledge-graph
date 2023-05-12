@@ -3,8 +3,12 @@ FROM python:3.8
 ARG USER_ID="1000"
 ARG GROUP_ID="1000"
 ARG HOME="/app/etl"
-ARG TYPE
-ENV TYPE=${TYPE}
+
+ARG WORKFLOW
+ENV WORKFLOW=${WORKFLOW}
+ARG TASK
+ENV TASK=${TASK}
+
 
 ENV HOME=${HOME}
 RUN groupadd --gid ${USER_ID} ${GROUP_ID} && \
@@ -22,4 +26,4 @@ COPY . .
 RUN chown -R ${USER_ID}:${GROUP_ID} ${HOME}
 USER ${USER_ID}
 
-CMD ["sh", "-c", "python3 main.py  -t ${TYPE}"]
+CMD ["sh", "-c", "python3 main.py -w ${WORKFLOW} -t ${TASK}"]

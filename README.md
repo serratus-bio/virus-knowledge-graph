@@ -53,7 +53,7 @@ Labels:
 
 ### Running jobs
 
-See [Machines README](./machines/README) for machine setup.
+See [Machines README](./machines/README) for machine setup and neo4j config managment.
 See [Makefile](./Makefile) for available commands to run jobs.
 
 ### Cloudformation
@@ -61,17 +61,6 @@ See [Makefile](./Makefile) for available commands to run jobs.
 - [Reference](https://github.com/neo4j-partners/amazon-cloud-formation-neo4j)
 
 ![architecture diagram](./machines/cloudformation/aws-community.png)
-
-### Neo4j DB config management
-
-- Updating cloudformation may cause issues since it new resources do not use updated IP config values. For now, to make changes to the neo4j config it's easiest to ssh directly into the instance
-- Use "EC2 Instance Connect" to ssh into server instance, this may require adding necessary IAM permissions
-- Edit config file: `/etc/neo4j/neo4j.conf`
-- Download plugins: `/var/lib/neo4j/plugins`
-- After making changes, you will need to restart the instance. Some useful commands:
-  - Check status: `neo4j status`, `sudo service neo4j status` or `curl http://localhost:7474/`
-  - Rveiw log files: `/var/log/neo4j/`
-  - Restart instance: `neo4j stop && neo4j start` or `sudo service neo4j restart`
 
 ### Neo4j community edition
 

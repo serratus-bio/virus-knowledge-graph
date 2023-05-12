@@ -22,6 +22,9 @@ WITH gds.alpha.graph.project(
 RETURN graph.nodeCount AS nodeCount, graph.relationshipCount AS relationshipCount
 
 
+
+
+
 // Inspect relationsip property
 CALL gds.graph.relationshipProperty.stream('palmprintHost', 'countOfReads')
 YIELD sourceNodeId, targetNodeId, propertyValue AS countOfReads
@@ -49,9 +52,10 @@ CALL gds.beta.pipeline.linkPrediction.addFeature('lp-pipeline', 'hadamard', {
 })
 
 // Configure the data splits
+// https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/config/#linkprediction-configure-splits
 CALL gds.beta.pipeline.linkPrediction.configureSplit('lp-pipeline', {
-  testFraction: 0.0625,
-  trainFraction: 0.25,
+  testFraction: 0.0625, //0.0625, 0.25
+  trainFraction: 0.25, //0.25, 0.6
   validationFolds: 3
 })
 
@@ -76,7 +80,7 @@ CALL gds.beta.pipeline.linkPrediction.train.estimate('palmprintHost', {
 CALL gds.beta.pipeline.linkPrediction.train('palmprintHost', {
   pipeline: 'lp-pipeline',
   modelName: 'lp-pipeline-model',
-  metrics: ['AUCPR', 'OUT_OF_BAG_ERROR'],
+  metrics: ['AUCPR'],
   sourceNodeLabel: 'Palmprint',
   targetNodeLabel: 'Taxon',
   targetRelationshipType: 'UNDIRECTED_HOST',
@@ -95,7 +99,7 @@ CALL gds.beta.pipeline.linkPrediction.predict.stream('palmprintHost', {
   modelName: 'lp-pipeline-model',
   relationshipTypes: ['UNDIRECTED_HOST'],
   sampleRate: 0.5,
-  topK: 5,
+  topK: 1,
   randomJoins: 2,
   maxIterations: 3,
   // necessary for deterministic results
@@ -110,7 +114,7 @@ CALL gds.beta.pipeline.linkPrediction.predict.stream('palmprintHost', {
 // Output exhaustive top 5 predictions
 CALL gds.beta.pipeline.linkPrediction.predict.stream('palmprintHost', {
   modelName: 'lp-pipeline-model',
-  topN: 5,
+  topN: 3,
   threshold: 0.5
 })
  YIELD node1, node2, probability
@@ -118,21 +122,20 @@ CALL gds.beta.pipeline.linkPrediction.predict.stream('palmprintHost', {
  ORDER BY probability DESC, palmId, taxId
 
 
-
 // Mutate exhaustive top 5 predictions
 CALL gds.beta.pipeline.linkPrediction.predict.mutate('palmprintHost', {
   modelName: 'lp-pipeline-model',
   relationshipTypes: ['UNDIRECTED_HOST'],
-  mutateRelationshipType: 'UNDIRECTED_HOST_EXHAUSTIVE_PREDICTED',
+  mutateRelationshipType: 'VIRUS_HOST_INTERACTION_PREDICTION',
   topN: 5,
-  threshold: 0.5
+  threshold: 0.9
 }) YIELD relationshipsWritten, samplingStats
 
-// Mutate approx predictions
+// Write approx predictions
 CALL gds.beta.pipeline.linkPrediction.predict.mutate('palmprintHost', {
   modelName: 'lp-pipeline-model',
   relationshipTypes: ['UNDIRECTED_HOST'],
-  mutateRelationshipType: 'UNDIRECTED_HOST_APPROX_PREDICTED',
+  mutateRelationshipType: 'VIRUS_HOST_INTERACTION_PREDICTION_APPROX',
   sampleRate: 0.5,
   topK: 1,
   randomJoins: 2,
@@ -143,10 +146,18 @@ CALL gds.beta.pipeline.linkPrediction.predict.mutate('palmprintHost', {
 })
  YIELD relationshipsWritten, samplingStats
 
-// Store model to disk (might not be supported)
+
+// Store model to disk (not be supported without gds license)
 CALL gds.alpha.model.store(
     'lp-pipeline-model'
 )
+
+// Store graph projection to DB
+CALL gds.graph.export('palmprintHost', { dbName: 'neo4j-catalog-palmprintHost' })
+
+:use system CREATE DATABASE neo4j-catalog-palmprintHost;
+:use neo4j-catalog-palmprintHost MATCH (n) RETURN n;
+
 
 // Clean up graph, pipeline and model from catalog
 CALL gds.graph.drop(

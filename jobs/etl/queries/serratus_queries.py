@@ -3,9 +3,8 @@ import os
 from datasources.psql import get_connection
 import dask.dataframe as dd
 
-# TODO: configure with CLI arg or env vars
-USE_LOCAL_CACHE = True
-EXTRACT_DIR = './data/'
+
+EXTRACT_DIR = './data/query_cache/'
 
 
 def write_query_to_disk(query='', cache_file_path=''):
@@ -21,10 +20,10 @@ def read_df_from_disk(cache_file_path=''):
     try:
         # Neo4j works best with batches of 10k - 100k, this blocksize approximates that range
         df = dd.read_csv(cache_file_path, dtype='string', blocksize="1MB")
-        print('Using local cached file')
+        print('Using local cached file', cache_file_path)
         return df
     except:
-        print('No local cache file found')
+        print('No local cache file found', cache_file_path)
         return None
 
 def get_query_results(query='', cache_filename=''):
@@ -33,15 +32,13 @@ def get_query_results(query='', cache_filename=''):
     # https://dask.pydata.org/en/latest/dataframe.html
 
     if not os.path.exists(EXTRACT_DIR):
-        os.mkdir(EXTRACT_DIR)
+        os.makedirs(EXTRACT_DIR)
 
     cache_file_path = EXTRACT_DIR + cache_filename
+    df = read_df_from_disk(cache_file_path)
     if not os.path.exists(cache_file_path):
         write_query_to_disk(query, cache_file_path)
 
-    df = read_df_from_disk(cache_file_path)
-    if not USE_LOCAL_CACHE:
-        os.remove(cache_file_path)
     return df
 
 
@@ -49,7 +46,7 @@ def get_sra_df():
     query = "SELECT * FROM public.srarun"
     return get_query_results(
         query=query,
-        cache_filename='sra_nodes.csv'
+        cache_filename='sql_sra_nodes.csv'
     )
 
 
@@ -57,7 +54,7 @@ def get_palmprint_df():
     query = "SELECT * FROM public.palmdb2"
     return get_query_results(
         query=query,
-        cache_filename='palmprint_nodes.csv'
+        cache_filename='sql_palmprint_nodes.csv'
     )
 
 
@@ -66,7 +63,7 @@ def get_palmprint_msa_df():
             "WHERE pident >= 40 AND palm_id1 != palm_id2")
     return get_query_results(
         query=query,
-        cache_filename='palmprint_edges.csv'
+        cache_filename='sql_palmprint_edges.csv'
     )
 
 
@@ -75,7 +72,7 @@ def get_sra_palmprint_df():
         "FROM palm_sra2 INNER JOIN srarun ON palm_sra2.run_id = srarun.run")
     return get_query_results(
         query=query,
-        cache_filename='sra_palmprint_edges.csv'
+        cache_filename='sql_sra_palmprint_edges.csv'
     )
 
 
@@ -87,7 +84,7 @@ def get_taxon_df():
     )
     return get_query_results(
         query=query,
-        cache_filename='taxon_nodes.csv'
+        cache_filename='sql_taxon_nodes.csv'
     )
 
 
@@ -95,7 +92,7 @@ def get_sra_taxon_df():
     query = "SELECT srarun.run as run_id, tax_id FROM srarun"
     return get_query_results(
         query=query,
-        cache_filename='sra_taxon_edges_original.csv'
+        cache_filename='sql_sra_taxon_edges_original.csv'
     )
 
 
@@ -103,6 +100,6 @@ def get_palmprint_taxon_edges_df():
     query = "SELECT * FROM public.palm_tax"
     return get_query_results(
         query=query,
-        cache_filename='palmprint_taxon_edges.csv'
+        cache_filename='sql_palmprint_taxon_edges.csv'
     )
 

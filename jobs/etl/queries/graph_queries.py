@@ -3,13 +3,6 @@ from datasources.neo4j import get_connection
 conn = get_connection()
 
 
-def add_constraints():
-    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SRA) ON n.runId')
-    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Palmprint) ON n.palmId')
-    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.taxId')
-    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.scientificName')
-
-
 def batch_insert_data(query, df):
     results = []
     for partition in df.partitions:
@@ -20,6 +13,15 @@ def batch_insert_data(query, df):
             }
         ))
     return results
+
+
+
+def add_constraints():
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SRA) ON n.runId')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Palmprint) ON n.palmId')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.taxId')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.scientificName')
+
 
 ###### SRA ######
 
@@ -52,7 +54,7 @@ def add_palmprint_nodes(rows):
             MERGE (n:Palmprint {palmId: row.palm_id})
                 SET n += {
                 sotu: row.sotu,
-                centroid: toBoolean(row.centroid),
+                centroid: toBoolean(row.centroid = 't'),
                 nickname: row.nickname,
                 palmprint: row.palmprint
             }
@@ -60,13 +62,15 @@ def add_palmprint_nodes(rows):
     return batch_insert_data(query, rows)
 
 
-def add_sotu_labels(rows):
+def add_sotu_labels():
     query = '''
             MATCH (n:Palmprint)
             WHERE n.centroid = true
             SET n:SOTU
             '''
-    return batch_insert_data(query, rows)
+    conn.query(
+        query=query
+    )
 
 
 def add_palmprint_msa_edges(rows):
@@ -98,14 +102,20 @@ def add_palmprint_sotu_edges():
     )
 
 
-def add_sra_palmprint_edges(rows):
+def get_palmprint_nodes():
     query = '''
-            UNWIND $rows as row
-            MATCH (s:SRA), (t:Palmprint)
-            WHERE s.runId = row.run_id AND t.palmId = row.palm_id
-            MERGE (s)-[r:HAS_PALMPRINT]->(t)
+            MATCH (n:Palmprint)
+            RETURN id(n) as id, labels(n) as labels, n.centroid as centroid 
             '''
-    return batch_insert_data(query, rows)
+    return conn.query(query=query)
+
+
+def get_has_sotu_edges():
+    query = '''
+            MATCH (s:Palmprint)-[r:HAS_SOTU]->(t:Palmprint)
+            RETURN id(s) as sourceNodeId, id(t) as targetNodeId, type(r) as relationshipType, 1 as weight
+            '''
+    return conn.query(query=query)
 
 
 ###### Taxon ######
@@ -120,7 +130,12 @@ def add_taxon_nodes(rows):
             SET n += {
                 scientificName: row.scientific_name,
                 rank: row.rank,
-                potentialHosts: row.potential_hosts
+                taxKingdom: row.tax_kingdom,
+                taxPhylum: row.tax_phylum,
+                taxOrder: row.tax_order,
+                taxFamily: row.tax_family,
+                taxGenus: row.tax_genus,
+                taxSpecies: row.tax_species
             }
             '''
     return batch_insert_data(query, rows)
@@ -134,6 +149,36 @@ def add_taxon_edges(rows):
             MERGE (s)-[r:HAS_PARENT]->(t)
             '''
     return batch_insert_data(query, rows)
+
+
+def get_taxon_nodes():
+    query = '''
+            MATCH (n:Taxon)
+            RETURN id(n) as id, labels(n) as labels, n.rank as rank
+            '''
+    return conn.query(query=query)
+
+
+def get_has_parent_edges():
+    query = '''
+            MATCH (s:Taxon)-[r:HAS_PARENT]->(t:Taxon)
+            RETURN id(s) as sourceNodeId, id(t) as targetNodeId, type(r) as relationshipType, 1 as weight 
+            '''
+    return conn.query(query=query)
+
+
+###### Heterogenous edges ######
+
+
+def add_sra_palmprint_edges(rows):
+    query = '''
+            UNWIND $rows as row
+            MATCH (s:SRA), (t:Palmprint)
+            WHERE s.runId = row.run_id AND t.palmId = row.palm_id
+            MERGE (s)-[r:HAS_PALMPRINT]->(t)
+            '''
+    return batch_insert_data(query, rows)
+
 
 def add_sra_taxon_edges(rows):
     query = '''
@@ -165,3 +210,15 @@ def add_palmprint_taxon_edges(rows):
             }
             '''
     return batch_insert_data(query, rows)
+
+
+def get_has_host_edges():
+    # Get inferred Palmprint -> Taxon edges
+    # exclude all hosts that are descendants of unclassified Taxon 12908
+    query = '''
+            MATCH (s:Palmprint)<-[:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST]->(t:Taxon)
+            WHERE not (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
+            RETURN id(s) as sourceNodeId, id(t) as targetNodeId, 'HAS_HOST' as relationshipType, count(*) AS weight
+            '''
+    return conn.query(query=query)
+
