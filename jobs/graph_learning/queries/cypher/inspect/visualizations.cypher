@@ -30,6 +30,17 @@ WITH  collect (n) as all_hosts, collect(s) as virus_host
 RETURN [x in all_hosts WHERE not(x in virus_host)] as delta,
        length(all_hosts), length(virus_host)
 
+
+
+MATCH (n:Host)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'}) RETURN COUNT(n)
+//
+
+MATCH (n:Host)
+WHERE not (n)-[:HAS_PARENT*]->(t:Taxon {taxId: '12908'}) RETURN COUNT(n)
+WITH  collect (n) as all_hosts, collect(s) as virus_host
+RETURN [x in all_hosts WHERE not(x in virus_host)] as delta,
+       length(all_hosts), length(virus_host)
+
 // Children derived from same parents
 START c1=node(*), c2=node(*)
 MATCH c1-[:ChildOf]->parent<-[:ChildOf]-c2

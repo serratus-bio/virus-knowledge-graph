@@ -286,6 +286,8 @@ Resources:
             - "    echo \"Disable page cache requirements\"\n"
             - "    sed -i s/server.memory.pagecache.size=10g/#server.memory.pagecache.size=10g/g /etc/neo4j/neo4j.conf\n"
             - "    sed -i s|server.directories.data=/var/lib/neo4j/data|server.directories.data=/mnt/graphdata/neo4j/data|g /etc/neo4j/neo4j.conf\n"
+            - "    echo \"gds.export.location=/mnt/graphdata\" >> /etc/neo4j/neo4j.conf\n"
+            - "    echo \"gds.model.store_location=/home/ec2-user/workspace/virus-host-graph\" >> /etc/neo4j/neo4j.conf\n"
             - "  fi\n"
             - "}\n"
 

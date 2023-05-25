@@ -6,7 +6,8 @@ services:
       context: ./jobs/etl
       dockerfile: Dockerfile
       args:
-        TYPE: all
+        WORKFLOW: graph_to_features
+        TASK: all
     deploy:
       resources:
         limits:
@@ -20,7 +21,10 @@ services:
     build:
       context: ./jobs/graph_learning
       dockerfile: Dockerfile
+      args:
+        WORKFLOW: link_prediction
+        TASK: all
     env_file:
-      - ./jobs/etl/.env
+      - ./jobs/graph_learning/.env
     volumes:
       - /mnt/graphdata/:/app/graph_learning/data

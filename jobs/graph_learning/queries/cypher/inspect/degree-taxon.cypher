@@ -33,3 +33,36 @@ RETURN centralityDistribution.min AS minimumScore, centralityDistribution.mean A
 CALL gds.graph.drop(
   'SRATaxon'
 )
+
+CALL gds.degree.stream('palmprintHost', {
+  nodeLabels: ['Host']
+  relationshipTypes: ['UNDIRECTED_HOST'], 
+  orientation: 'UNDIRECTED',
+  relationshipWeightProperty: 'countOfReads'
+})
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).taxId AS taxId, gds.util.asNode(nodeId).taxSpecies as taxSpecies,  score AS score
+ORDER BY score DESC, taxId DESC
+LIMIT 500
+
+// Rank > superkingdom > phylum > class > order > family > genus
+
+CALL gds.degree.stream('palmprintHost', {
+  relationshipTypes: ['UNDIRECTED_HOST'], 
+  orientation: 'UNDIRECTED',
+  relationshipWeightProperty: 'countOfReads'
+})
+YIELD nodeId, score
+WITH gds.util.asNode(nodeId) as node, score
+WHERE node.taxId is not NULL
+RETURN node.taxId, node.rank, node.taxSpecies, node.taxKingdom, node.taxPhylum, score
+ORDER BY score DESC
+
+
+https://stackoverflow.com/questions/57142419/degree-centrality-algorithm-returns-only-0-0-as-score
+"Eukaryota"	18360
+null	4628
+"Bacteria"	2172
+"Viruses"	542
+"Archaea"	56
+

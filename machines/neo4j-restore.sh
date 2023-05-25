@@ -1,5 +1,13 @@
 #!/bin/bash
 
-# Restore
-/bin/neo4j-admin database load --from-path=/mnt/graphdata/neo4j/neo4j.dump neo4j --overwrite-destination=true
-neo4j start
+BACKUP_DIR=/mnt/graphdata/neo4j
+
+if [[! "${sudo systemctl stop neo4j}"]]; then
+  while [["${neo4j status}"]];
+    sleep 1
+    echo "Still waiting..."
+  done;
+fi
+
+/bin/neo4j-admin database load --from-path=$BACKUP_DIR/neo4j.dump neo4j --overwrite-destination=true
+sudo systemctl start neo4j
