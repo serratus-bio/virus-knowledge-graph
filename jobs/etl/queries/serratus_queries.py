@@ -18,13 +18,15 @@ def write_query_to_disk(query='', cache_file_path=''):
 
 def read_df_from_disk(cache_file_path=''):
     try:
-        # Neo4j works best with batches of 10k - 100k, this blocksize approximates that range
+        # Neo4j works best with batches of 10k - 100k, this blocksize
+        # approximates that range
         df = dd.read_csv(cache_file_path, dtype='string', blocksize="1MB")
         print('Using local cached file', cache_file_path)
         return df
-    except:
+    except BaseException:
         print('No local cache file found', cache_file_path)
         return None
+
 
 def get_query_results(query='', cache_filename=''):
     # reading directly from PSQL to a pandas dataframe with read_sql_query is memory intensive
@@ -60,7 +62,7 @@ def get_palmprint_df():
 
 def get_palmprint_msa_df():
     query = ("SELECT * FROM public.palm_graph "
-            "WHERE pident >= 40 AND palm_id1 != palm_id2")
+             "WHERE pident >= 40 AND palm_id1 != palm_id2")
     return get_query_results(
         query=query,
         cache_filename='sql_palmprint_edges.csv'
@@ -69,7 +71,7 @@ def get_palmprint_msa_df():
 
 def get_sra_palmprint_df():
     query = ("SELECT srarun.run as run_id, palm_id "
-        "FROM palm_sra2 INNER JOIN srarun ON palm_sra2.run_id = srarun.run")
+             "FROM palm_sra2 INNER JOIN srarun ON palm_sra2.run_id = srarun.run")
     return get_query_results(
         query=query,
         cache_filename='sql_sra_palmprint_edges.csv'
@@ -78,10 +80,10 @@ def get_sra_palmprint_df():
 
 def get_taxon_df():
     query = ("SELECT *"
-        "FROM public.tax_nodes as t1 "
-        "FULL JOIN public.tax_lineage as t2 "
-        "ON t1.tax_id = t2.tax_id"
-    )
+             "FROM public.tax_nodes as t1 "
+             "FULL JOIN public.tax_lineage as t2 "
+             "ON t1.tax_id = t2.tax_id"
+             )
     return get_query_results(
         query=query,
         cache_filename='sql_taxon_nodes.csv'
@@ -102,4 +104,3 @@ def get_palmprint_taxon_edges_df():
         query=query,
         cache_filename='sql_palmprint_taxon_edges.csv'
     )
-

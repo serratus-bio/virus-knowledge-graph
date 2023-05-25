@@ -8,12 +8,11 @@ def batch_insert_data(query, df):
     for partition in df.partitions:
         results.append(conn.query(
             query,
-            parameters = {
+            parameters={
                 'rows': partition.compute().to_dict(orient="records")
             }
         ))
     return results
-
 
 
 def add_constraints():
@@ -47,6 +46,7 @@ def add_sra_nodes(rows):
     return batch_insert_data(query, rows)
 
 ###### Palmprint ######
+
 
 def add_palmprint_nodes(rows):
     query = '''
@@ -105,7 +105,7 @@ def add_palmprint_sotu_edges():
 def get_palmprint_nodes():
     query = '''
             MATCH (n:Palmprint)
-            RETURN id(n) as id, labels(n) as labels, n.centroid as centroid 
+            RETURN id(n) as id, labels(n) as labels, n.centroid as centroid
             '''
     return conn.query(query=query)
 
@@ -162,7 +162,7 @@ def get_taxon_nodes():
 def get_has_parent_edges():
     query = '''
             MATCH (s:Taxon)-[r:HAS_PARENT]->(t:Taxon)
-            RETURN id(s) as sourceNodeId, id(t) as targetNodeId, type(r) as relationshipType, 1 as weight 
+            RETURN id(s) as sourceNodeId, id(t) as targetNodeId, type(r) as relationshipType, 1 as weight
             '''
     return conn.query(query=query)
 
@@ -189,6 +189,7 @@ def add_sra_taxon_edges(rows):
             SET t:Host
             '''
     return batch_insert_data(query, rows)
+
 
 def add_palmprint_taxon_edges(rows):
     query = '''
@@ -221,4 +222,3 @@ def get_has_host_edges():
             RETURN id(s) as sourceNodeId, id(t) as targetNodeId, 'HAS_HOST' as relationshipType, count(*) AS weight
             '''
     return conn.query(query=query)
-
