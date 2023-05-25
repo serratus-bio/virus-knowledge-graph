@@ -2,6 +2,7 @@ import os
 
 from neo4j import GraphDatabase
 
+
 class Neo4jConnection:
     def __init__(self, uri, user, pwd):
         self._uri = uri
@@ -9,7 +10,8 @@ class Neo4jConnection:
         self._pwd = pwd
         self._driver = None
         try:
-            self._driver = GraphDatabase.driver(self._uri, auth=(self._user, self._pwd))
+            self._driver = GraphDatabase.driver(
+                self._uri, auth=(self._user, self._pwd))
         except Exception as e:
             print("Failed to create the driver:", e)
 
@@ -22,7 +24,8 @@ class Neo4jConnection:
         session = None
         response = None
         try:
-            session = self._driver.session(database=db) if db is not None else self._driver.session()
+            session = self._driver.session(
+                database=db) if db is not None else self._driver.session()
             response = list(session.run(query, parameters))
         except Exception as e:
             print("Query failed:", e)
@@ -31,7 +34,8 @@ class Neo4jConnection:
                 session.close()
         return response
 
-def get_connection(): 
+
+def get_connection():
     return Neo4jConnection(
         uri=os.environ.get('NEO4J_URI'),
         user=os.environ.get('NEO4J_USER'),

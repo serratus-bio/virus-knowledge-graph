@@ -18,7 +18,7 @@ def run(args):
         pipeline = gds_queries.create_lp_pipeline()
         pipeline = gds_queries.add_training_method(pipeline)
         gds_queries.log_pipeline(pipeline)
-    
+
     if args.task == 'all' or args.task == 'train':
         print('Training model')
         model, train_result = gds_queries.train_model(G, pipeline)
@@ -27,7 +27,7 @@ def run(args):
     if args.task == 'all' or args.task == 'predict_stream':
         print('Streaming predictions')
         pipeline = gds_queries.stream_predictions(G, model)
-    
+
     if args.task == 'all' or args.task == 'predict_mutate':
         print('Writing predictions')
         pipeline = gds_queries.mutate_predictions(G, model)
@@ -37,4 +37,3 @@ def run(args):
         G.drop()
         pipeline.drop()
         model.drop()
-    

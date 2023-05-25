@@ -11,7 +11,7 @@ def main(args):
     if args.workflow == 'graph_to_features':
         print('Running workflow: Neo4j -> feature store')
         graph_to_features.run(args)
-   
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run ETL jobs")

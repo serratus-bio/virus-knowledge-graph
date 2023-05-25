@@ -2,6 +2,7 @@ from queries import serratus_queries
 from queries import ncbi_queries
 from queries import graph_queries
 
+
 def run(args):
     graph_queries.add_constraints()
 
@@ -19,7 +20,7 @@ def run(args):
 
         df_palmprint_msa = serratus_queries.get_palmprint_msa_df()
         graph_queries.add_palmprint_msa_edges(df_palmprint_msa)
-    
+
     if args.task == 'all' or args.task == 'taxon':
         print('Processing Taxons')
         df_taxon = serratus_queries.get_taxon_df()

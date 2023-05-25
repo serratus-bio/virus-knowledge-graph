@@ -1,4 +1,4 @@
-from datasources.neo4j import gds 
+from datasources.neo4j import gds
 
 
 def run(args):

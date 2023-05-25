@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 
-from datasources.neo4j import gds 
+from datasources.neo4j import gds
 
 
 CONFIG = {
@@ -18,12 +18,13 @@ CONFIG = {
     'SAMPLING_RATIO': 0.1,
 }
 
+
 def read_df_from_disk(file_path=''):
     try:
         df = pd.read_csv(file_path, index_col=0)
         print('Using local file for dataframe: ', file_path)
         return df
-    except:
+    except BaseException:
         print('No local file found: ', file_path)
         return None
 
@@ -36,11 +37,11 @@ def get_dataset_from_cache():
     sampling_ratio = CONFIG['SAMPLING_RATIO']
     random_seed = CONFIG['RANDOM_SEED']
     nodes = read_df_from_disk(
-        CONFIG['DATASET_DIR'] + f"palmprint_host_dataset_nodes_{sampling_ratio}_{random_seed}.csv"
-    )
+        CONFIG['DATASET_DIR'] +
+        f"palmprint_host_dataset_nodes_{sampling_ratio}_{random_seed}.csv")
     relationships = read_df_from_disk(
-        CONFIG['DATASET_DIR'] + f"palmprint_host_dataset_relationships_{sampling_ratio}_{random_seed}.csv"
-    )
+        CONFIG['DATASET_DIR'] +
+        f"palmprint_host_dataset_relationships_{sampling_ratio}_{random_seed}.csv")
     if not nodes or not relationships:
         return None
 
@@ -108,7 +109,7 @@ def create_subgraph_dataset(G):
         graph_name=graph_name,
         from_G=G,
         concurrency=1,
-        randomSeed=random_seed, # can only use if concurrency=1
+        randomSeed=random_seed,  # can only use if concurrency=1
         samplingRatio=sampling_ratio,
         nodeLabelStratification=True,
     )
@@ -124,8 +125,8 @@ def store_subgraph_dataset(G):
 
     df_dataset_relationships = gds.beta.graph.relationships.stream(G)
     df_dataset_relationships.to_csv(
-        CONFIG['DATASET_DIR'] + f"palmprint_host_dataset_relationships_{sampling_ratio}_{random_seed}.csv"
-    )
+        CONFIG['DATASET_DIR'] +
+        f"palmprint_host_dataset_relationships_{sampling_ratio}_{random_seed}.csv")
     df_dataset_nodes = gds.graph.nodeProperty.stream(
         G,
         node_properties=['*'],
@@ -133,8 +134,8 @@ def store_subgraph_dataset(G):
         separate_property_columns=True,
     )
     df_dataset_nodes.to_csv(
-        CONFIG['DATASET_DIR'] + f"palmprint_host_dataset_nodes_{sampling_ratio}_{random_seed}.csv"
-    )
+        CONFIG['DATASET_DIR'] +
+        f"palmprint_host_dataset_nodes_{sampling_ratio}_{random_seed}.csv")
 
 
 def log_graph(G):
@@ -150,7 +151,7 @@ def create_lp_pipeline():
     pipeline_name = CONFIG['PIPELINE_NAME']
     if gds.beta.pipeline.exists(pipeline_name)['exists']:
         gds.beta.pipeline.drop(gds.pipeline.get(pipeline_name))
-    
+
     pipeline, _ = gds.beta.pipeline.linkPrediction.create(pipeline_name)
     pipeline.addNodeProperty(
         procedure_name="fastRP",
@@ -161,14 +162,18 @@ def create_lp_pipeline():
         contextNodeLabels=['Host', 'SOTU'],
     )
     pipeline.addFeature("hadamard", nodeProperties=["embedding"])
-    
+
     # Add a Degree Centrality feature to the pipeline
     pipeline.addNodeProperty("degree", mutateProperty="rank")
     # pipeline.selectFeatures("rank")
-    
+
     # pipeline.configureSplit(trainFraction=0.6, testFraction=0.25, validationFolds=3)
-    pipeline.configureSplit(trainFraction=0.25, testFraction=0.0625, validationFolds=3)
+    pipeline.configureSplit(
+        trainFraction=0.25,
+        testFraction=0.0625,
+        validationFolds=3)
     return pipeline
+
 
 def add_training_method(pipeline):
     # pipeline.addLogisticRegression(penalty=(0.1, 2))
@@ -188,7 +193,7 @@ def train_model(G, pipeline):
     model_name = CONFIG['MODEL_NAME']
     if gds.beta.model.exists(model_name)['exists']:
         gds.beta.model.drop(gds.model.get(model_name))
-    
+
     model, train_result = pipeline.train(
         G=G,
         modelName=model_name,
@@ -205,7 +210,8 @@ def train_model(G, pipeline):
 
 
 def store_model_results(model, train_result):
-    model_dir = CONFIG['MODELS_DIR'] + f"link_prediction/{CONFIG['SAMPLING_RATIO']}/"
+    model_dir = CONFIG['MODELS_DIR'] + \
+        f"link_prediction/{CONFIG['SAMPLING_RATIO']}/"
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
     train_result.to_csv(
@@ -218,7 +224,8 @@ def store_model_results(model, train_result):
 def stream_predictions(G, model):
     predictions = model.predict_stream(G, topN=3, threshold=0.5)
     print(predictions)
-    model_dir = CONFIG['MODELS_DIR'] + f"link_prediction/{CONFIG['SAMPLING_RATIO']}/"
+    model_dir = CONFIG['MODELS_DIR'] + \
+        f"link_prediction/{CONFIG['SAMPLING_RATIO']}/"
     predictions.to_csv(
         model_dir + f"train_results.csv"
     )
@@ -226,6 +233,7 @@ def stream_predictions(G, model):
 
 
 def mutate_predictions(G, model):
-    mutate_result = model.predict_mutate(G, topN=5, mutateRelationshipType="HAS_HOST")
+    mutate_result = model.predict_mutate(
+        G, topN=5, mutateRelationshipType="HAS_HOST")
     print(mutate_result)
     return mutate_result
