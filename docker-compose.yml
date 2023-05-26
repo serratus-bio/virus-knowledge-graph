@@ -22,7 +22,7 @@ services:
       context: ./jobs/graph_learning
       dockerfile: Dockerfile
       args:
-        WORKFLOW: link_prediction
+        WORKFLOW: link_prediction_gds
         TASK: all
     env_file:
       - ./jobs/graph_learning/.env

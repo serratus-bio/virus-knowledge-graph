@@ -30,4 +30,5 @@ if __name__ == "__main__":
         help="Specify sub-task, defaults to run all tasks in workflow",
     )
     args = parser.parse_args()
+    print(args)
     main(args)

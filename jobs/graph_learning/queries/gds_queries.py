@@ -1,234 +1,278 @@
-import ast
 import os
+
+from datasources.neo4j import gds
+from queries import feature_queries, utils
+from config.config import (
+    DIR_CFG,
+    MODEL_CFGS,
+    CURRENT_MODEL_VERSION,
+)
 
 import pandas as pd
 
-from datasources.neo4j import gds
+
+MODEL_CFG = MODEL_CFGS[CURRENT_MODEL_VERSION]
 
 
-CONFIG = {
-    'FEATURE_STORE_DIR': './data/features/',
-    'DATASET_DIR': './data/datasets/',
-    'MODELS_DIR': './data/models/',
-    'FULL_PROJECTION_NAME': 'palmprint-host-full',
-    'DATASET_PROJECTION_NAME': 'palmprint-host-dataset',
-    'PIPELINE_NAME': 'lp-pipeline',
-    'MODEL_NAME': 'lp-model',
-    'RANDOM_SEED': 42,
-    'SAMPLING_RATIO': 0.1,
-}
+def run_query(query):
+    return gds.run_cypher(query)
 
 
-def read_df_from_disk(file_path=''):
-    try:
-        df = pd.read_csv(file_path, index_col=0)
-        print('Using local file for dataframe: ', file_path)
-        return df
-    except BaseException:
-        print('No local file found: ', file_path)
-        return None
+def store_run_artifact(run_uid, obj, filename):
+    print("Storing artifact", obj)
+    results_dir = f"{DIR_CFG['RESULTS_DIR']}link_prediction"\
+        + f"/{MODEL_CFG['SAMPLING_RATIO']}/{run_uid}/"
+
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir, exist_ok=True)
+
+    if isinstance(obj, pd.DataFrame) or isinstance(obj, pd.Series):
+        obj.to_csv(results_dir + filename + '.csv', index=False)
+    else:
+        with open(results_dir + filename + '.txt', 'w') as f:
+            f.write(obj.__repr__())
 
 
-def get_dataset_from_cache():
-    graph_name = CONFIG['DATASET_PROJECTION_NAME']
+def create_projection_from_dataset(
+    sampling_ratio=MODEL_CFG['SAMPLING_RATIO'],
+    graph_name=MODEL_CFG['PROJECTION_NAME'],
+    undirected_relationship_types=['HAS_PARENT', 'HAS_SOTU', 'HAS_HOST'],
+):
+    graph_name = \
+        f"{MODEL_CFG['PROJECTION_NAME']}_{sampling_ratio}"
+
     if gds.graph.exists(graph_name)['exists']:
         return gds.graph.get(graph_name)
+        # gds.graph.drop(gds.graph.get(graph_name))
 
-    sampling_ratio = CONFIG['SAMPLING_RATIO']
-    random_seed = CONFIG['RANDOM_SEED']
-    nodes = read_df_from_disk(
-        CONFIG['DATASET_DIR'] +
-        f"palmprint_host_dataset_nodes_{sampling_ratio}_{random_seed}.csv")
-    relationships = read_df_from_disk(
-        CONFIG['DATASET_DIR'] +
-        f"palmprint_host_dataset_relationships_{sampling_ratio}_{random_seed}.csv")
-    if not nodes or not relationships:
-        return None
+    if sampling_ratio < 1:
+        dir_name = f"{DIR_CFG['DATASETS_DIR']}{graph_name}/"
+    else:
+        # Use full feature set if sampling_ratio is 1
+        dir_name = f"{DIR_CFG['FEATURE_STORE_DIR']}"
 
+    nodes = feature_queries.get_all_node_features(
+        dir_name=dir_name)
+    relationships = feature_queries.get_all_relationship_features(
+        dir_name=dir_name)
     return gds.alpha.graph.construct(
         graph_name=graph_name,
         nodes=nodes,
         relationships=relationships,
         concurrency=4,
-        undirected_relationship_types=['HAS_PARENT', 'HAS_SOTU', 'HAS_HOST'],
+        undirected_relationship_types=undirected_relationship_types,
     )
 
 
-def merge_and_unserialize(file_paths):
-    if not file_paths:
-        return pd.DataFrame()
-
-    df = pd.concat([
-        read_df_from_disk(file_path)
-        for file_path
-        in file_paths
-    ]).drop_duplicates()
-
-    # convert labels to list (must be done after concatenation)
-    if 'labels' in df:
-        df['labels'] = df['labels'].apply(lambda x: ast.literal_eval(x))
-    return df
-
-
-def create_palmprint_host_projection():
-    graph_name = CONFIG['FULL_PROJECTION_NAME']
+def create_subgraph_dataset(
+    G,
+    sampling_ratio=MODEL_CFG['SAMPLING_RATIO'],
+    random_seed=MODEL_CFG['RANDOM_SEED'],
+):
+    graph_name = \
+        f"{MODEL_CFG['PROJECTION_NAME']}_{sampling_ratio}"
     if gds.graph.exists(graph_name)['exists']:
-        gds.graph.drop(gds.graph.get(graph_name))
-
-    dir_name = CONFIG['FEATURE_STORE_DIR']
-
-    node_file_paths = [
-        dir_name + 'n4j_palmprint_nodes.csv',
-        dir_name + 'n4j_taxon_nodes.csv',
-    ]
-    nodes = merge_and_unserialize(node_file_paths)
-    relationship_file_paths = [
-        dir_name + 'n4j_has_sotu_edges.csv',
-        dir_name + 'n4j_has_parent_edges.csv',
-        dir_name + 'n4j_has_host_edges.csv',
-    ]
-    relationships = merge_and_unserialize(relationship_file_paths)
-    return gds.alpha.graph.construct(
-        graph_name=graph_name,
-        nodes=nodes,
-        relationships=relationships,
-        concurrency=4,
-        undirected_relationship_types=['HAS_PARENT', 'HAS_SOTU', 'HAS_HOST'],
-    )
-
-
-def create_subgraph_dataset(G):
-    graph_name = CONFIG['DATASET_PROJECTION_NAME']
-    if gds.graph.exists(graph_name)['exists']:
-        gds.graph.drop(gds.graph.get(graph_name))
-
-    random_seed = CONFIG['RANDOM_SEED']
-    sampling_ratio = CONFIG['SAMPLING_RATIO']
+        return gds.graph.get(graph_name)
+        # gds.graph.drop(gds.graph.get(graph_name))
 
     G_dataset, _ = gds.alpha.graph.sample.rwr(
         graph_name=graph_name,
         from_G=G,
         concurrency=1,
-        randomSeed=random_seed,  # can only use if concurrency=1
+        randomSeed=random_seed,
         samplingRatio=sampling_ratio,
-        nodeLabelStratification=True,
+        nodeLabelStratification=True,  # True
     )
     return G_dataset
 
 
-def store_subgraph_dataset(G):
-    sampling_ratio = CONFIG['SAMPLING_RATIO']
-    random_seed = CONFIG['RANDOM_SEED']
+# need to manually export, gds.beta.graph.export.csv is incompatible with PyG
+# TODO: improve readability & performance
+def create_dataset_from_projection(G):
+    dataset_dir = DIR_CFG['DATASETS_DIR'] + f"{G.name()}"
+    if not os.path.exists(dataset_dir):
+        os.makedirs(dataset_dir)
 
-    if not os.path.exists(CONFIG['DATASET_DIR']):
-        os.makedirs(CONFIG['DATASET_DIR'])
+    node_mappings = [
+        {
+            'filename': 'palmprint_nodes.csv',
+            'labels': ['Palmprint', 'SOTU'],
+        },
+        {
+            'filename': 'taxon_nodes.csv',
+            'labels': ['Host', 'Taxon'],
+        },
+    ]
+    for mapping in node_mappings:
+        df_node_fts = feature_queries.get_features_from_file(
+            mapping['filename'],
+            index_cols=['nodeId'],
+        )
+        df_dataset_nodes = gds.graph.nodeProperties.stream(
+            G,
+            node_properties=['features'],
+            node_labels=mapping['labels'],
+            separate_property_columns=True,
+        )
+        df_dataset_nodes = utils.df_to_ddf(df_dataset_nodes)
 
-    df_dataset_relationships = gds.beta.graph.relationships.stream(G)
-    df_dataset_relationships.to_csv(
-        CONFIG['DATASET_DIR'] +
-        f"palmprint_host_dataset_relationships_{sampling_ratio}_{random_seed}.csv")
-    df_dataset_nodes = gds.graph.nodeProperty.stream(
-        G,
-        node_properties=['*'],
-        nodeLabels=['*'],
-        separate_property_columns=True,
-    )
-    df_dataset_nodes.to_csv(
-        CONFIG['DATASET_DIR'] +
-        f"palmprint_host_dataset_nodes_{sampling_ratio}_{random_seed}.csv")
+        merged = df_dataset_nodes[['nodeId']].merge(
+            df_node_fts,
+            on='nodeId',
+            how='left',
+        ).dropna().compute()
+        # assert df_dataset_nodes.shape[0] == merged.shape[0]
 
+        merged.to_csv(
+            dataset_dir + '/' + mapping['filename'], index=False)
 
-def log_graph(G):
-    print('Node counts:\n', G.node_count())
-    print('Node labels:\n', G.node_labels())
-    print('Node properties:\n', G.node_properties())
-    print('Relationship count:\n', G.relationship_count())
-    print('Relationship types:\n', G.relationship_types())
-    print('Relationship properties:\n', G.relationship_properties())
+    rels_mappings = [
+        {
+            'filename': 'has_parent_edges.csv',
+            'types': ['HAS_PARENT'],
+        },
+        {
+            'filename': 'has_sotu_edges.csv',
+            'types': ['HAS_SOTU'],
+        },
+        {
+            'filename': 'has_host_edges.csv',
+            'types': ['HAS_HOST'],
+        },
+    ]
+
+    for mapping in rels_mappings:
+        df_rel_fts = feature_queries.get_features_from_file(
+            mapping['filename'],
+            index_cols=['sourceNodeId'],
+        )
+        df_dataset_rels = gds.beta.graph.relationships.stream(
+            G,
+            relationship_types=mapping['types'],
+        )
+        df_dataset_rels = utils.df_to_ddf(df_dataset_rels)
+
+        merged = df_dataset_rels[['sourceNodeId', 'targetNodeId']].merge(
+            df_rel_fts,
+            on=['sourceNodeId', 'targetNodeId'],
+            how='left',
+        ).dropna().compute()
+        # assert df_dataset_nodes.shape[0] == merged.shape[0]
+
+        merged.to_csv(dataset_dir + '/' +
+                      mapping['filename'], index=False)
 
 
 def create_lp_pipeline():
-    pipeline_name = CONFIG['PIPELINE_NAME']
+    pipeline_name = MODEL_CFG['PIPELINE_NAME']
     if gds.beta.pipeline.exists(pipeline_name)['exists']:
         gds.beta.pipeline.drop(gds.pipeline.get(pipeline_name))
 
     pipeline, _ = gds.beta.pipeline.linkPrediction.create(pipeline_name)
-    pipeline.addNodeProperty(
-        procedure_name="fastRP",
-        embeddingDimension=256,
-        mutateProperty="embedding",
-        randomSeed=CONFIG['RANDOM_SEED'],
+
+    # pipeline.addNodeProperty(
+    #     procedure_name="degree",
+    #     mutateProperty="degree",
+    #     contextRelationshipTypes=['HAS_PARENT', 'HAS_SOTU'],
+    #     contextNodeLabels=['SOTU'],
+    # )
+    # pipeline.addFeature("l2", nodeProperties=["degree"])
+
+    _ = pipeline.addNodeProperty(
+        "beta.hashgnn",
+        mutateProperty="hashGNN",
+        iterations=4,
+        heterogeneous=True,
+        embeddingDensity=512,  # 512, 2
+        neighborInfluence=0.7,  # 1, 0.7
+        generateFeatures={'dimension': 6, 'densityLevel': 1},
+        # binarizeFeatures={'dimension': 6, 'threshold': 32},
+        # featureProperties=["features", "degree"],
+        randomSeed=MODEL_CFG['RANDOM_SEED'],
         contextRelationshipTypes=['HAS_PARENT', 'HAS_SOTU'],
-        contextNodeLabels=['Host', 'SOTU'],
+        contextNodeLabels=['SOTU'],  # 'Host'
     )
-    pipeline.addFeature("hadamard", nodeProperties=["embedding"])
+    pipeline.addFeature("hadamard", nodeProperties=["hashGNN"])
+    # pipeline.selectFeature("hashGNN")
 
-    # Add a Degree Centrality feature to the pipeline
-    pipeline.addNodeProperty("degree", mutateProperty="rank")
-    # pipeline.selectFeatures("rank")
+    # pipeline.addNodeProperty(
+    #     procedure_name="fastRP",
+    #     embeddingDimension=256,
+    #     mutateProperty="fastRP",
+    #     randomSeed=MODEL_CFG['RANDOM_SEED'],
+    #     contextRelationshipTypes=['HAS_PARENT', 'HAS_SOTU'],
+    #     contextNodeLabels=['SOTU'],
+    # )
+    # pipeline.addFeature("hadamard", nodeProperties=["fastRP"])
 
-    # pipeline.configureSplit(trainFraction=0.6, testFraction=0.25, validationFolds=3)
+    # trainFraction is % of all nodes
+    # testFraction is % of complement of trainFraction
+    # feature-input is remainder used for generating features
     pipeline.configureSplit(
-        trainFraction=0.25,
-        testFraction=0.0625,
-        validationFolds=3)
+        trainFraction=MODEL_CFG['TRAIN_FRACTION'],
+        testFraction=MODEL_CFG['TEST_FRACTION'],
+        validationFolds=MODEL_CFG['VALIDATION_FOLDS'],
+        negativeSamplingRatio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
+    )
     return pipeline
 
 
 def add_training_method(pipeline):
-    # pipeline.addLogisticRegression(penalty=(0.1, 2))
-    # Add a random forest model with tuning over `maxDepth`
-    # pipe.addRandomForest(maxDepth=(2, 20))
-    pipeline.addMLP(hiddenLayerSizes=[4, 2], penalty=1, patience=2)
-    # pipeline.addMLP(hiddenLayerSizes=[64, 16, 4], penalty=0.1, patience=2)
+    # Add a random forest model with auto tuning over `penalty`
+    pipeline.addLogisticRegression(penalty=(0.1, 2))
+    # Add a random forest model with auto tuning over `maxDepth`
+    pipeline.addRandomForest(maxDepth=(5, 10))
+    # pipeline.addMLP(hiddenLayerSizes=[4, 2], penalty=1, patience=2)
+    pipeline.addMLP(hiddenLayerSizes=[64, 16, 4], penalty=1, patience=2)
     return pipeline
 
 
-def log_pipeline(pipeline):
-    print('Number of steps:\n', len(pipeline.feature_steps()))
-    print('Steps:\n', pipeline.feature_steps())
-
-
 def train_model(G, pipeline):
-    model_name = CONFIG['MODEL_NAME']
+    model_name = MODEL_CFG['MODEL_NAME']
     if gds.beta.model.exists(model_name)['exists']:
         gds.beta.model.drop(gds.model.get(model_name))
 
-    model, train_result = pipeline.train(
+    model, eval = pipeline.train(
         G=G,
         modelName=model_name,
         targetRelationshipType="HAS_HOST",
         sourceNodeLabel='Palmprint',
         targetNodeLabel='Taxon',
-        randomSeed=CONFIG['RANDOM_SEED'],
+        randomSeed=MODEL_CFG['RANDOM_SEED'],
         metrics=["AUCPR", "OUT_OF_BAG_ERROR"],
+        negativeClassWeight=MODEL_CFG['NEGATIVE_CLASS_WEIGHT'],
     )
-    assert train_result["trainMillis"] >= 0
-    print("Train result:\n", train_result['modelSelectionStats'])
+    assert eval["trainMillis"] >= 0
+    print("Train result:\n", eval['modelSelectionStats'])
     print("Model:\n", model)
-    return model, train_result
+    return model, eval
 
 
-def store_model_results(model, train_result):
-    model_dir = CONFIG['MODELS_DIR'] + \
-        f"link_prediction/{CONFIG['SAMPLING_RATIO']}/"
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
-    train_result.to_csv(
-        model_dir + f"train_results.csv"
+def stream_approx_predictions(G, model):
+    predictions = model.predict_stream(
+        G,
+        topK=1,
+        relationshipTypes=['HAS_HOST'],
+        sampleRate=0.5,
+        randomJoins=2,
+        maxIterations=3,
     )
-    # Not available for unlicensed GDS.
-    # gds.alpha.model.store(model=model)
-
-
-def stream_predictions(G, model):
-    predictions = model.predict_stream(G, topN=3, threshold=0.5)
+    predictions = predictions[
+        predictions.probability >= MODEL_CFG['PREDICTION_THRESHOLD']]
+    predictions = predictions.sort_values('probability')
     print(predictions)
-    model_dir = CONFIG['MODELS_DIR'] + \
-        f"link_prediction/{CONFIG['SAMPLING_RATIO']}/"
-    predictions.to_csv(
-        model_dir + f"train_results.csv"
+    return predictions
+
+
+def stream_exhaustive_predictions(G, model):
+    predictions = model.predict_stream(
+        G,
+        topN=1,
+        threshold=MODEL_CFG['PREDICTION_THRESHOLD'],
+        relationshipTypes=['HAS_HOST'],
     )
+    predictions = predictions.sort_values('probability')
+    print(predictions)
     return predictions
 
 

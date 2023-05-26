@@ -1,5 +1,4 @@
 from queries import serratus_queries
-from queries import ncbi_queries
 from queries import graph_queries
 
 
@@ -35,5 +34,6 @@ def run(args):
         df_sra_taxon = serratus_queries.get_sra_taxon_df()
         graph_queries.add_sra_taxon_edges(df_sra_taxon)
 
-        df_palmprint_taxon_edges = serratus_queries.get_palmprint_taxon_edges_df()
+        df_palmprint_taxon_edges = \
+            serratus_queries.get_palmprint_taxon_edges_df()
         graph_queries.add_palmprint_taxon_edges(df_palmprint_taxon_edges)
