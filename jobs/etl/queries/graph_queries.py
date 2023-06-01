@@ -22,7 +22,7 @@ def add_constraints():
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.scientificName')
 
 
-###### SRA ######
+# SRA #
 
 def add_sra_nodes(rows):
     query = '''
@@ -45,7 +45,8 @@ def add_sra_nodes(rows):
             '''
     return batch_insert_data(query, rows)
 
-###### Palmprint ######
+
+# Palmprint #
 
 
 def add_palmprint_nodes(rows):
@@ -74,17 +75,21 @@ def add_sotu_labels():
 
 
 def add_palmprint_msa_edges(rows):
-    query_alt = '''
-            UNWIND $rows as row
-            MATCH (s:Palmprint), (t:Palmprint)
-            WHERE toFloat(row.pident) > 0 AND s.palmId = row.palm_id1 AND t.palmId = row.palm_id2
-            MERGE (s)-[r:SEQUENCE_ALIGNMENT]->(t)
-            SET r.percentIdentity = toFloat(row.pident)
-            '''
+    # query = '''
+    #         UNWIND $rows as row
+    #         MATCH (s:Palmprint), (t:Palmprint)
+    #         WHERE toFloat(row.pident) > 0
+    #           AND s.palmId = row.palm_id1
+    #               AND t.palmId = row.palm_id2
+    #         MERGE (s)-[r:SEQUENCE_ALIGNMENT]->(t)
+    #         SET r.percentIdentity = toFloat(row.pident)
+    #         '''
     query = '''
             UNWIND $rows as row
             MATCH (s:Palmprint), (t:Palmprint)
-            WHERE toFloat(row.distance) > 0 AND s.palmId = row.source AND t.palmId = row.target
+            WHERE toFloat(row.distance) > 0
+                AND s.palmId = row.source
+                AND t.palmId = row.target
             MERGE (s)-[r:SEQUENCE_ALIGNMENT]->(t)
             SET r.percentIdentity = (1 - toFloat(row.distance))
             '''
@@ -105,7 +110,11 @@ def add_palmprint_sotu_edges():
 def get_palmprint_nodes():
     query = '''
             MATCH (n:Palmprint)
-            RETURN id(n) as id, labels(n) as labels, n.centroid as centroid
+            RETURN
+                id(n) as id,
+                labels(n) as labels,
+                n.centroid as centroid,
+                n.palmId as palmId
             '''
     return conn.query(query=query)
 
@@ -113,12 +122,18 @@ def get_palmprint_nodes():
 def get_has_sotu_edges():
     query = '''
             MATCH (s:Palmprint)-[r:HAS_SOTU]->(t:Palmprint)
-            RETURN id(s) as sourceNodeId, id(t) as targetNodeId, type(r) as relationshipType, 1 as weight
+            RETURN
+                id(s) as sourceNodeId,
+                id(t) as targetNodeId,
+                type(r) as relationshipType,
+                1 as weight,
+                s.palmId as sourceNodePalmId,
+                t.palmId as targetNodePalmId
             '''
     return conn.query(query=query)
 
 
-###### Taxon ######
+# Taxon #
 
 
 def add_taxon_nodes(rows):
@@ -154,7 +169,11 @@ def add_taxon_edges(rows):
 def get_taxon_nodes():
     query = '''
             MATCH (n:Taxon)
-            RETURN id(n) as id, labels(n) as labels, n.rank as rank
+            RETURN
+                id(n) as id,
+                labels(n) as labels,
+                n.rank as rank,
+                n.taxId as taxId
             '''
     return conn.query(query=query)
 
@@ -162,12 +181,18 @@ def get_taxon_nodes():
 def get_has_parent_edges():
     query = '''
             MATCH (s:Taxon)-[r:HAS_PARENT]->(t:Taxon)
-            RETURN id(s) as sourceNodeId, id(t) as targetNodeId, type(r) as relationshipType, 1 as weight
+            RETURN
+                id(s) as sourceNodeId,
+                id(t) as targetNodeId,
+                type(r) as relationshipType,
+                1 as weight,
+                t.taxId as sourceNodeTaxId,
+                t.taxId as targetNodeTaxId
             '''
     return conn.query(query=query)
 
 
-###### Heterogenous edges ######
+# Heterogenous edges #
 
 
 def add_sra_palmprint_edges(rows):
@@ -219,6 +244,12 @@ def get_has_host_edges():
     query = '''
             MATCH (s:Palmprint)<-[:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST]->(t:Taxon)
             WHERE not (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
-            RETURN id(s) as sourceNodeId, id(t) as targetNodeId, 'HAS_HOST' as relationshipType, count(*) AS weight
+            RETURN
+                id(s) as sourceNodeId,
+                id(t) as targetNodeId,
+                'HAS_HOST' as relationshipType,
+                count(*) AS weight,
+                s.palmId as sourceNodePalmId,
+                t.taxId as targetNodeTaxId
             '''
     return conn.query(query=query)

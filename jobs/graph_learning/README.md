@@ -14,6 +14,10 @@ The general process for using GDS:
 1. Store model weight checkpoint to disk.
 1. Clean up graph projection, pipeline, and models from Neo4j catalog.
 
+### Commands:
+
+See Makefile > '# ML Commands'. Generally, `make docker-start` and `make ml-run` using provided args in docker-compose or with CLI to specify workflow and subtasks.
+
 ### Useful References
 
 - Main GDS docs: https://neo4j.com/docs/graph-data-science/current/

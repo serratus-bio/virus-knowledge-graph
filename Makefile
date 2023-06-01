@@ -24,7 +24,7 @@ neo4j-start:
 
 neo4j-restart: neo4j-stop neo4j-start
 
-neo4j-stream-logs:
+neo4j-logs:
 	tail -f  /var/log/neo4j/neo4j.log
 
 ## Docker

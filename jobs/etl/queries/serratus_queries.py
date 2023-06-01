@@ -16,7 +16,7 @@ def write_query_to_disk(query='', cache_file_path=''):
     conn.close()
 
 
-def read_df_from_disk(cache_file_path=''):
+def read_ddf_from_disk(cache_file_path=''):
     try:
         # Neo4j works best with batches of 10k - 100k, this blocksize
         # approximates that range
@@ -37,7 +37,7 @@ def get_query_results(query='', cache_filename=''):
         os.makedirs(EXTRACT_DIR)
 
     cache_file_path = EXTRACT_DIR + cache_filename
-    df = read_df_from_disk(cache_file_path)
+    df = read_ddf_from_disk(cache_file_path)
     if not os.path.exists(cache_file_path):
         write_query_to_disk(query, cache_file_path)
 
