@@ -15,16 +15,19 @@ services:
     env_file:
       - ./jobs/etl/.env
     volumes:
-      - /mnt/graphdata:/app/etl/data
+      - /mnt/graphdata:/mnt/graphdata
   graph_learning:
     container_name: graph_learning_container
     build:
       context: ./jobs/graph_learning
       dockerfile: Dockerfile
       args:
+        # WORKFLOW: make_datasets
         WORKFLOW: link_prediction_gds
+        # WORKFLOW: link_prediction_pyg
+        # WORKFLOW: enrich_features
         TASK: all
     env_file:
       - ./jobs/graph_learning/.env
     volumes:
-      - /mnt/graphdata/:/app/graph_learning/data
+      - /mnt/graphdata/:/mnt/graphdata

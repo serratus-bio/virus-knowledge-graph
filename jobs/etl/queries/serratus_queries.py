@@ -4,7 +4,7 @@ from datasources.psql import get_connection
 import dask.dataframe as dd
 
 
-EXTRACT_DIR = './data/query_cache/'
+EXTRACT_DIR = '/mnt/graphdata/query_cache/'
 
 
 def write_query_to_disk(query='', cache_file_path=''):
@@ -29,8 +29,9 @@ def read_ddf_from_disk(cache_file_path=''):
 
 
 def get_query_results(query='', cache_filename=''):
-    # reading directly from PSQL to a pandas dataframe with read_sql_query is memory intensive
-    # instead, write to EBS disk then read csv into a partitioned dataframe with dask:
+    # reading directly from PSQL to a pandas dataframe with read_sql_query
+    # is memory intensive. instead, write to EBS disk then read csv into a
+    # partitioned dataframe with dask:
     # https://dask.pydata.org/en/latest/dataframe.html
 
     if not os.path.exists(EXTRACT_DIR):
@@ -71,7 +72,8 @@ def get_palmprint_msa_df():
 
 def get_sra_palmprint_df():
     query = ("SELECT srarun.run as run_id, palm_id "
-             "FROM palm_sra2 INNER JOIN srarun ON palm_sra2.run_id = srarun.run")
+             "FROM palm_sra2 "
+             "INNER JOIN srarun ON palm_sra2.run_id = srarun.run")
     return get_query_results(
         query=query,
         cache_filename='sql_sra_palmprint_edges.csv'

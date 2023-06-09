@@ -14,10 +14,9 @@ class GNN(torch.nn.Module):
         x = self.conv2(x, edge_index)
         return x
 
+
 # Classifier applies the dot-product between source and destination
 # node embeddings to derive edge-level predictions:
-
-
 class Classifier(torch.nn.Module):
     def forward(self, x_palmprint, x_taxon, edge_label_index):
         # Convert node embeddings to edge-level representations:

@@ -9,10 +9,10 @@
 - (Conda) `conda activate {myenv}`
 - (virtualenv) `source {myenv}/bin/activate`
 
-## 3. Install requirements
+## 3. Install container requirements and notebook specific requirements
 
-- `pip3 install -r requirements.txt`
-- `pip3 install python-dotenv`
+- `pip3 install -r ../requirements.txt`
+- `pip3 install -r ./requirements.txt`
 
 ## 4. Set up jupyter kernel using virtual env
 

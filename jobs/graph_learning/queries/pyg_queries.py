@@ -5,33 +5,41 @@ from queries.feature_queries import (
     load_node_tensor,
 )
 from models.models import Model
+from config.config import DIR_CFG, MODEL_CFGS, CURRENT_MODEL_VERSION
 
 import torch
 from torch_geometric.data import HeteroData
 from torch_geometric.loader import LinkNeighborLoader
+from torch_geometric.sampler import NegativeSampling
 import torch_geometric.transforms as T
 import torch.nn.functional as F
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, average_precision_score
 
 
-def create_pyg_graph():
-    sampling_rate = 0.08
-    graph_name = 'palmprint-host-dataset'
-    dir_name = f'./data/datasets/{graph_name}_{sampling_rate}'
+MODEL_CFG = MODEL_CFGS[CURRENT_MODEL_VERSION]
+
+
+def create_pyg_graph(
+    sampling_rate=MODEL_CFG['SAMPLING_RATIO']
+):
+    graph_name = MODEL_CFG['PROJECTION_NAME']
+    dir_name = f"{DIR_CFG['DATASETS_DIR']}{graph_name}_{sampling_rate}"
 
     taxon_x, taxon_mapping = load_node_tensor(
         filename=f'{dir_name}/taxon_nodes.csv',
         index_col='nodeId',
         encoders={
             # 'rank': LabelEncoder(),
-            'features': ListEncoder()
+            'features': ListEncoder(),
+            'degree': IdentityEncoder(dtype=torch.float)
         }
     )
     palmprint_x, palmprint_mapping = load_node_tensor(
         filename=f'{dir_name}/palmprint_nodes.csv',
         index_col='nodeId',
         encoders={
-            'features': ListEncoder()
+            'features': ListEncoder(),
+            'degree': IdentityEncoder(dtype=torch.float)
         }
     )
 
@@ -41,9 +49,9 @@ def create_pyg_graph():
         src_mapping=palmprint_mapping,
         dst_index_col='targetNodeId',
         dst_mapping=taxon_mapping,
-        # encoders={
-        #     'weight': IdentityEncoder(dtype=torch.long)
-        # },
+        encoders={
+            'weight': IdentityEncoder(dtype=torch.float)
+        },
     )
 
     has_parent_edge_index, has_parent_edge_label = load_edge_tensor(
@@ -90,11 +98,9 @@ def create_pyg_graph():
     print(f'Graph is undirected: {data.is_undirected()}')
 
     if not ('taxon', 'rev_has_host', 'palmprint') in edge_types:
-        # not ('taxon', 'rev_has_parent', 'taxon') in edge_types:
-        # not ('palmprint', 'rev_has_sotu', 'palmprint') in edge_types:
         data = T.ToUndirected()(data)
-        # Remove "reverse" label.
-        del data['taxon', 'rev_has_host', 'palmprint'].edge_label
+        # Remove "reverse" label. (redundant if using link loader)
+        # del data['taxon', 'rev_has_host', 'palmprint'].edge_label
         # del data['taxon', 'rev_has_parent', 'taxon'].edge_label
         # del data['palmprint', 'rev_has_sotu', 'palmprint'].edge_label
 
@@ -105,27 +111,30 @@ def create_pyg_graph():
 
 
 def split_data(data):
+    num_test = (1 - MODEL_CFG['TRAIN_FRACTION']) * MODEL_CFG['TEST_FRACTION']
+    num_val = 1 - MODEL_CFG['TRAIN_FRACTION'] - num_test
     transform = T.RandomLinkSplit(
         # Link-level split train (80%), validate (10%), and test edges (10%)
-        num_val=0.1,
-        num_test=0.1,
+        num_val=num_val,
+        num_test=num_test,
 
-        # Of training edges, use 70% for message passing 30% for supervision
+        # Of training edges, use 70% for message passing (edge_label_index)
+        # and 30% for supervision (edge_index)
         disjoint_train_ratio=0.3,
 
         # Generate fixed negative edges for evaluation with a ratio of 2-1.
         # Negative edges during training will be generated on-the-fly.
-        neg_sampling_ratio=2.0,
-        add_negative_train_samples=False,
+        neg_sampling_ratio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
+        add_negative_train_samples=True,
 
         edge_types=('palmprint', 'has_host', 'taxon'),
         rev_edge_types=('taxon', 'rev_has_host', 'palmprint'),
     )
     train_data, val_data, test_data = transform(data)
 
-    print(f'Train graphs: {train_data}')
-    print(f'Validation graphs: {val_data}')
-    print(f'Test graphs: {test_data}')
+    print(f'Train graphs: {1 - num_test - num_val},  {train_data}')
+    print(f'Validation graphs: {num_val}, {val_data}')
+    print(f'Test graphs: {num_test}, {test_data}')
     return train_data, val_data, test_data
 
 
@@ -137,8 +146,10 @@ def get_train_loader(train_data):
 
     train_loader = LinkNeighborLoader(
         data=train_data,
+        # In the first hop, we sample at most 20 neighbors.
+        # In the second hop, we sample at most 10 neighbors.
         num_neighbors=[20, 10],
-        neg_sampling_ratio=2.0,
+        neg_sampling_ratio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
         edge_label_index=(('palmprint', 'has_host', 'taxon'),
                           edge_label_index),
         edge_label=edge_label,
@@ -150,16 +161,15 @@ def get_train_loader(train_data):
     print("Sampled training mini-batch:")
     print("===================")
     print(sampled_data)
-    assert sampled_data[('palmprint', 'has_host', 'taxon')
-                        ].edge_label_index.size(1) == 3 * 128
+    # assert sampled_data[('palmprint', 'has_host', 'taxon')
+    #                     ].edge_label_index.size(1) == 3 * 128
     return train_loader
 
 
 def get_model(data):
-
     model = Model(
         num_features=data.num_node_features,
-        hidden_channels=64,
+        hidden_channels=128,
         use_embeddings=True,
         data=data,
     )
@@ -170,10 +180,9 @@ def get_model(data):
 def train(model, train_loader):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Device: '{device}'")
-    print(len(train_loader))
     model = model.to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    for epoch in range(1, 2):
+    for epoch in range(1, 10):
         print(epoch)
         total_loss = total_examples = 0
         for sampled_data in train_loader:
@@ -213,8 +222,8 @@ def get_val_loader(val_data):
     print("Sampled validation mini-batch:")
     print("===================")
     print(sampled_data)
-    assert sampled_data['palmprint', 'has_host',
-                        'taxon'].edge_label_index.size(1) == 3 * 128
+    # assert sampled_data['palmprint', 'has_host',
+    #                     'taxon'].edge_label_index.size(1) == 3 * 128
     assert sampled_data[
         'palmprint', 'has_host', 'taxon'].edge_label.min() >= 0
     assert sampled_data[
@@ -230,7 +239,7 @@ def eval(model, val_loader):
     for sampled_data in val_loader:
         with torch.no_grad():
             sampled_data.to(device)
-            preds.append(model(sampled_data))
+            preds.append(model(sampled_data).clamp(min=0, max=1))
             ground_truths.append(
                 sampled_data['palmprint', 'has_host', 'taxon'].edge_label)
 
@@ -239,5 +248,7 @@ def eval(model, val_loader):
     print(ground_truth)
     print(pred)
     auc = roc_auc_score(ground_truth, pred)
-    print(f"Validation AUC: {auc:.4f}")
+    print(f"Validation AUC-ROC: {auc:.4f}")
+    average_precision = average_precision_score(ground_truth, pred)
+    print(f"Validation AUC-PR: {average_precision:.4f}")
     return auc

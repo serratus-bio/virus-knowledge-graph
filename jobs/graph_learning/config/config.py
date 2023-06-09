@@ -1,7 +1,7 @@
 DIR_CFG = {
-    'FEATURE_STORE_DIR': './data/features/',
-    'DATASETS_DIR': './data/datasets/',
-    'RESULTS_DIR': './data/results/',
+    'FEATURE_STORE_DIR': '/mnt/graphdata/features/',
+    'DATASETS_DIR': '/mnt/graphdata/datasets/',
+    'RESULTS_DIR': '/mnt/graphdata/results/',
 }
 
 CURRENT_MODEL_VERSION = 'V1'

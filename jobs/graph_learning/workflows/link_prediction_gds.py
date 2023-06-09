@@ -6,7 +6,8 @@ from config.config import MODEL_CFGS, CURRENT_MODEL_VERSION
 
 def run(args):
     pipeline = model = G_full = G_dataset = None
-    run_uid = int(time.time())
+    custom_run_name = 'ft-eng-degree-resampled'
+    run_uid = custom_run_name if custom_run_name else int(time.time())
 
     gds_queries.store_run_artifact(
         run_uid, MODEL_CFGS[CURRENT_MODEL_VERSION], 'config')
@@ -33,12 +34,12 @@ def run(args):
         gds_queries.store_run_artifact(
             run_uid, approx_predictions, 'approx_predictions')
 
-    if args.task == 'all' or args.task == 'exhasutive_predictions':
-        print('Streaming exhaustive predictions')
-        exhaustive_predictions = gds_queries.stream_exhaustive_predictions(
-            G_dataset, model)
-        gds_queries.store_run_artifact(
-            run_uid, exhaustive_predictions, 'exhaustive_predictions')
+    # if args.task == 'all' or args.task == 'exhasutive_predictions':
+    #     print('Streaming exhaustive predictions')
+    #     exhaustive_predictions = gds_queries.stream_exhaustive_predictions(
+    #         G_dataset, model)
+    #     gds_queries.store_run_artifact(
+    #         run_uid, exhaustive_predictions, 'exhaustive_predictions')
 
     print('Cleaning up GDS catalog')
     for catalog_item in [G_dataset, G_full, pipeline, model]:

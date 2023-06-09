@@ -112,9 +112,9 @@ def get_palmprint_nodes():
             MATCH (n:Palmprint)
             RETURN
                 id(n) as id,
+                n.palmId as palmId,
                 labels(n) as labels,
-                n.centroid as centroid,
-                n.palmId as palmId
+                n.centroid as centroid
             '''
     return conn.query(query=query)
 
@@ -125,10 +125,10 @@ def get_has_sotu_edges():
             RETURN
                 id(s) as sourceNodeId,
                 id(t) as targetNodeId,
+                s.palmId as sourceAppId,
+                t.palmId as targetAppId,
                 type(r) as relationshipType,
-                1 as weight,
-                s.palmId as sourceNodePalmId,
-                t.palmId as targetNodePalmId
+                1 as weight
             '''
     return conn.query(query=query)
 
@@ -171,9 +171,9 @@ def get_taxon_nodes():
             MATCH (n:Taxon)
             RETURN
                 id(n) as id,
+                n.taxId as taxId,
                 labels(n) as labels,
-                n.rank as rank,
-                n.taxId as taxId
+                n.rank as rank
             '''
     return conn.query(query=query)
 
@@ -184,10 +184,10 @@ def get_has_parent_edges():
             RETURN
                 id(s) as sourceNodeId,
                 id(t) as targetNodeId,
+                t.taxId as sourceAppId,
+                t.taxId as targetAppId,
                 type(r) as relationshipType,
-                1 as weight,
-                t.taxId as sourceNodeTaxId,
-                t.taxId as targetNodeTaxId
+                1 as weight
             '''
     return conn.query(query=query)
 
@@ -247,9 +247,9 @@ def get_has_host_edges():
             RETURN
                 id(s) as sourceNodeId,
                 id(t) as targetNodeId,
+                s.palmId as sourceAppId,
+                t.taxId as targetAppId,
                 'HAS_HOST' as relationshipType,
-                count(*) AS weight,
-                s.palmId as sourceNodePalmId,
-                t.taxId as targetNodeTaxId
+                count(*) AS weight
             '''
     return conn.query(query=query)
