@@ -1,42 +1,45 @@
 import ast
 
 from queries import utils
+from config.config import DIR_CFG
 
 import torch
 import pandas as pd
 
 
-FEATURE_STORE_DIR = './data/features/'
-
-
 def get_features_from_file(
     file_name,
-    dir_name=FEATURE_STORE_DIR,
+    dir_name=DIR_CFG['FEATURE_STORE_DIR'],
     select_columns=[],
     index_cols=[],
 ):
     df = utils.read_ddf_from_disk(dir_name + file_name)
     if select_columns:
         df = df[select_columns]
-    df.set_index(index_cols)
+    if len(index_cols) > 0:
+        df.set_index(index_cols)
     return df
 
 
-def get_all_node_features(dir_name=FEATURE_STORE_DIR):
+def get_all_node_features(dir_name=DIR_CFG['FEATURE_STORE_DIR']):
     node_file_paths = [
         dir_name + 'palmprint_nodes.csv',
         dir_name + 'taxon_nodes.csv',
     ]
     nodes = utils.merge_files_to_df(
         node_file_paths,
-        select_columns=['nodeId', 'labels', 'features'],
+        select_columns=['nodeId', 'labels',
+                        'features', 'degree', 'degreeWeighted'],
     )
     nodes = utils.deserialize_df(nodes)
     nodes.set_index('nodeId')
     return nodes
 
 
-def get_all_relationship_features(dir_name=FEATURE_STORE_DIR):
+def get_all_relationship_features(
+        dir_name=DIR_CFG['FEATURE_STORE_DIR'],
+):
+
     relationship_file_paths = [
         dir_name + 'has_sotu_edges.csv',
         dir_name + 'has_parent_edges.csv',
@@ -90,6 +93,14 @@ class LabelEncoder(object):
             for genre in col.split(self.sep):
                 x[i, mapping[genre]] = 1
         return x
+
+
+class RandomValueEncoder(object):
+    def __init__(self, dim=1):
+        self.dim = dim
+
+    def __call__(self, df):
+        return torch.rand(len(df), self.dim)
 
 
 def load_node_tensor(filename, index_col, encoders=None, **kwargs):

@@ -1,0 +1,6 @@
+python-dotenv
+matplotlib
+numpy
+scipy
+sklearn
+graphistry

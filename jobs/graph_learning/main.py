@@ -4,7 +4,7 @@ from workflows import (
     make_datasets,
     link_prediction_gds,
     link_prediction_pyg,
-    query,
+    enrich_features,
 )
 
 
@@ -21,9 +21,9 @@ def main(args):
         print('Running Pytorch Geometric link prediction workflow')
         link_prediction_pyg.run(args)
 
-    if args.workflow == 'query':
-        print('Running query workflow')
-        query.run(args)
+    if args.workflow == 'enrich_features':
+        print('Running feature enrichment workflow')
+        enrich_features.run(args)
 
 
 if __name__ == "__main__":
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         "-w",
         "--workflow",
         type=str,
-        help="Specify workflow. Valid args: link_prediction, query",
+        help="Specify workflow to run.",
     )
     parser.add_argument(
         "-t",
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         type=str,
         nargs='?',
         const='all',
-        help="Specify single task, defaults to full workflow",
+        help="Specify single task. Defaults to full workflow.",
     )
     args = parser.parse_args()
     print(args)

@@ -52,7 +52,7 @@ etl-connect:
 ### ML
 
 ml-env:
-	printf '%s\n' 'NEO4J_USER="neo4j"' 'NEO4J_PASSWORD=""' 'NEO4J_URI="bolt://:7687"' 'PYTHONUNBUFFERED=1' > ./jobs/graph_learning/.env
+	printf '%s\n' 'NEO4J_USER="neo4j"' 'NEO4J_PASSWORD=""' 'NEO4J_URI="bolt://:7687"' 'PYTHONUNBUFFERED=1' 'GRAPHISTRY_USERNAME="" GRAPHISTRY_PASSWORD=""' > ./jobs/graph_learning/.env
 
 ml-run:
 	docker-compose up --build graph_learning

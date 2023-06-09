@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 
-FEATURE_STORE_DIR = './data/features/'
+FEATURE_STORE_DIR = '/mnt/graphdata/features/'
 
 
 def write_to_feature_store(df, file_name=''):
@@ -48,12 +48,20 @@ def vectorize_features(df, encoders={}):
     return encoded_column
 
 
+def min_max_normalize_features(df_col):
+    max_ft = df_col.max()
+    min_ft = df_col.min()
+    if min_ft == max_ft:
+        return df_col
+    return (df_col - min_ft) / (max_ft - min_ft)
+
+
 def encode_palmprint_fts(query_results):
     df = pd.DataFrame([dict(record) for record in query_results])
     df = pd.DataFrame().assign(
         nodeId=df['id'],
+        appId=df['palmId'],
         labels=df['labels'],
-        palmId=df['palmId'],
         centroid=df['centroid'],
         features=vectorize_features(df, {'centroid': bool_encode}),
     )
@@ -67,8 +75,8 @@ def encode_taxon_fts(query_results):
     # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7408187/#sup1
     return pd.DataFrame().assign(
         nodeId=df['id'],
+        appId=df['taxId'],
         labels=df['labels'],
-        taxId=df['taxId'],
         rank=df['rank'],
         features=vectorize_features(df, {'rank': label_encode}),
     )
@@ -79,6 +87,9 @@ def encode_edges(query_results):
     return pd.DataFrame().assign(
         sourceNodeId=df['sourceNodeId'],
         targetNodeId=df['targetNodeId'],
+        sourceAppId=df['sourceAppId'],
+        targetAppId=df['targetAppId'],
         relationshipType=df['relationshipType'],
-        weight=df['weight'],
+        weight=min_max_normalize_features(df['weight']),
+        weightUnscaled=df['weight'],
     )

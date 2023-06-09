@@ -52,9 +52,12 @@ def create_projection_from_dataset(
         dir_name = f"{DIR_CFG['FEATURE_STORE_DIR']}"
 
     nodes = feature_queries.get_all_node_features(
-        dir_name=dir_name)
+        dir_name=dir_name
+    )
     relationships = feature_queries.get_all_relationship_features(
-        dir_name=dir_name)
+        dir_name=dir_name,
+    )
+
     return gds.alpha.graph.construct(
         graph_name=graph_name,
         nodes=nodes,
@@ -64,7 +67,7 @@ def create_projection_from_dataset(
     )
 
 
-def create_subgraph_dataset(
+def create_random_walk_subgraph(
     G,
     sampling_ratio=MODEL_CFG['SAMPLING_RATIO'],
     random_seed=MODEL_CFG['RANDOM_SEED'],
@@ -72,8 +75,8 @@ def create_subgraph_dataset(
     graph_name = \
         f"{MODEL_CFG['PROJECTION_NAME']}_{sampling_ratio}"
     if gds.graph.exists(graph_name)['exists']:
-        return gds.graph.get(graph_name)
-        # gds.graph.drop(gds.graph.get(graph_name))
+        # return gds.graph.get(graph_name)
+        gds.graph.drop(gds.graph.get(graph_name))
 
     G_dataset, _ = gds.alpha.graph.sample.rwr(
         graph_name=graph_name,
@@ -81,86 +84,11 @@ def create_subgraph_dataset(
         concurrency=1,
         randomSeed=random_seed,
         samplingRatio=sampling_ratio,
-        nodeLabelStratification=True,  # True
+        nodeLabelStratification=True,
+        relationshipWeightProperty='weight',
+        relationshipTypes=['HAS_PARENT', 'HAS_SOTU', 'HAS_HOST'],
     )
     return G_dataset
-
-
-# need to manually export, gds.beta.graph.export.csv is incompatible with PyG
-# TODO: improve readability & performance
-def create_dataset_from_projection(G):
-    dataset_dir = DIR_CFG['DATASETS_DIR'] + f"{G.name()}"
-    if not os.path.exists(dataset_dir):
-        os.makedirs(dataset_dir)
-
-    node_mappings = [
-        {
-            'filename': 'palmprint_nodes.csv',
-            'labels': ['Palmprint', 'SOTU'],
-        },
-        {
-            'filename': 'taxon_nodes.csv',
-            'labels': ['Host', 'Taxon'],
-        },
-    ]
-    for mapping in node_mappings:
-        df_node_fts = feature_queries.get_features_from_file(
-            mapping['filename'],
-            index_cols=['nodeId'],
-        )
-        df_dataset_nodes = gds.graph.nodeProperties.stream(
-            G,
-            node_properties=['features'],
-            node_labels=mapping['labels'],
-            separate_property_columns=True,
-        )
-        df_dataset_nodes = utils.df_to_ddf(df_dataset_nodes)
-
-        merged = df_dataset_nodes[['nodeId']].merge(
-            df_node_fts,
-            on='nodeId',
-            how='left',
-        ).dropna().compute()
-        # assert df_dataset_nodes.shape[0] == merged.shape[0]
-
-        merged.to_csv(
-            dataset_dir + '/' + mapping['filename'], index=False)
-
-    rels_mappings = [
-        {
-            'filename': 'has_parent_edges.csv',
-            'types': ['HAS_PARENT'],
-        },
-        {
-            'filename': 'has_sotu_edges.csv',
-            'types': ['HAS_SOTU'],
-        },
-        {
-            'filename': 'has_host_edges.csv',
-            'types': ['HAS_HOST'],
-        },
-    ]
-
-    for mapping in rels_mappings:
-        df_rel_fts = feature_queries.get_features_from_file(
-            mapping['filename'],
-            index_cols=['sourceNodeId'],
-        )
-        df_dataset_rels = gds.beta.graph.relationships.stream(
-            G,
-            relationship_types=mapping['types'],
-        )
-        df_dataset_rels = utils.df_to_ddf(df_dataset_rels)
-
-        merged = df_dataset_rels[['sourceNodeId', 'targetNodeId']].merge(
-            df_rel_fts,
-            on=['sourceNodeId', 'targetNodeId'],
-            how='left',
-        ).dropna().compute()
-        # assert df_dataset_nodes.shape[0] == merged.shape[0]
-
-        merged.to_csv(dataset_dir + '/' +
-                      mapping['filename'], index=False)
 
 
 def create_lp_pipeline():
@@ -176,15 +104,15 @@ def create_lp_pipeline():
     #     contextRelationshipTypes=['HAS_PARENT', 'HAS_SOTU'],
     #     contextNodeLabels=['SOTU'],
     # )
-    # pipeline.addFeature("l2", nodeProperties=["degree"])
+    pipeline.addFeature("l2", nodeProperties=["degree"])
 
     _ = pipeline.addNodeProperty(
         "beta.hashgnn",
         mutateProperty="hashGNN",
         iterations=4,
         heterogeneous=True,
-        embeddingDensity=512,  # 512, 2
-        neighborInfluence=0.7,  # 1, 0.7
+        embeddingDensity=512,
+        neighborInfluence=0.7,
         generateFeatures={'dimension': 6, 'densityLevel': 1},
         # binarizeFeatures={'dimension': 6, 'threshold': 32},
         # featureProperties=["features", "degree"],
@@ -193,7 +121,6 @@ def create_lp_pipeline():
         contextNodeLabels=['SOTU'],  # 'Host'
     )
     pipeline.addFeature("hadamard", nodeProperties=["hashGNN"])
-    # pipeline.selectFeature("hashGNN")
 
     # pipeline.addNodeProperty(
     #     procedure_name="fastRP",
@@ -256,9 +183,10 @@ def stream_approx_predictions(G, model):
         sampleRate=0.5,
         randomJoins=2,
         maxIterations=3,
+        deltaThreshold=MODEL_CFG['PREDICTION_THRESHOLD'],
     )
-    predictions = predictions[
-        predictions.probability >= MODEL_CFG['PREDICTION_THRESHOLD']]
+    # predictions = predictions[
+    #     predictions.probability >= MODEL_CFG['PREDICTION_THRESHOLD']]
     predictions = predictions.sort_values('probability')
     print(predictions)
     return predictions
@@ -281,3 +209,109 @@ def mutate_predictions(G, model):
         G, topN=5, mutateRelationshipType="HAS_HOST")
     print(mutate_result)
     return mutate_result
+
+
+def mutate_degree_property(G):
+    gds.degree.mutate(
+        G,
+        mutateProperty="degree",
+        orientation="UNDIRECTED",
+    )
+    gds.degree.mutate(
+        G,
+        mutateProperty="degreeWeighted",
+        orientation="UNDIRECTED",
+        relationshipWeightProperty="weight",
+    )
+    return G
+
+
+# TODO: simplify code
+# use alt conditional branching (nodes/rels, features/dataset)
+def export_projection(G, destination='features'):
+    if destination not in ['features', 'dataset']:
+        raise Exception("Invalid destination arg")
+
+    destination_dir = DIR_CFG['FEATURE_STORE_DIR']
+    if destination == 'dataset':
+        destination_dir = DIR_CFG['DATASETS_DIR'] + f"{G.name()}"
+
+    if not os.path.exists(destination_dir):
+        os.makedirs(destination_dir)
+
+    node_mappings = [
+        {
+            'filename': 'palmprint_nodes.csv',
+            'labels': ['Palmprint', 'SOTU'],
+            'app_id': ['palmId'],
+        },
+        {
+            'filename': 'taxon_nodes.csv',
+            'labels': ['Host', 'Taxon'],
+            'app_id': ['taxId'],
+        },
+    ]
+
+    rel_mappings = [
+        {
+            'filename': 'has_parent_edges.csv',
+            'types': ['HAS_PARENT'],
+            'app_id': ['sourceNodeId', 'targetNodeId'],
+        },
+        {
+            'filename': 'has_sotu_edges.csv',
+            'types': ['HAS_SOTU'],
+            'app_id': ['sourceNodeId', 'targetNodeId'],
+        },
+        {
+            'filename': 'has_host_edges.csv',
+            'types': ['HAS_HOST'],
+        },
+    ]
+
+    for entity_type, entity_mappings in zip(
+        ['nodes', 'rels'],
+        [node_mappings, rel_mappings]
+    ):
+        for mapping in entity_mappings:
+            if entity_type == 'nodes':
+                stream_fnc = gds.graph.nodeProperties.stream
+                stream_fnc_args = {
+                    'node_properties': [
+                        'features', 'degree', 'degreeWeighted'],
+                    'node_labels': mapping['labels'],
+                    'separate_property_columns': True,
+                    'db_node_properties': mapping['app_id'],
+                }
+                merge_left_on = mapping['app_id']
+                merge_right_on = ['appId']
+            else:
+                stream_fnc = gds.beta.graph.relationships.stream
+                stream_fnc_args = {
+                    'relationship_types': mapping['types']
+                }
+                merge_left_on = ['sourceNodeId', 'targetNodeId']
+                merge_right_on = ['sourceNodeId', 'targetNodeId']
+
+            df_fts = feature_queries.get_features_from_file(
+                mapping['filename'])
+            df_fts = df_fts.astype(str)
+            df_projection = stream_fnc(G, **stream_fnc_args)
+            df_projection = utils.df_to_ddf(df_projection)
+            df_projection = df_projection.astype(str)
+
+            how = 'left' if destination == 'dataset' else 'right'
+
+            merged = df_projection.merge(
+                df_fts,
+                left_on=merge_left_on,
+                right_on=merge_right_on,
+                how=how,
+                suffixes=('', '_dup'),
+            )
+            merged = merged.dropna()
+            merged = merged.loc[:, ~merged.columns.str.contains('_dup$')]
+            merged = merged.compute()
+
+            merged.to_csv(
+                destination_dir + '/' + mapping['filename'], index=False)
