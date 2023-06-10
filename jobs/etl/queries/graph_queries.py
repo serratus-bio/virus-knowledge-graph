@@ -107,32 +107,6 @@ def add_palmprint_sotu_edges():
     )
 
 
-def get_palmprint_nodes():
-    query = '''
-            MATCH (n:Palmprint)
-            RETURN
-                id(n) as id,
-                n.palmId as palmId,
-                labels(n) as labels,
-                n.centroid as centroid
-            '''
-    return conn.query(query=query)
-
-
-def get_has_sotu_edges():
-    query = '''
-            MATCH (s:Palmprint)-[r:HAS_SOTU]->(t:Palmprint)
-            RETURN
-                id(s) as sourceNodeId,
-                id(t) as targetNodeId,
-                s.palmId as sourceAppId,
-                t.palmId as targetAppId,
-                type(r) as relationshipType,
-                1 as weight
-            '''
-    return conn.query(query=query)
-
-
 # Taxon #
 
 
@@ -164,32 +138,6 @@ def add_taxon_edges(rows):
             MERGE (s)-[r:HAS_PARENT]->(t)
             '''
     return batch_insert_data(query, rows)
-
-
-def get_taxon_nodes():
-    query = '''
-            MATCH (n:Taxon)
-            RETURN
-                id(n) as id,
-                n.taxId as taxId,
-                labels(n) as labels,
-                n.rank as rank
-            '''
-    return conn.query(query=query)
-
-
-def get_has_parent_edges():
-    query = '''
-            MATCH (s:Taxon)-[r:HAS_PARENT]->(t:Taxon)
-            RETURN
-                id(s) as sourceNodeId,
-                id(t) as targetNodeId,
-                t.taxId as sourceAppId,
-                t.taxId as targetAppId,
-                type(r) as relationshipType,
-                1 as weight
-            '''
-    return conn.query(query=query)
 
 
 # Heterogenous edges #
@@ -236,20 +184,3 @@ def add_palmprint_taxon_edges(rows):
             }
             '''
     return batch_insert_data(query, rows)
-
-
-def get_has_host_edges():
-    # Get inferred Palmprint -> Taxon edges
-    # exclude all hosts that are descendants of unclassified Taxon 12908
-    query = '''
-            MATCH (s:Palmprint)<-[:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST]->(t:Taxon)
-            WHERE not (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
-            RETURN
-                id(s) as sourceNodeId,
-                id(t) as targetNodeId,
-                s.palmId as sourceAppId,
-                t.taxId as targetAppId,
-                'HAS_HOST' as relationshipType,
-                count(*) AS weight
-            '''
-    return conn.query(query=query)

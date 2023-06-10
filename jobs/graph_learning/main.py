@@ -1,14 +1,18 @@
 import argparse
 
 from workflows import (
+    make_features,
     make_datasets,
     link_prediction_gds,
     link_prediction_pyg,
-    enrich_features,
 )
 
 
 def main(args):
+    if args.workflow == 'make_features':
+        print('Running feature encoding and enrichment workflow')
+        make_features.run(args)
+
     if args.workflow == 'make_datasets':
         print('Running dataset creation workflow')
         make_datasets.run(args)
@@ -20,10 +24,6 @@ def main(args):
     if args.workflow == 'link_prediction_pyg':
         print('Running Pytorch Geometric link prediction workflow')
         link_prediction_pyg.run(args)
-
-    if args.workflow == 'enrich_features':
-        print('Running feature enrichment workflow')
-        enrich_features.run(args)
 
 
 if __name__ == "__main__":

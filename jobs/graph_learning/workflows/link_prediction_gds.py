@@ -1,18 +1,19 @@
 import time
 
 from queries import gds_queries
-from config.config import MODEL_CFGS, CURRENT_MODEL_VERSION
+from config import MODEL_CFGS, CUR_MODEL_VERSION
 
 
 def run(args):
     pipeline = model = G_full = G_dataset = None
-    custom_run_name = 'ft-eng-degree-resampled'
+    custom_run_name = 'ft-eng-degree'
     run_uid = custom_run_name if custom_run_name else int(time.time())
 
     gds_queries.store_run_artifact(
-        run_uid, MODEL_CFGS[CURRENT_MODEL_VERSION], 'config')
+        run_uid, MODEL_CFGS[CUR_MODEL_VERSION], 'config')
 
-    G_dataset = gds_queries.create_projection_from_dataset()
+    G_dataset = gds_queries.create_projection_from_dataset(
+        enriched_features=True)
     gds_queries.store_run_artifact(run_uid, G_dataset, 'dataset')
 
     if args.task == 'all' or args.task == 'pipeline':

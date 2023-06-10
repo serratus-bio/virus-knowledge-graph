@@ -4,7 +4,7 @@ DIR_CFG = {
     'RESULTS_DIR': '/mnt/graphdata/results/',
 }
 
-CURRENT_MODEL_VERSION = 'V1'
+CUR_MODEL_VERSION = 'V1'
 
 MODEL_CFGS = {
     'V1': {

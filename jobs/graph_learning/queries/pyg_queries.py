@@ -1,22 +1,22 @@
 from queries.feature_queries import (
+    LabelEncoder,
     ListEncoder,
     IdentityEncoder,
     load_edge_tensor,
     load_node_tensor,
 )
 from models.models import Model
-from config.config import DIR_CFG, MODEL_CFGS, CURRENT_MODEL_VERSION
+from config import DIR_CFG, MODEL_CFGS, CUR_MODEL_VERSION
 
 import torch
 from torch_geometric.data import HeteroData
 from torch_geometric.loader import LinkNeighborLoader
-from torch_geometric.sampler import NegativeSampling
 import torch_geometric.transforms as T
 import torch.nn.functional as F
 from sklearn.metrics import roc_auc_score, average_precision_score
 
 
-MODEL_CFG = MODEL_CFGS[CURRENT_MODEL_VERSION]
+MODEL_CFG = MODEL_CFGS[CUR_MODEL_VERSION]
 
 
 def create_pyg_graph(
@@ -29,17 +29,19 @@ def create_pyg_graph(
         filename=f'{dir_name}/taxon_nodes.csv',
         index_col='nodeId',
         encoders={
-            # 'rank': LabelEncoder(),
-            'features': ListEncoder(),
-            'degree': IdentityEncoder(dtype=torch.float)
+            'rankEncoded': IdentityEncoder(dtype=torch.float, is_tensor=True),
+            # 'features': ListEncoder(),
+            'degree': IdentityEncoder(dtype=torch.float, is_tensor=True)
         }
     )
     palmprint_x, palmprint_mapping = load_node_tensor(
         filename=f'{dir_name}/palmprint_nodes.csv',
         index_col='nodeId',
         encoders={
-            'features': ListEncoder(),
-            'degree': IdentityEncoder(dtype=torch.float)
+            'centroidEncoded': IdentityEncoder(dtype=torch.long,
+                                               is_tensor=True),
+            # 'features': ListEncoder(),
+            'degree': IdentityEncoder(dtype=torch.float, is_tensor=True)
         }
     )
 
@@ -50,7 +52,7 @@ def create_pyg_graph(
         dst_index_col='targetNodeId',
         dst_mapping=taxon_mapping,
         encoders={
-            'weight': IdentityEncoder(dtype=torch.float)
+            'weight': IdentityEncoder(dtype=torch.long, is_tensor=True)
         },
     )
 
@@ -61,7 +63,7 @@ def create_pyg_graph(
         dst_index_col='targetNodeId',
         dst_mapping=taxon_mapping,
         encoders={
-            'weight': IdentityEncoder(dtype=torch.long)
+            'weight': IdentityEncoder(dtype=torch.long, is_tensor=True)
         },
     )
 
@@ -72,7 +74,7 @@ def create_pyg_graph(
         dst_index_col='targetNodeId',
         dst_mapping=palmprint_mapping,
         encoders={
-            'weight': IdentityEncoder(dtype=torch.long)
+            'weight': IdentityEncoder(dtype=torch.long, is_tensor=True)
         },
     )
     data = HeteroData()
@@ -170,7 +172,7 @@ def get_model(data):
     model = Model(
         num_features=data.num_node_features,
         hidden_channels=128,
-        use_embeddings=True,
+        use_embeddings=False,
         data=data,
     )
     print(model)
