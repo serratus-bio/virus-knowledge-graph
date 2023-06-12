@@ -11,7 +11,7 @@ def df_to_ddf(df):
 def read_ddf_from_disk(cache_file_path=''):
     try:
         df = dd.read_csv(cache_file_path, blocksize="1MB")
-        print('Using local cached file', cache_file_path)
+        print('Reading local cached file', cache_file_path)
         return df
     except BaseException:
         print('No local cache file found', cache_file_path)
@@ -46,3 +46,7 @@ def deserialize_df(df):
         df['features'] = df['features'].apply(
             lambda x: [int(val) for val in ast.literal_eval(x)])
     return df
+
+
+def write_ddf_to_disk(ddf, file_path=''):
+    ddf.to_csv(file_path, index=False, single_file=True)

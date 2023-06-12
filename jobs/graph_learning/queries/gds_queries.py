@@ -2,16 +2,16 @@ import os
 
 from datasources.neo4j import gds
 from queries import feature_queries, utils
-from config.config import (
+from config import (
     DIR_CFG,
     MODEL_CFGS,
-    CURRENT_MODEL_VERSION,
+    CUR_MODEL_VERSION,
 )
 
 import pandas as pd
 
 
-MODEL_CFG = MODEL_CFGS[CURRENT_MODEL_VERSION]
+MODEL_CFG = MODEL_CFGS[CUR_MODEL_VERSION]
 
 
 def run_query(query):
@@ -37,6 +37,7 @@ def create_projection_from_dataset(
     sampling_ratio=MODEL_CFG['SAMPLING_RATIO'],
     graph_name=MODEL_CFG['PROJECTION_NAME'],
     undirected_relationship_types=['HAS_PARENT', 'HAS_SOTU', 'HAS_HOST'],
+    enriched_features=False,
 ):
     graph_name = \
         f"{MODEL_CFG['PROJECTION_NAME']}_{sampling_ratio}"
@@ -52,7 +53,8 @@ def create_projection_from_dataset(
         dir_name = f"{DIR_CFG['FEATURE_STORE_DIR']}"
 
     nodes = feature_queries.get_all_node_features(
-        dir_name=dir_name
+        dir_name=dir_name,
+        enriched_features=enriched_features,
     )
     relationships = feature_queries.get_all_relationship_features(
         dir_name=dir_name,

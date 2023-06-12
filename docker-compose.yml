@@ -6,7 +6,8 @@ services:
       context: ./jobs/etl
       dockerfile: Dockerfile
       args:
-        WORKFLOW: graph_to_features
+        # WORKFLOW: sql_to_graph
+        WORKFLOW: graph_to_projection
         TASK: all
     deploy:
       resources:
@@ -22,10 +23,10 @@ services:
       context: ./jobs/graph_learning
       dockerfile: Dockerfile
       args:
+        # WORKFLOW: make_features
         # WORKFLOW: make_datasets
-        WORKFLOW: link_prediction_gds
-        # WORKFLOW: link_prediction_pyg
-        # WORKFLOW: enrich_features
+        # WORKFLOW: link_prediction_gds
+        WORKFLOW: link_prediction_pyg
         TASK: all
     env_file:
       - ./jobs/graph_learning/.env

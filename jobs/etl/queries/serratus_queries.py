@@ -21,7 +21,7 @@ def read_ddf_from_disk(cache_file_path=''):
         # Neo4j works best with batches of 10k - 100k, this blocksize
         # approximates that range
         df = dd.read_csv(cache_file_path, dtype='string', blocksize="1MB")
-        print('Using local cached file', cache_file_path)
+        print('Reading local cached file', cache_file_path)
         return df
     except BaseException:
         print('No local cache file found', cache_file_path)
