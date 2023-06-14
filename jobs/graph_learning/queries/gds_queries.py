@@ -2,64 +2,49 @@ import os
 
 from datasources.neo4j import gds
 from queries import feature_queries, utils
-from config import (
+from config.base import (
     DIR_CFG,
-    MODEL_CFGS,
-    CUR_MODEL_VERSION,
+    MODEL_CFG,
+    DATASET_CFG,
 )
-
-import pandas as pd
-
-
-MODEL_CFG = MODEL_CFGS[CUR_MODEL_VERSION]
 
 
 def run_query(query):
     return gds.run_cypher(query)
 
 
-def store_run_artifact(run_uid, obj, filename):
-    print("Storing artifact", obj)
-    results_dir = f"{DIR_CFG['RESULTS_DIR']}link_prediction"\
-        + f"/{MODEL_CFG['SAMPLING_RATIO']}/{run_uid}/"
-
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir, exist_ok=True)
-
-    if isinstance(obj, pd.DataFrame) or isinstance(obj, pd.Series):
-        obj.to_csv(results_dir + filename + '.csv', index=False)
-    else:
-        with open(results_dir + filename + '.txt', 'w') as f:
-            f.write(obj.__repr__())
-
-
 def create_projection_from_dataset(
     sampling_ratio=MODEL_CFG['SAMPLING_RATIO'],
-    graph_name=MODEL_CFG['PROJECTION_NAME'],
-    undirected_relationship_types=['HAS_PARENT', 'HAS_SOTU', 'HAS_HOST'],
-    enriched_features=False,
+    dataset_cfg=DATASET_CFG,
+    model_cfg=MODEL_CFG,
 ):
     graph_name = \
-        f"{MODEL_CFG['PROJECTION_NAME']}_{sampling_ratio}"
+        f"{model_cfg['PROJECTION_NAME']}_{sampling_ratio}"
 
     if gds.graph.exists(graph_name)['exists']:
-        return gds.graph.get(graph_name)
-        # gds.graph.drop(gds.graph.get(graph_name))
+        # return gds.graph.get(graph_name)
+        gds.graph.drop(gds.graph.get(graph_name))
 
     if sampling_ratio < 1:
-        dir_name = f"{DIR_CFG['DATASETS_DIR']}{graph_name}/"
+        dir_name = f"{DIR_CFG['DATASETS_DIR']}{sampling_ratio}/"
     else:
         # Use full feature set if sampling_ratio is 1
         dir_name = f"{DIR_CFG['FEATURE_STORE_DIR']}"
 
     nodes = feature_queries.get_all_node_features(
         dir_name=dir_name,
-        enriched_features=enriched_features,
+        dataset_cfg=dataset_cfg,
     )
     relationships = feature_queries.get_all_relationship_features(
         dir_name=dir_name,
+        dataset_cfg=dataset_cfg,
     )
-
+    undirected_relationship_types = list(
+        map(
+            (lambda cfg: cfg['TYPES'][0]),
+            dataset_cfg['REL_META']
+        )
+    )
     return gds.alpha.graph.construct(
         graph_name=graph_name,
         nodes=nodes,
@@ -72,41 +57,71 @@ def create_projection_from_dataset(
 def create_random_walk_subgraph(
     G,
     sampling_ratio=MODEL_CFG['SAMPLING_RATIO'],
-    random_seed=MODEL_CFG['RANDOM_SEED'],
+    model_cfg=MODEL_CFG,
 ):
     graph_name = \
-        f"{MODEL_CFG['PROJECTION_NAME']}_{sampling_ratio}"
+        f"{model_cfg['PROJECTION_NAME']}_{sampling_ratio}"
     if gds.graph.exists(graph_name)['exists']:
         # return gds.graph.get(graph_name)
         gds.graph.drop(gds.graph.get(graph_name))
+
+    relationship_types = list(
+        map(
+            (lambda cfg: cfg['TYPES'][0]),
+            DATASET_CFG['REL_META']
+        )
+    )
 
     G_dataset, _ = gds.alpha.graph.sample.rwr(
         graph_name=graph_name,
         from_G=G,
         concurrency=1,
-        randomSeed=random_seed,
+        randomSeed=model_cfg['RANDOM_SEED'],
         samplingRatio=sampling_ratio,
         nodeLabelStratification=True,
         relationshipWeightProperty='weight',
-        relationshipTypes=['HAS_PARENT', 'HAS_SOTU', 'HAS_HOST'],
+        relationshipTypes=relationship_types,
     )
     return G_dataset
 
 
-def create_lp_pipeline():
-    pipeline_name = MODEL_CFG['PIPELINE_NAME']
+def create_lp_pipeline(
+        dataset_cfg=DATASET_CFG,
+        model_cfg=MODEL_CFG,
+):
+    pipeline_name = model_cfg['PIPELINE_NAME']
     if gds.beta.pipeline.exists(pipeline_name)['exists']:
         gds.beta.pipeline.drop(gds.pipeline.get(pipeline_name))
 
     pipeline, _ = gds.beta.pipeline.linkPrediction.create(pipeline_name)
 
-    # pipeline.addNodeProperty(
-    #     procedure_name="degree",
-    #     mutateProperty="degree",
-    #     contextRelationshipTypes=['HAS_PARENT', 'HAS_SOTU'],
-    #     contextNodeLabels=['SOTU'],
-    # )
-    pipeline.addFeature("l2", nodeProperties=["degree"])
+    all_relationship_types = list(
+        map(
+            (lambda cfg: cfg['TYPES'][0]),
+            dataset_cfg['REL_META']
+        )
+    )
+    context_relationship_types = list(
+        filter(lambda x: x !=
+               dataset_cfg['TARGET_REL_TYPE'],
+               all_relationship_types)
+    )
+    all_node_labels = list(
+        map(
+            (lambda cfg: cfg['LABELS']),
+            dataset_cfg['NODE_META']
+        )
+    )
+    all_node_labels = [
+        item for sublist in all_node_labels
+        for item in sublist
+    ]
+    context_node_labels = list(
+        filter(
+            (lambda x: x not in ['Host', 'SOTU', 'Palmprint', 'Taxon']),
+            all_node_labels
+        )
+    )
 
     _ = pipeline.addNodeProperty(
         "beta.hashgnn",
@@ -119,29 +134,45 @@ def create_lp_pipeline():
         # binarizeFeatures={'dimension': 6, 'threshold': 32},
         # featureProperties=["features", "degree"],
         randomSeed=MODEL_CFG['RANDOM_SEED'],
-        contextRelationshipTypes=['HAS_PARENT', 'HAS_SOTU'],
-        contextNodeLabels=['SOTU'],  # 'Host'
+        contextRelationshipTypes=context_relationship_types,
+        contextNodeLabels=context_node_labels,
     )
     pipeline.addFeature("hadamard", nodeProperties=["hashGNN"])
+
+    # pipeline.addNodeProperty(
+    #     procedure_name="degree",
+    #     mutateProperty="degree",
+    #     contextRelationshipTypes=context_relationship_types,
+    #     contextNodeLabels=context_node_labels,
+    # )
+    # pipeline.addFeature("l2", nodeProperties=["degree"])
 
     # pipeline.addNodeProperty(
     #     procedure_name="fastRP",
     #     embeddingDimension=256,
     #     mutateProperty="fastRP",
     #     randomSeed=MODEL_CFG['RANDOM_SEED'],
-    #     contextRelationshipTypes=['HAS_PARENT', 'HAS_SOTU'],
-    #     contextNodeLabels=['SOTU'],
+    #     contextRelationshipTypes=context_relationship_types,
+    #     contextNodeLabels=context_node_labels,
     # )
     # pipeline.addFeature("hadamard", nodeProperties=["fastRP"])
+
+    # pipeline.addNodeProperty(
+    #     procedure_name="graphSage",
+    #     mutateProperty="graphSage",
+    #     contextRelationshipTypes=context_relationship_types,
+    #     contextNodeLabels=context_node_labels,
+    # )
+    # pipeline.addFeature("hadamard", nodeProperties=["graphSage"])
 
     # trainFraction is % of all nodes
     # testFraction is % of complement of trainFraction
     # feature-input is remainder used for generating features
     pipeline.configureSplit(
-        trainFraction=MODEL_CFG['TRAIN_FRACTION'],
-        testFraction=MODEL_CFG['TEST_FRACTION'],
-        validationFolds=MODEL_CFG['VALIDATION_FOLDS'],
-        negativeSamplingRatio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
+        trainFraction=model_cfg['TRAIN_FRACTION'],
+        testFraction=model_cfg['TEST_FRACTION'],
+        validationFolds=model_cfg['VALIDATION_FOLDS'],
+        negativeSamplingRatio=model_cfg['NEGATIVE_SAMPLING_RATIO'],
     )
     return pipeline
 
@@ -156,20 +187,20 @@ def add_training_method(pipeline):
     return pipeline
 
 
-def train_model(G, pipeline):
-    model_name = MODEL_CFG['MODEL_NAME']
+def train_model(G, pipeline, model_cfg=MODEL_CFG, dataset_cfg=DATASET_CFG):
+    model_name = model_cfg['MODEL_NAME']
     if gds.beta.model.exists(model_name)['exists']:
         gds.beta.model.drop(gds.model.get(model_name))
 
     model, eval = pipeline.train(
         G=G,
         modelName=model_name,
-        targetRelationshipType="HAS_HOST",
+        targetRelationshipType=dataset_cfg['TARGET_REL_TYPE'][0],
         sourceNodeLabel='Palmprint',
         targetNodeLabel='Taxon',
-        randomSeed=MODEL_CFG['RANDOM_SEED'],
+        randomSeed=model_cfg['RANDOM_SEED'],
         metrics=["AUCPR", "OUT_OF_BAG_ERROR"],
-        negativeClassWeight=MODEL_CFG['NEGATIVE_CLASS_WEIGHT'],
+        negativeClassWeight=model_cfg['NEGATIVE_CLASS_WEIGHT'],
     )
     assert eval["trainMillis"] >= 0
     print("Train result:\n", eval['modelSelectionStats'])
@@ -177,138 +208,96 @@ def train_model(G, pipeline):
     return model, eval
 
 
-def stream_approx_predictions(G, model):
+def stream_approx_predictions(
+        G,
+        model,
+        model_cfg=MODEL_CFG,
+        dataset_cfg=DATASET_CFG,
+):
     predictions = model.predict_stream(
         G,
         topK=1,
-        relationshipTypes=['HAS_HOST'],
+        relationshipTypes=dataset_cfg['TARGET_REL_TYPE'],
         sampleRate=0.5,
         randomJoins=2,
         maxIterations=3,
-        deltaThreshold=MODEL_CFG['PREDICTION_THRESHOLD'],
+        deltaThreshold=model_cfg['PREDICTION_THRESHOLD'],
     )
     # predictions = predictions[
-    #     predictions.probability >= MODEL_CFG['PREDICTION_THRESHOLD']]
+    #     predictions.probability >= model_cfg['PREDICTION_THRESHOLD']]
     predictions = predictions.sort_values('probability')
     print(predictions)
     return predictions
 
 
-def stream_exhaustive_predictions(G, model):
+def stream_exhaustive_predictions(
+        G,
+        model,
+        model_cfg=MODEL_CFG,
+        dataset_cfg=DATASET_CFG
+):
     predictions = model.predict_stream(
         G,
         topN=1,
-        threshold=MODEL_CFG['PREDICTION_THRESHOLD'],
-        relationshipTypes=['HAS_HOST'],
+        threshold=model_cfg['PREDICTION_THRESHOLD'],
+        relationshipTypes=dataset_cfg['TARGET_REL_TYPE'],
     )
     predictions = predictions.sort_values('probability')
     print(predictions)
     return predictions
 
 
-def mutate_predictions(G, model):
+def mutate_predictions(G, model, dataset_cfg=DATASET_CFG):
     mutate_result = model.predict_mutate(
-        G, topN=5, mutateRelationshipType="HAS_HOST")
+        G, topN=5, mutateRelationshipType=dataset_cfg["TARGET_REL_TYPE"])
     print(mutate_result)
     return mutate_result
 
 
-def mutate_degree_property(G):
-    gds.degree.mutate(
-        G,
-        mutateProperty="degree",
-        orientation="UNDIRECTED",
-    )
-    gds.degree.mutate(
-        G,
-        mutateProperty="degreeWeighted",
-        orientation="UNDIRECTED",
-        relationshipWeightProperty="weight",
-    )
-    return G
-
-
 # TODO: simplify code
 # use alt conditional branching (nodes/rels, features/dataset)
-def export_projection(G, destination='features'):
-    if destination not in ['features', 'dataset']:
-        raise Exception("Invalid destination arg")
+def export_projection(G, sampling_ratio=1, dataset_cfg=DATASET_CFG):
 
-    destination_dir = DIR_CFG['FEATURE_STORE_DIR']
-    if destination == 'dataset':
-        destination_dir = DIR_CFG['DATASETS_DIR'] + f"{G.name()}"
+    destination_dir = f"{DIR_CFG['DATASETS_DIR']}{sampling_ratio}/"
 
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)
 
-    node_mappings = [
-        {
-            'filename': 'palmprint_nodes.csv',
-            'labels': ['Palmprint', 'SOTU'],
-            'app_id': ['palmId'],
-        },
-        {
-            'filename': 'taxon_nodes.csv',
-            'labels': ['Host', 'Taxon'],
-            'app_id': ['taxId'],
-        },
-    ]
-
-    rel_mappings = [
-        {
-            'filename': 'has_parent_edges.csv',
-            'types': ['HAS_PARENT'],
-            'app_id': ['sourceNodeId', 'targetNodeId'],
-        },
-        {
-            'filename': 'has_sotu_edges.csv',
-            'types': ['HAS_SOTU'],
-            'app_id': ['sourceNodeId', 'targetNodeId'],
-        },
-        {
-            'filename': 'has_host_edges.csv',
-            'types': ['HAS_HOST'],
-        },
-    ]
-
     for entity_type, entity_mappings in zip(
         ['nodes', 'rels'],
-        [node_mappings, rel_mappings]
+        [dataset_cfg['NODE_META'], dataset_cfg['REL_META']]
     ):
         for mapping in entity_mappings:
             if entity_type == 'nodes':
                 stream_fnc = gds.graph.nodeProperties.stream
                 stream_fnc_args = {
-                    'node_properties': [
-                        'features', 'degree', 'degreeWeighted'],
-                    'node_labels': mapping['labels'],
+                    'node_properties': ['features'],
+                    'node_labels': mapping['LABELS'],
                     'separate_property_columns': True,
-                    'db_node_properties': mapping['app_id'],
+                    'db_node_properties': mapping['APP_ID'],
                 }
-                merge_left_on = mapping['app_id']
+                merge_left_on = mapping['APP_ID']
                 merge_right_on = ['appId']
             else:
                 stream_fnc = gds.beta.graph.relationships.stream
                 stream_fnc_args = {
-                    'relationship_types': mapping['types']
+                    'relationship_types': mapping['TYPES']
                 }
                 merge_left_on = ['sourceNodeId', 'targetNodeId']
                 merge_right_on = ['sourceNodeId', 'targetNodeId']
 
             df_fts = feature_queries.get_features_from_file(
-                mapping['filename'])
+                mapping['FILE_NAME'])
             df_fts = df_fts.astype(str)
             df_projection = stream_fnc(G, **stream_fnc_args)
             df_projection = utils.df_to_ddf(df_projection)
             df_projection = df_projection.astype(str)
 
-            how = 'left' if destination == 'dataset' else 'right'
-
             merged = df_projection.merge(
                 df_fts,
                 left_on=merge_left_on,
                 right_on=merge_right_on,
-                how=how,
+                how='left',
                 suffixes=('', '_dup'),
             )
             merged = merged.dropna()
@@ -316,4 +305,4 @@ def export_projection(G, destination='features'):
             merged = merged.compute()
 
             merged.to_csv(
-                destination_dir + '/' + mapping['filename'], index=False)
+                destination_dir + mapping['FILE_NAME'], index=False)

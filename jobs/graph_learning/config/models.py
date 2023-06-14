@@ -1,0 +1,61 @@
+from .datasets import (
+    DATASET_VERSION_1,
+    DATASET_VERSION_2,
+    DATASET_VERSION_3,
+    DATASET_VERSION_4
+)
+
+MODEL_VERSION_1 = 'model-v1'
+MODEL_VERSION_2 = 'model-v2'
+MODEL_VERSION_3 = 'model-v3'
+MODEL_VERSION_4 = 'model-v4'
+
+CUR_MODEL_VERSION = MODEL_VERSION_1
+
+BASE_MODEL_CFG = {
+    'PROJECTION_NAME': 'palmprint-host-dataset',
+    'PIPELINE_NAME': 'lp-pipeline',
+    'MODEL_NAME': 'lp-model',
+    'RANDOM_SEED': 42,
+    'TEST_FRACTION': 0.3,
+    'TRAIN_FRACTION': 0.6,
+    'VALIDATION_FOLDS': 10,
+    'MIN_EPOCHS': 1,
+    'MAX_EPOCHS': 100,
+    'LR': 0.001,
+}
+
+MODEL_CFGS = {
+    MODEL_VERSION_1: {
+        **BASE_MODEL_CFG,
+        'DATASET_VERSION': DATASET_VERSION_1,
+        'SAMPLING_RATIO': 0.25,
+        'NEGATIVE_SAMPLING_RATIO': 1.34,
+        'NEGATIVE_CLASS_WEIGHT': 1,
+        'PREDICTION_THRESHOLD': 0.7,
+    },
+    MODEL_VERSION_2: {
+        **BASE_MODEL_CFG,
+        'DATASET_VERSION': DATASET_VERSION_2,
+        'SAMPLING_RATIO': 0.5,
+        'NEGATIVE_SAMPLING_RATIO': 0.68,
+        'NEGATIVE_CLASS_WEIGHT': 1,
+        'PREDICTION_THRESHOLD': 0.7,
+    },
+    MODEL_VERSION_3: {
+        **BASE_MODEL_CFG,
+        'DATASET_VERSION': DATASET_VERSION_3,
+        'SAMPLING_RATIO': 0.25,
+        'NEGATIVE_SAMPLING_RATIO': 0.68,
+        'NEGATIVE_CLASS_WEIGHT': 1,
+        'PREDICTION_THRESHOLD': 0.7,
+    },
+    MODEL_VERSION_4: {
+        **BASE_MODEL_CFG,
+        'DATASET_VERSION': DATASET_VERSION_4,
+        'SAMPLING_RATIO': 0.1,
+        'NEGATIVE_SAMPLING_RATIO': 0.68,
+        'NEGATIVE_CLASS_WEIGHT': 1,
+        'PREDICTION_THRESHOLD': 0.7,
+    }
+}

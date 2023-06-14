@@ -11,3 +11,4 @@ torch-geometric
 pyg-lib
 # torchvision
 scikit-learn
+scipy
