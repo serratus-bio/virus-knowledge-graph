@@ -43,8 +43,8 @@ Labels:
 
 | Types                 | Properties |
 | --------------------- | ---------- |
-| `SEQUENCE_ALIGNMENT`  | `distance` |
-| `HAS_HOST`            |            |
+| `SEQUENCE_ALIGNMENT`  | `percentIdentity` |
+| `HAS_HOST`            | `percentIdentity` |
 | `HAS_PALMPRINT`       |            |
 | `HAS_PARENT`          |            |
 | `HAS_POTENTIAL_TAXON` |            |

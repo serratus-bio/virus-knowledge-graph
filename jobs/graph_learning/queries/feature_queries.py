@@ -1,7 +1,8 @@
 import ast
 
 from queries import utils
-from config import DIR_CFG
+from config.base import DIR_CFG, DATASET_CFG
+from config.encoders import TAXON_RANK_LABELS
 
 import torch
 import pandas as pd
@@ -23,18 +24,18 @@ def get_features_from_file(
 
 def get_all_node_features(
         dir_name=DIR_CFG['FEATURE_STORE_DIR'],
-        enriched_features=False,
+        dataset_cfg=None,
 ):
-    node_file_paths = [
-        dir_name + 'palmprint_nodes.csv',
-        dir_name + 'taxon_nodes.csv',
-    ]
-    if enriched_features:
-        select_columns = ['nodeId', 'labels', 'features',
-                          'degree', 'degreeWeighted']
-    else:
-        select_columns = ['nodeId', 'labels', 'features']
+    if not dataset_cfg:
+        raise ValueError("Must provide dataset_cfg")
 
+    node_file_paths = list(
+        map(
+            (lambda cfg: dir_name + cfg['FILE_NAME']),
+            dataset_cfg['NODE_META']
+        )
+    )
+    select_columns = ['nodeId', 'labels', 'features']
     nodes = utils.merge_files_to_df(
         node_file_paths,
         select_columns=select_columns,
@@ -46,20 +47,22 @@ def get_all_node_features(
 
 def get_all_relationship_features(
         dir_name=DIR_CFG['FEATURE_STORE_DIR'],
+        dataset_cfg=None,
 ):
+    if not dataset_cfg:
+        raise ValueError("Must provide dataset_cfg")
 
-    relationship_file_paths = [
-        dir_name + 'has_sotu_edges.csv',
-        dir_name + 'has_parent_edges.csv',
-        dir_name + 'has_host_edges.csv',
-    ]
+    relationship_file_paths = list(
+        map(
+            (lambda cfg: dir_name + cfg['FILE_NAME']),
+            dataset_cfg['REL_META']
+        )
+    )
     relationships = utils.merge_files_to_df(
         relationship_file_paths,
         select_columns=['sourceNodeId', 'targetNodeId',
                         'relationshipType', 'weight'],
     )
-    relationships = utils.deserialize_df(relationships)
-    # relationships.set_index(['sourceNodeId', 'targetNodeId'])
     return relationships
 
 
@@ -75,6 +78,7 @@ class IdentityEncoder(object):
         if self.is_tensor:
             if self.is_list:
                 return torch.stack([torch.tensor(el) for el in df.values])
+            x = torch.from_numpy(df.values).to(self.dtype)
             return torch.from_numpy(df.values).to(self.dtype)
         else:
             return df
@@ -94,33 +98,29 @@ class ListEncoder(object):
 class LabelEncoder(object):
     # The 'LabelEncoder' splits the raw column strings by 'sep' and converts
     # individual elements to categorical labels.
-    def __init__(self, sep=',', is_tensor=False):
+    def __init__(self, sep=',', is_tensor=False, mapping=None):
         self.sep = sep
         self.is_tensor = is_tensor
+        self.mapping = mapping
 
     def __call__(self, df):
+        mapping = self.mapping
         if self.is_tensor:
-            labels = set(
-                label for col in df.values for label in col.split(self.sep))
-            mapping = {label: i for i, label in enumerate(labels)}
+            if not mapping:
+                labels = set(
+                    label for col in df.values
+                    for label in col.split(self.sep)
+                )
+                mapping = {label: i for i, label in enumerate(labels)}
             x = torch.zeros(len(df), len(mapping))
             for i, col in enumerate(df.values):
                 for label in col.split(self.sep):
                     x[i, mapping[label]] = 1
             return x
-        else:
+        if not mapping:
             labels = df[df.columns[0]].unique()
             mapping = {label: i for i, label in enumerate(labels)}
-            return df.replace(mapping)
-
-
-class RandomValueEncoder(object):
-    def __init__(self, dim=1, is_tensor=False):
-        self.dim = dim
-        self.is_tensor = is_tensor
-
-    def __call__(self, df):
-        return torch.rand(len(df), self.dim)
+        return df.replace(mapping)
 
 
 class MinMaxNormalizeEncoder(object):
@@ -139,64 +139,6 @@ class MinMaxNormalizeEncoder(object):
                 return df
             df[df.columns[0]] = (series - min_ft) / (max_ft - min_ft)
             return df
-
-
-def encode_features(
-        filename,
-        dir_name=DIR_CFG['FEATURE_STORE_DIR'],
-        encoders=None,
-        write_to_disk=False
-):
-    file_path = dir_name + filename
-    df = pd.read_csv(file_path, header=0)
-
-    if encoders is not None:
-        encoded_cols = pd.concat([
-            encoder(df[[col]])
-            for col, encoder
-            in encoders.items()
-        ])
-        encoded_cols = encoded_cols.add_suffix('Encoded')
-        df[encoded_cols.columns.values] = encoded_cols
-        # df = pd.concat([df, encoded_cols], axis=1)
-
-    if write_to_disk:
-        df.to_csv(file_path, index=False)
-
-    return df
-
-
-def encode_node_properties():
-    encode_features(
-        filename='taxon_nodes.csv',
-        write_to_disk=True,
-        encoders={
-            'rank': LabelEncoder(is_tensor=False),
-        }
-    )
-    encode_features(
-        filename='palmprint_nodes.csv',
-        write_to_disk=True,
-        encoders={
-            'centroid': LabelEncoder(is_tensor=False),
-        }
-    )
-
-
-def encode_relationship_properties():
-    # TODO: use mean normalization to account for high variance in read counts
-    df = encode_features(
-        filename='has_host_edges.csv',
-        write_to_disk=False,
-        encoders={
-            'count': MinMaxNormalizeEncoder(
-                is_tensor=False),
-        }
-    )
-    df.columns = ['weight' if x ==
-                  'countEncoded' else x for x in df.columns]
-    df.to_csv(DIR_CFG['FEATURE_STORE_DIR'] +
-              'has_host_edges.csv', index=False)
 
 
 def load_node_tensor(filename, index_col, encoders=None):
@@ -225,12 +167,79 @@ def load_edge_tensor(filename, src_index_col, src_mapping,
     return edge_index, edge_attr
 
 
-# to support heterogenous nodes in GDS, use vectorized "feature" column
+def encode_features(
+        filename,
+        dir_name=DIR_CFG['FEATURE_STORE_DIR'],
+        encoders=None,
+        write_to_disk=False
+):
+    file_path = dir_name + filename
+    df = pd.read_csv(file_path, header=0)
+
+    if encoders is not None:
+        encoded_cols = pd.concat([
+            encoder(df[[col]])
+            for col, encoder
+            in encoders.items()
+        ])
+        encoded_cols = encoded_cols.add_suffix('Encoded')
+        df[encoded_cols.columns.values] = encoded_cols
+
+    if write_to_disk:
+        df.to_csv(file_path, index=False)
+
+    return df
+
+
+def encode_node_properties(dataset_cfg=DATASET_CFG):
+    # TODO: consider moving encoder mappings to config file (?)
+    node_file_paths = list(
+        map(
+            (lambda cfg: cfg['FILE_NAME']),
+            dataset_cfg['NODE_META']
+        )
+    )
+    if 'taxon_nodes.csv' in node_file_paths:
+        encode_features(
+            filename='taxon_nodes.csv',
+            write_to_disk=True,
+            encoders={
+                'rank': LabelEncoder(
+                    is_tensor=False, mapping=TAXON_RANK_LABELS),
+            }
+        )
+
+    if 'sotu_nodes.csv' in node_file_paths:
+        encode_features(
+            filename='sotu_nodes.csv',
+            write_to_disk=True,
+            encoders={
+                'centroid': LabelEncoder(is_tensor=False),
+            }
+        )
+
+    if 'palmprint_nodes.csv' in node_file_paths:
+        encode_features(
+            filename='palmprint_nodes.csv',
+            write_to_disk=True,
+            encoders={
+                'centroid': LabelEncoder(is_tensor=False),
+            }
+        )
+
+
+def encode_relationship_properties():
+    # TODO: decide on better encoding for weight, cur using avg pidentity
+    # account for both avg percent identity and high variance read counts
+    raise NotImplementedError
+
+
+# this is needed to support heterogenous nodes in GDS
 def vectorize_features(
     filename,
     dir_name=DIR_CFG['FEATURE_STORE_DIR'],
-    write_to_disk=False,
     select_columns=[],
+    write_to_disk=False,
 ):
     df = pd.read_csv(dir_name + filename, header=0)
     if select_columns:
@@ -243,14 +252,30 @@ def vectorize_features(
     return df
 
 
-def vectorize_node_properties():
-    vectorize_features(
-        filename='taxon_nodes.csv',
-        write_to_disk=True,
-        select_columns=['rankEncoded']
+def vectorize_node_properties(dataset_cfg=DATASET_CFG):
+    node_file_paths = list(
+        map(
+            (lambda cfg: cfg['FILE_NAME']),
+            dataset_cfg['NODE_META'],
+        )
     )
-    vectorize_features(
-        filename='palmprint_nodes.csv',
-        write_to_disk=True,
-        select_columns=['centroidEncoded']
-    )
+    if 'taxon_nodes.csv' in node_file_paths:
+        vectorize_features(
+            filename='taxon_nodes.csv',
+            select_columns=['rankEncoded'],
+            write_to_disk=True,
+        )
+
+    if 'sotu_nodes.csv' in node_file_paths:
+        vectorize_features(
+            filename='sotu_nodes.csv',
+            select_columns=['centroidEncoded'],
+            write_to_disk=True,
+        )
+
+    if 'palmprint_nodes.csv' in node_file_paths:
+        vectorize_features(
+            filename='palmprint_nodes.csv',
+            select_columns=['centroidEncoded'],
+            write_to_disk=True,
+        )

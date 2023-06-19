@@ -31,18 +31,17 @@ def read_ddf_from_disk(cache_file_path=''):
 def get_query_results(query='', cache_filename=''):
     # reading directly from PSQL to a pandas dataframe with read_sql_query
     # is memory intensive. instead, write to EBS disk then read csv into a
-    # partitioned dataframe with dask:
-    # https://dask.pydata.org/en/latest/dataframe.html
+    # partitioned dataframe with dask
+    # TODO: improve redundant loading of dataframe on creation
 
     if not os.path.exists(EXTRACT_DIR):
         os.makedirs(EXTRACT_DIR)
 
     cache_file_path = EXTRACT_DIR + cache_filename
-    df = read_ddf_from_disk(cache_file_path)
     if not os.path.exists(cache_file_path):
         write_query_to_disk(query, cache_file_path)
 
-    return df
+    return read_ddf_from_disk(cache_file_path)
 
 
 def get_sra_df():
@@ -71,7 +70,7 @@ def get_palmprint_msa_df():
 
 
 def get_sra_palmprint_df():
-    query = ("SELECT srarun.run as run_id, palm_id "
+    query = ("SELECT srarun.run as run_id, palm_id, percent_identity "
              "FROM palm_sra2 "
              "INNER JOIN srarun ON palm_sra2.run_id = srarun.run")
     return get_query_results(

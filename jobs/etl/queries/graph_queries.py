@@ -149,6 +149,7 @@ def add_sra_palmprint_edges(rows):
             MATCH (s:SRA), (t:Palmprint)
             WHERE s.runId = row.run_id AND t.palmId = row.palm_id
             MERGE (s)-[r:HAS_PALMPRINT]->(t)
+            SET r.percentIdentity = toFloat(row.percent_identity)
             '''
     return batch_insert_data(query, rows)
 

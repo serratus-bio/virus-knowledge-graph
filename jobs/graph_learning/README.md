@@ -14,9 +14,11 @@ The general process for using GDS:
 1. Store model weight checkpoint to disk.
 1. Clean up graph projection, pipeline, and models from Neo4j catalog.
 
-### Commands:
-
-See Makefile > '# ML Commands'. Generally, `make docker-start` and `make ml-run` using provided args in docker-compose or with CLI to specify workflow and subtasks.
+### Limitations
+- Can not run cypher queries on projections
+- Exported projections are in a format that is not easy to use with PyGeometric. It's easier to stream nodes and edges by property then manually reformat into more common csv structure
+- Can not directly access train and test split in ML pipeline
+- Can not use traditional link prediction algos on projections
 
 ### Useful References
 

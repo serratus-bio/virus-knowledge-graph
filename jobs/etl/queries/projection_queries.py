@@ -6,16 +6,24 @@ from datasources.neo4j import get_connection
 
 conn = get_connection()
 
-
+# TODO: use query_cache dir instead of features dir
 FEATURE_STORE_DIR = '/mnt/graphdata/features/'
 
 
-def write_to_disk(query_results, file_name=''):
+def write_to_disk(
+    query_results,
+    file_name='',
+    projection_version='',
+    mode='w',
+):
     df = pd.DataFrame([dict(record) for record in query_results])
-    if not os.path.exists(FEATURE_STORE_DIR):
-        os.makedirs(FEATURE_STORE_DIR)
-    file_path = FEATURE_STORE_DIR + file_name
-    df.to_csv(file_path, index=False)
+    version_dir = f"data-v{projection_version}"
+    dir_name = FEATURE_STORE_DIR + version_dir + '/'
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+    file_path = dir_name + file_name
+    header = True if mode == 'w' else False
+    df.to_csv(file_path, index=False, mode=mode, header=header)
 
 
 def get_palmprint_nodes():
@@ -31,9 +39,22 @@ def get_palmprint_nodes():
     return conn.query(query=query)
 
 
+def get_sotu_nodes():
+    query = '''
+            MATCH (n:SOTU)
+            RETURN
+                id(n) as nodeId,
+                n.palmId as appId,
+                n.palmId as palmId,
+                labels(n) as labels,
+                n.centroid as centroid
+            '''
+    return conn.query(query=query)
+
+
 def get_has_sotu_edges():
     query = '''
-            MATCH (s:Palmprint)-[r:HAS_SOTU]->(t:Palmprint)
+            MATCH (s:Palmprint)-[r:HAS_SOTU]->(t:SOTU)
             RETURN
                 id(s) as sourceNodeId,
                 s.palmId as sourceAppId,
@@ -63,7 +84,7 @@ def get_has_parent_edges():
             MATCH (s:Taxon)-[r:HAS_PARENT]->(t:Taxon)
             RETURN
                 id(s) as sourceNodeId,
-                t.taxId as sourceAppId,
+                s.taxId as sourceAppId,
                 id(t) as targetNodeId,
                 t.taxId as targetAppId,
                 type(r) as relationshipType,
@@ -72,11 +93,12 @@ def get_has_parent_edges():
     return conn.query(query=query)
 
 
-def get_has_host_edges():
-    # Get inferred Palmprint -> Taxon edges
+def get_palmprint_has_host_edges():
+    # Get inferred Palmprint -> Taxon edges from Palmprint -> SRA -> Taxon
     # exclude all hosts that are descendants of unclassified Taxon 12908
     query = '''
-            MATCH (s:Palmprint)<-[:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST]->(t:Taxon)
+            MATCH (s:Palmprint)<-[r:HAS_PALMPRINT]-(:SRA)
+                -[:HAS_HOST]->(t:Taxon)
             WHERE not (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
             RETURN
                 id(s) as sourceNodeId,
@@ -84,6 +106,82 @@ def get_has_host_edges():
                 id(t) as targetNodeId,
                 t.taxId as targetAppId,
                 'HAS_HOST' as relationshipType,
-                count(*) AS count
+                count(*) AS count,
+                avg(r.percentIdentity) as avgPercentIdentity,
+                avg(r.percentIdentity) as weight
+            '''
+    return conn.query(query=query)
+
+
+def get_sotu_has_host_edges():
+    # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
+    # exclude all hosts that are descendants of unclassified Taxon 12908
+    query = '''
+            MATCH (s:SOTU)<-[:HAS_SOTU]-(:Palmprint)
+                    <-[r:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST]->(t:Taxon)
+            WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
+            OPTIONAL MATCH (s:SOTU)<-[r:HAS_PALMPRINT]-(:SRA)
+                    -[:HAS_HOST]->(t:Taxon)
+            WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
+            RETURN
+                id(s) as sourceNodeId,
+                s.palmId as sourceAppId,
+                id(t) as targetNodeId,
+                t.taxId as targetAppId,
+                'HAS_HOST' as relationshipType,
+                count(*) AS count,
+                avg(r.percentIdentity) as avgPercentIdentity,
+                avg(r.percentIdentity) as weight
+            '''
+    return conn.query(query=query)
+
+
+def get_sotu_sequnce_aligment_edges(
+        page_size=10000,
+        cursor=0,
+):
+    query = '''
+        MATCH (s:SOTU)-[r:SEQUENCE_ALIGNMENT]->(t:SOTU)
+        WHERE r.percentIdentity > 0.7
+        RETURN
+            id(s) as sourceNodeId,
+            s.palmId as sourceAppId,
+            id(t) as targetNodeId,
+            t.palmId as targetAppId,
+            type(r) as relationshipType,
+            r.percentIdentity as weight,
+            r.percentIdentity as percentIdentity
+        ORDER BY r.percentIdentity DESC
+        SKIP $cursor
+        LIMIT $page_size
+        '''
+    return conn.query(
+        query,
+        parameters={
+            'page_size': page_size,
+            'cursor': cursor,
+        }
+    )
+
+
+def get_sotu_has_potential_taxon():
+    # Get inferred SOTU -> Taxon has potential taxon edges
+    # from Palmprint -> SOTU -> Taxon
+    # exclude all hosts that are descendants of unclassified Taxon 12908
+    query = '''
+            MATCH (s:SOTU)<-[:HAS_SOTU]-(:Palmprint)
+                    -[r:HAS_POTENTIAL_TAXON]->(t:Taxon)
+            WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
+            OPTIONAL MATCH (s:SOTU)-[r:HAS_POTENTIAL_TAXON]->(t:Taxon)
+            WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
+            RETURN
+                id(s) as sourceNodeId,
+                s.palmId as sourceAppId,
+                id(t) as targetNodeId,
+                t.taxId as targetAppId,
+                'HAS_HOST' as relationshipType,
+                count(*) AS count,
+                avg(r.percentIdentity) as avgPercentIdentity,
+                avg(r.percentIdentity) as weight
             '''
     return conn.query(query=query)
