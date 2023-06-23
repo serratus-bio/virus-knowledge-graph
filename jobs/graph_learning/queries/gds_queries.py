@@ -123,21 +123,15 @@ def create_lp_pipeline(
         )
     )
 
-    _ = pipeline.addNodeProperty(
-        "beta.hashgnn",
-        mutateProperty="hashGNN",
-        iterations=4,
-        heterogeneous=True,
-        embeddingDensity=512,
-        neighborInfluence=0.7,
-        generateFeatures={'dimension': 6, 'densityLevel': 1},
-        # binarizeFeatures={'dimension': 6, 'threshold': 32},
-        # featureProperties=["features", "degree"],
-        randomSeed=MODEL_CFG['RANDOM_SEED'],
-        contextRelationshipTypes=context_relationship_types,
-        contextNodeLabels=context_node_labels,
-    )
-    pipeline.addFeature("hadamard", nodeProperties=["hashGNN"])
+    # pipeline.addNodeProperty(
+    #     procedure_name="pageRank",
+    #     mutateProperty="pageRank",
+    #     dampingFactor=0.85,
+    #     tolerance=0.0000001,
+    #     contextRelationshipTypes=context_relationship_types,
+    #     contextNodeLabels=context_node_labels,
+    # )
+    # pipeline.addFeature("l2", nodeProperties=["pageRank"])
 
     # pipeline.addNodeProperty(
     #     procedure_name="degree",
@@ -147,11 +141,29 @@ def create_lp_pipeline(
     # )
     # pipeline.addFeature("l2", nodeProperties=["degree"])
 
+    _ = pipeline.addNodeProperty(
+        "beta.hashgnn",
+        mutateProperty="hashGNN",
+        iterations=4,
+        heterogeneous=True,
+        embeddingDensity=512,
+        neighborInfluence=0.7,
+        binarizeFeatures={'dimension': 6, 'threshold': 32},
+        # generateFeatures={'dimension': 6, 'densityLevel': 1},
+        # featureProperties=["features", "degree", "pageRank"],
+        featureProperties=["features"],
+        randomSeed=MODEL_CFG['RANDOM_SEED'],
+        contextRelationshipTypes=context_relationship_types,
+        contextNodeLabels=context_node_labels,
+    )
+    pipeline.addFeature("hadamard", nodeProperties=["hashGNN"])
+
     # pipeline.addNodeProperty(
     #     procedure_name="fastRP",
     #     embeddingDimension=256,
     #     mutateProperty="fastRP",
     #     randomSeed=MODEL_CFG['RANDOM_SEED'],
+    #     featureProperties=["features"],
     #     contextRelationshipTypes=context_relationship_types,
     #     contextNodeLabels=context_node_labels,
     # )
@@ -208,6 +220,27 @@ def train_model(G, pipeline, model_cfg=MODEL_CFG, dataset_cfg=DATASET_CFG):
     return model, eval
 
 
+def map_ids_to_predictions(predictions, dataset_cfg=DATASET_CFG,):
+    node_mapping = feature_queries.get_node_mapping(dataset_cfg)
+    predictions = predictions.merge(
+        node_mapping,
+        left_on='node1',
+        right_on='nodeId',
+        how='left',
+    )
+    predictions = predictions.rename({'appId': 'sourceAppId'}, axis=1)
+    predictions = predictions.merge(
+        node_mapping,
+        left_on='node2',
+        right_on='nodeId',
+        how='left',
+    )
+    predictions = predictions.rename({'appId': 'targetAppId'}, axis=1)
+    predictions = predictions.drop(
+        predictions.filter(regex='^nodeId').columns, axis=1)
+    return predictions
+
+
 def stream_approx_predictions(
         G,
         model,
@@ -223,9 +256,8 @@ def stream_approx_predictions(
         maxIterations=3,
         deltaThreshold=model_cfg['PREDICTION_THRESHOLD'],
     )
-    # predictions = predictions[
-    #     predictions.probability >= model_cfg['PREDICTION_THRESHOLD']]
     predictions = predictions.sort_values('probability')
+    predictions = map_ids_to_predictions(predictions, dataset_cfg)
     print(predictions)
     return predictions
 
@@ -243,6 +275,7 @@ def stream_exhaustive_predictions(
         relationshipTypes=dataset_cfg['TARGET_REL_TYPE'],
     )
     predictions = predictions.sort_values('probability')
+    predictions = map_ids_to_predictions(predictions, dataset_cfg)
     print(predictions)
     return predictions
 

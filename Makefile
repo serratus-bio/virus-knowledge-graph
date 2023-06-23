@@ -35,13 +35,19 @@ docker-start:
 docker-clean:
 	docker system prune -a -f
 
-### ETL
+### ETL container
 
 etl-env:
 	printf '%s\n' 'NEO4J_USER="neo4j"' 'NEO4J_PASSWORD=""' 'NEO4J_URI="bolt://:7687"' 'PYTHONUNBUFFERED=1' > ./jobs/etl/.env
 
-etl-run:
+etl:
 	docker-compose up --build etl
+
+etl-sql:
+	WORKFLOW="sql_to_graph" docker-compose up --build etl
+
+etl-projection:
+	WORKFLOW="graph_to_projection" docker-compose up --build etl
 
 etl-clear-cache:
 	rm /mnt/graphdata/*.csv
@@ -49,14 +55,25 @@ etl-clear-cache:
 etl-connect:
 	docker exec -it $(docker ps -aqf "name=etl")  /bin/bash
 
-### ML
+### Graph learning container
 
 ml-env:
 	printf '%s\n' 'NEO4J_USER="neo4j"' 'NEO4J_PASSWORD=""' 'NEO4J_URI="bolt://:7687"' 'PYTHONUNBUFFERED=1' 'GRAPHISTRY_USERNAME="" GRAPHISTRY_PASSWORD=""' > ./jobs/graph_learning/.env
 
-ml-run:
+ml:
 	docker-compose up --build graph_learning
 
 ml-connect:
 	docker exec -it $(docker ps -aqf "name=etl")  /bin/bash
 
+ml-dataset:
+	WORKFLOW="make_datasets" docker-compose up --build graph_learning
+
+lp-pyg:
+	WORKFLOW="link_prediction_pyg" docker-compose up --build graph_learning
+
+lp-gds:
+	WORKFLOW="link_prediction_gds" docker-compose up --build graph_learning
+
+lp-nx:
+	WORKFLOW="link_prediction_nx" docker-compose up --build graph_learning

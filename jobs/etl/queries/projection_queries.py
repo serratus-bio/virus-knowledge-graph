@@ -42,12 +42,14 @@ def get_palmprint_nodes():
 def get_sotu_nodes():
     query = '''
             MATCH (n:SOTU)
+            OPTIONAL MATCH (n)<-[r:HAS_SOTU]-(:Palmprint)
             RETURN
                 id(n) as nodeId,
                 n.palmId as appId,
                 n.palmId as palmId,
                 labels(n) as labels,
-                n.centroid as centroid
+                n.centroid as centroid,
+                count(r) as numPalmprints
             '''
     return conn.query(query=query)
 
@@ -179,7 +181,7 @@ def get_sotu_has_potential_taxon():
                 s.palmId as sourceAppId,
                 id(t) as targetNodeId,
                 t.taxId as targetAppId,
-                'HAS_HOST' as relationshipType,
+                type(r) as relationshipType,
                 count(*) AS count,
                 avg(r.percentIdentity) as avgPercentIdentity,
                 avg(r.percentIdentity) as weight
