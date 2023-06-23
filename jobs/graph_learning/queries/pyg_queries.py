@@ -4,6 +4,7 @@ from queries.feature_queries import (
     load_edge_tensor,
     load_node_tensor,
 )
+from queries.utils import read_ddf_from_disk
 from models.models import Model
 from config.base import (
     DIR_CFG,
@@ -11,18 +12,24 @@ from config.base import (
     DATASET_CFG,
 )
 
+import numpy as np
+import pandas as pd
+from sklearn.metrics import (
+    average_precision_score,
+    roc_auc_score,
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 import torch
+from torch_geometric import seed_everything
 from torch_geometric.data import HeteroData
 from torch_geometric.loader import LinkNeighborLoader
-from torch_geometric import seed_everything
+from torch_geometric.utils import to_networkx
 import torch_geometric.transforms as T
 import torch.nn.functional as F
-from sklearn.metrics import (
-    roc_auc_score,
-    average_precision_score,
-    accuracy_score
-)
-import numpy as np
+
 
 seed_everything(MODEL_CFG['RANDOM_SEED'])
 
@@ -32,6 +39,7 @@ def create_pyg_graph(
     dataset_cfg=DATASET_CFG,
 ):
     data = HeteroData()
+    mappings = {}
     dir_name = f"{DIR_CFG['DATASETS_DIR']}{sampling_rate}"
     node_file_paths = list(
         map(
@@ -57,6 +65,7 @@ def create_pyg_graph(
             }
         )
         data['taxon'].x = taxon_x
+        mappings['taxon'] = taxon_mapping
 
     if 'sotu_nodes.csv' in node_file_paths:
         sotu_x, sotu_mapping = load_node_tensor(
@@ -68,185 +77,153 @@ def create_pyg_graph(
                 'features': ListEncoder(),
             }
         )
-        data['palmprint'].x = sotu_x
+        data['sotu'].x = torch.arange(0, len(sotu_mapping))
+        mappings['sotu'] = sotu_mapping
 
     if 'sotu_has_host_edges.csv' in rel_file_paths:
-        has_host_edge_index, has_host_edge_label = load_edge_tensor(
+        edge_index, edge_label = load_edge_tensor(
             filename=f'{dir_name}/sotu_has_host_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
             dst_mapping=taxon_mapping,
-            encoders={
-                'weight': IdentityEncoder(dtype=torch.long, is_tensor=True)
-            },
+            # encoders={
+            #     'weight': IdentityEncoder(dtype=torch.float, is_tensor=True),
+            #     # 'weight': BinaryEncoder(dtype=torch.long),
+            # },
         )
-        data['palmprint', 'has_host', 'taxon'].edge_index = has_host_edge_index
-        data['palmprint', 'has_host', 'taxon'].edge_label = has_host_edge_label
+        # edge_label = torch.div(edge_label, 100)
+
+        data['sotu', 'has_host', 'taxon'].edge_index = edge_index
+        data['sotu', 'has_host', 'taxon'].edge_label = edge_label
 
     if 'has_parent_edges.csv' in rel_file_paths:
-        has_parent_edge_index, has_parent_edge_label = load_edge_tensor(
+        edge_index, edge_label = load_edge_tensor(
             filename=f'{dir_name}/has_parent_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=taxon_mapping,
             dst_index_col='targetAppId',
             dst_mapping=taxon_mapping,
             encoders={
-                'weight': IdentityEncoder(dtype=torch.long, is_tensor=True)
+                'weight': IdentityEncoder(dtype=torch.float, is_tensor=True)
             },
         )
-        data['taxon', 'has_parent', 'taxon'].edge_index = has_parent_edge_index
-        data['taxon', 'has_parent', 'taxon'].edge_label = has_parent_edge_label
+        data['taxon', 'has_parent', 'taxon'].edge_index = edge_index
+        data['taxon', 'has_parent', 'taxon'].edge_label = edge_label
 
     if 'sotu_sequence_alignment_edges.csv' in rel_file_paths:
-        has_parent_edge_index, has_parent_edge_label = load_edge_tensor(
+        edge_index, edge_label = load_edge_tensor(
             filename=f'{dir_name}/sotu_sequence_alignment_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
             dst_mapping=sotu_mapping,
             encoders={
-                'weight': IdentityEncoder(dtype=torch.long, is_tensor=True)
+                'weight': IdentityEncoder(dtype=torch.float, is_tensor=True)
             },
         )
-        data['taxon', 'has_parent', 'taxon'].edge_index = has_parent_edge_index
-        data['taxon', 'has_parent', 'taxon'].edge_label = has_parent_edge_label
+        data['sotu', 'sequence_alignment', 'sotu'].edge_index = edge_index
+        data['sotu', 'sequence_alignment', 'sotu'].edge_label = edge_label
+
+    if 'sotu_has_potential_taxon.csv' in rel_file_paths:
+        edge_index, edge_label = load_edge_tensor(
+            filename=f'{dir_name}/sotu_has_potential_taxon.csv',
+            src_index_col='sourceAppId',
+            src_mapping=sotu_mapping,
+            dst_index_col='targetAppId',
+            dst_mapping=taxon_mapping,
+            encoders={
+                'weight': IdentityEncoder(dtype=torch.float, is_tensor=True)
+            },
+        )
+        data['sotu', 'has_potential_taxon', 'taxon'].edge_index = edge_index
+        data['sotu', 'has_potential_taxon', 'taxon'].edge_label = edge_label
 
     node_types, edge_types = data.metadata()
-    if not ('taxon', 'rev_has_host', 'palmprint') in edge_types:
+    if not ('taxon', 'rev_has_host', 'sotu') in edge_types:
         data = T.ToUndirected()(data)
         # Remove "reverse" label. (redundant if using link loader)
-        del data['taxon', 'rev_has_host', 'palmprint'].edge_label
-    return data
+        del data['taxon', 'rev_has_host', 'sotu'].edge_label
+        # del data['taxon', 'rev_has_host_binary', 'sotu'].edge_label
+    return data, mappings
 
 
 def split_data(data):
     num_test = (1 - MODEL_CFG['TRAIN_FRACTION']) * MODEL_CFG['TEST_FRACTION']
     num_val = 1 - MODEL_CFG['TRAIN_FRACTION'] - num_test
+    # labels = data[('sotu', 'has_host', 'taxon')]['edge_label']
+    # print(labels)
+    # print(torch.min(labels))
+    # print(torch.max(labels))
+
     transform = T.RandomLinkSplit(
         # Link-level split train (80%), validate (10%), and test edges (10%)
         num_val=num_val,
         num_test=num_test,
-
-        # Of training edges, use 70% for message passing (edge_label_index)
-        # and 30% for supervision (edge_index)
+        # Of training edges, use 70% for message passing (edge_index)
+        # and 30% for supervision (edge_label_index)
         disjoint_train_ratio=0.3,
-
         # Generate fixed negative edges for evaluation with a ratio of 2-1.
         # Negative edges during training will be generated on-the-fly.
         neg_sampling_ratio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
-        add_negative_train_samples=True,
-
-        edge_types=('palmprint', 'has_host', 'taxon'),
-        rev_edge_types=('taxon', 'rev_has_host', 'palmprint'),
+        add_negative_train_samples=False,
+        edge_types=('sotu', 'has_host', 'taxon'),
+        rev_edge_types=('taxon', 'rev_has_host', 'sotu'),
     )
     train_data, val_data, test_data = transform(data)
     return train_data, val_data, test_data
 
 
-def get_train_loader(train_data):
+def get_train_loader(train_data, batch_size=2048):
     # Define mini-batch loaders
     edge_label_index = train_data[(
-        'palmprint', 'has_host', 'taxon')].edge_label_index
-    edge_label = train_data[('palmprint', 'has_host', 'taxon')].edge_label
+        'sotu', 'has_host', 'taxon')].edge_label_index
 
     train_loader = LinkNeighborLoader(
         data=train_data,
         # In the first hop, we sample at most 20 neighbors.
         # In the second hop, we sample at most 10 neighbors.
-        num_neighbors=[20, 10],
-        neg_sampling_ratio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
-        edge_label_index=(('palmprint', 'has_host', 'taxon'),
+        num_neighbors=[8, 4],
+        # neg_sampling_ratio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
+        neg_sampling='binary',
+        # let 'binary' setting handle this
+        # edge_label=train_data[('sotu', 'has_host', 'taxon')].edge_label,
+        edge_label_index=(('sotu', 'has_host', 'taxon'),
                           edge_label_index),
-        edge_label=edge_label,
-        batch_size=128,
+        batch_size=batch_size,
         shuffle=True,
+        # num_workers=4,
     )
     return train_loader
 
 
-def get_model(data):
-    model = Model(
-        num_features=data.num_node_features,
-        hidden_channels=128,
-        use_embeddings=True,
-        data=data,
-    )
-    return model
-
-
-def update_stats(epoch, loss, total_examples, ):
-    pass
-
-
-def train(model, train_loader, model_cfg=MODEL_CFG):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Device: '{device}'")
-    model = model.to(device)
-    model.train()
-    optimizer = torch.optim.Adam(model.parameters(), lr=model_cfg['LR'])
-    stats = {}
-
-    for epoch in range(1, model_cfg['MAX_EPOCHS']):
-        total_loss = total_examples = 0
-        for sampled_data in train_loader:
-            optimizer.zero_grad()
-            sampled_data.to(device)
-            pred = model(sampled_data)
-            ground_truth = sampled_data[
-                "palmprint", "has_host", "taxon"].edge_label.float()
-            loss = F.binary_cross_entropy_with_logits(pred, ground_truth)
-            loss.backward()
-            optimizer.step()
-            total_loss += float(loss) * pred.numel()
-            total_examples += pred.numel()
-        if epoch % 10 == 0:
-            print(
-                f"Epoch: {epoch:03d}, Loss: {total_loss / total_examples:.4f}")
-    return loss.data.numpy()
-
-
-def get_val_loader(val_data):
+def get_val_loader(val_data, batch_size=2048):
     # Define the validation seed edges:
-    edge_label_index = val_data['palmprint',
+    edge_label_index = val_data['sotu',
                                 'has_host', 'taxon'].edge_label_index
-    edge_label = val_data['palmprint', 'has_host', 'taxon'].edge_label
+    edge_label = val_data['sotu', 'has_host', 'taxon'].edge_label
 
     val_loader = LinkNeighborLoader(
         data=val_data,
-        num_neighbors=[20, 10],
-        edge_label_index=(('palmprint', 'has_host', 'taxon'),
+        num_neighbors=[8, 4],
+        edge_label_index=(('sotu', 'has_host', 'taxon'),
                           edge_label_index),
         edge_label=edge_label,
-        batch_size=3 * 128,
+        batch_size=batch_size,
         shuffle=False,
+        # num_workers=4,
     )
     return val_loader
 
 
-def eval(model, val_loader):
-    preds = []
-    ground_truths = []
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model.eval()
-
-    for sampled_data in val_loader:
-        with torch.no_grad():
-            sampled_data.to(device)
-            outs = model(sampled_data)
-            preds.append(outs.clamp(min=0, max=1))
-            ground_truths.append(
-                sampled_data['palmprint', 'has_host', 'taxon'].edge_label)
-
-    pred = torch.cat(preds, dim=0).cpu().numpy()
-    ground_truth = torch.cat(ground_truths, dim=0).cpu().numpy()
-    auc = roc_auc_score(ground_truth, pred)
-    print(f"Validation AUC-ROC: {auc:.4f}")
-    average_precision = average_precision_score(ground_truth, pred)
-    print(f"Validation AUC-PR: {average_precision:.4f}")
-    accuracy = accuracy_score(ground_truth, pred)
-    print(f"Accuracy: {accuracy:.4f}")
-    return auc
+def get_model(data):
+    model = Model(
+        num_sotus=data['sotu'].num_nodes,
+        num_taxons=data['taxon'].num_nodes,
+        hidden_channels=64,
+        out_channels=64,
+    )
+    return model
 
 
 class EarlyStopper:
@@ -267,48 +244,65 @@ class EarlyStopper:
         return False
 
 
-def train_one_epoch(model, train_loader, optimizer, device):
+def train(model, train_loader, optimizer, device):
     model.train()
     total_loss = total_examples = 0
-    for sampled_data in train_loader:
+    total_neg = 0
+    total = 0
+    for batch in train_loader:
+        labels = batch['sotu', 'taxon'].edge_label
+        total_neg += torch.count_nonzero(labels).item()
+        total += labels.numel()
+
+        batch = batch.to(device)
         optimizer.zero_grad()
-        sampled_data.to(device)
-        pred = model(sampled_data)
-        ground_truth = sampled_data[
-            "palmprint", "has_host", "taxon"].edge_label.float()
-        loss = F.binary_cross_entropy_with_logits(pred, ground_truth)
+
+        pred = model(
+            batch.x_dict,
+            batch.edge_index_dict,
+            batch['sotu', 'taxon'].edge_label_index)
+
+        target = batch['sotu', 'taxon'].edge_label.float()
+        loss = F.binary_cross_entropy_with_logits(pred, target)
         loss.backward()
         optimizer.step()
-        total_loss += float(loss) * pred.numel()
+
+        total_loss += float(loss)
         total_examples += pred.numel()
-    return loss.data.numpy()
+
+    return total_loss / total_examples
 
 
-def validate_one_epoch(model, loader, device):
+@torch.no_grad()
+def test(model, loader, device):
     model.eval()
-    preds = []
-    ground_truths = []
 
-    for sampled_data in loader:
-        with torch.no_grad():
-            sampled_data.to(device)
-            out = model(sampled_data)
-            preds.append(out.clamp(min=0, max=1))
-            ground_truths.append(
-                sampled_data['palmprint', 'has_host', 'taxon'].edge_label)
+    preds, targets = [], []
+    for batch in loader:
+        batch = batch.to(device)
 
-    pred = torch.cat(preds, dim=0).cpu().numpy()
-    ground_truth = torch.cat(ground_truths, dim=0).cpu().numpy()
+        pred = model(
+            batch.x_dict,
+            batch.edge_index_dict,
+            batch['sotu', 'taxon'].edge_label_index
+        ).sigmoid().view(-1).cpu()
+        target = batch['sotu', 'taxon'].edge_label.cpu()
 
-    accuracy = accuracy_score(ground_truth, pred)
+        preds.append(pred)
+        targets.append(target)
+
+    pred = torch.cat(preds, dim=0).numpy()
+    target = torch.cat(targets, dim=0).numpy()
+
+    # accuracy = accuracy_score(target, pred)
     # print(f"Accuracy: {accuracy:.4f}")
 
-    # auc_roc = roc_auc_score(ground_truth, pred)
+    # auc_roc = roc_auc_score(target, pred)
     # print(f"Validation AUC-ROC: {auc_roc:.4f}")
 
-    # auc_pr = average_precision_score(ground_truth, pred)
+    auc_pr = average_precision_score(target, pred)
     # print(f"Validation AUC-PR: {auc_pr:.4f}")
-    return accuracy
+    return auc_pr
 
 
 def update_stats(training_stats, epoch_stats):
@@ -321,30 +315,68 @@ def update_stats(training_stats, epoch_stats):
     return training_stats
 
 
-def train_and_eval_loop(model, train_loader, val_loader):
+def train_and_eval_loop(model, train_loader, val_loader, test_loader):
     early_stopper = EarlyStopper(patience=3, min_delta=10)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = model.to(device)
-
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     training_stats = None
 
     for epoch in range(1, MODEL_CFG['MAX_EPOCHS']):
-        train_loss = train_one_epoch(model, train_loader, optimizer, device)
-        print("train_loss: ", train_loss)
-
-        train_acc = validate_one_epoch(model, train_loader, device)
-        print("train_acc: ", train_acc)
-
-        val_acc = validate_one_epoch(model, val_loader, device)
-        print("val_acc: ", val_acc)
-
-        epoch_stats = {'train_acc': train_acc,
-                       'val_acc': val_acc, 'epoch': epoch}
+        train_loss = train(model, train_loader, optimizer, device)
+        train_acc = test(model, test_loader, device)
+        val_acc = test(model, val_loader, device)
+        epoch_stats = {'train_acc': train_acc, 'val_acc': val_acc,
+                       'train_loss': train_loss, 'epoch': epoch}
         training_stats = update_stats(training_stats, epoch_stats)
-        print("training_stats: ", training_stats)
+        if epoch % 10 == 0:
+            print(f"Epoch: {epoch:03d}")
+            print(f"Train loss: {train_loss:.4f}")
+            print(f"Train accuracy: {train_acc:.4f}")
+            print(f"Validation accuracy: {val_acc:.4f}")
 
         if epoch > MODEL_CFG['MIN_EPOCHS'] \
                 and early_stopper.early_stop(val_acc):
             break
     return training_stats
+
+
+def convert_pyg_to_nx(data):
+    return to_networkx(data.to_homogeneous())
+
+
+def run_exhaustive_lp_predictions(
+    prediction_fn=None,
+    model_cfg=MODEL_CFG,
+    dataset_cfg=DATASET_CFG,
+    file_path='',
+    run_uid='',
+    threshold=0.5,
+):
+    # https://github.com/pyg-team/pytorch_geometric/discussions/6792
+    dir_name = f"{DIR_CFG['DATASETS_DIR']}{model_cfg['SAMPLING_RATIO']}/"
+
+    if prediction_fn is None:
+        raise ValueError("prediction_fn must be specified")
+
+    # raise NotImplementedError
+
+    # Read sotus into dask df
+    df_sotu = read_ddf_from_disk(dir_name + 'sotu_nodes.csv')
+
+    # Read taxons into dask df
+    df_taxon = read_ddf_from_disk(dir_name + 'taxon_nodes.csv')
+
+    # Nested loop over sotus to taxons
+    # TODO use series if performance is bad
+    outs = []
+    for sotu_row in df_sotu[['appId', 'nodeId']].iterrows():
+        for taxon_row in df_taxon['appId', 'nodeId'].iterrows():
+            pred = prediction_fn(sotu_row['appId'], taxon_row['appId'])
+            if pred > threshold:
+                outs.append({
+                    'sourceNodeId': sotu_row['appId'],
+                })
+    # write preds to column
+    df = pd.DataFrame(outs)
+    df.to_csv(file_path, index=False)

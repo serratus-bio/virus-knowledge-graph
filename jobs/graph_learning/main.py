@@ -4,26 +4,26 @@ from workflows import (
     make_datasets,
     link_prediction_gds,
     link_prediction_pyg,
-    link_prediction_traditional,
+    link_prediction_nx,
 )
 
 
 def main(args):
     if args.workflow == 'make_datasets':
         print('Running dataset creation workflow')
-        make_datasets.run(args)
+        make_datasets.run()
 
     if args.workflow == 'link_prediction_gds':
         print('Running GDS link prediction workflow')
-        link_prediction_gds.run(args)
+        link_prediction_gds.run()
 
     if args.workflow == 'link_prediction_pyg':
         print('Running Pytorch Geometric link prediction workflow')
-        link_prediction_pyg.run(args)
+        link_prediction_pyg.run()
 
-    if args.workflow == 'link_prediction_traditional':
-        print('Running traditional link prediction workflow')
-        link_prediction_traditional.run(args)
+    if args.workflow == 'link_prediction_nx':
+        print('Running NetworkX traditional link prediction workflow')
+        link_prediction_nx.run()
 
 
 if __name__ == "__main__":
@@ -33,14 +33,6 @@ if __name__ == "__main__":
         "--workflow",
         type=str,
         help="Specify workflow to run.",
-    )
-    parser.add_argument(
-        "-t",
-        "--task",
-        type=str,
-        nargs='?',
-        const='all',
-        help="Specify single task. Defaults to full workflow.",
     )
     args = parser.parse_args()
     print(args)

@@ -27,7 +27,6 @@ NODE_HOST = {
 REL_TAXON_HAS_PARENT = {
     'FILE_NAME': 'has_parent_edges.csv',
     'TYPES': ['HAS_PARENT'],
-    'APP_ID': ['sourceNodeId', 'targetNodeId'],
 }
 REL_PALMPRINT_HAS_SOTU = {
     'FILE_NAME': 'has_sotu_edges.csv',
@@ -45,6 +44,11 @@ REL_SOTU_SEQUENCE_ALIGNMENT = {
     'FILE_NAME': 'sotu_sequence_alignment_edges.csv',
     'TYPES': ['SEQUENCE_ALIGNMENT'],
 }
+REL_SOTU_HAS_POTENTIAL_TAXON = {
+    'FILE_NAME': 'sotu_has_potential_taxon_edges.csv',
+    'TYPES': ['HAS_POTENTIAL_TAXON'],
+}
+
 
 DATASET_CFGS = {
     DATASET_VERSION_1: {
@@ -71,9 +75,10 @@ DATASET_CFGS = {
         'TARGET_NODE_LABEL': 'Taxon',
     },
     DATASET_VERSION_4: {
-        'NODE_META': [NODE_PALMPRINT, NODE_TAXON],
+        'NODE_META': [NODE_SOTU, NODE_TAXON],
         'REL_META': [REL_TAXON_HAS_PARENT, REL_SOTU_HAS_HOST,
-                     REL_PALMPRINT_HAS_SOTU, REL_SOTU_SEQUENCE_ALIGNMENT],
+                     REL_SOTU_SEQUENCE_ALIGNMENT, REL_SOTU_HAS_POTENTIAL_TAXON,
+                     ],
         'TARGET_REL_TYPE': ['HAS_HOST'],
         'SOURCE_NODE_LABEL': 'SOTU',
         'TARGET_NODE_LABEL': 'Taxon',

@@ -1,3 +1,4 @@
+# TODO: use yaml config library to manage versioning
 from .models import MODEL_CFGS, CUR_MODEL_VERSION
 from .datasets import DATASET_CFGS
 

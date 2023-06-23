@@ -2,10 +2,72 @@ import ast
 
 from queries import utils
 from config.base import DIR_CFG, DATASET_CFG
-from config.encoders import TAXON_RANK_LABELS
 
 import torch
 import pandas as pd
+
+
+# Ordinal encoding of taxonomy rank hierarchy. See table S3:
+# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7408187/#sup1
+TAXON_RANK_LABELS = {
+    'no rank': 0,
+    'environmental samples': 0,
+    'unclassified sequences': 0,
+    'unclassified': 0,
+    'incertae sedis': 0,
+    'clade': 0,
+    'superkingdom': 1,
+    'kingdom': 2,
+    'subkingdom': 3,
+    'superphylum': 4,
+    'superdivision': 4,
+    'phylum': 5,
+    'division': 5,
+    'subphylum': 6,
+    'subdivision': 6,
+    'infraphylum': 7,
+    'infradivision': 7,
+    'superclass': 8,
+    'class': 9,
+    'subclass': 10,
+    'infraclass': 11,
+    'cohort': 12,
+    'subcohort': 13,
+    'superorder': 14,
+    'order': 15,
+    'suborder': 16,
+    'infraorder': 17,
+    'parvorder': 18,
+    'superfamily': 19,
+    'family': 20,
+    'subfamily': 21,
+    'tribe': 22,
+    'subtribe': 23,
+    'genus': 24,
+    'subgenus': 25,
+    'section': 26,
+    'subsection': 27,
+    'series': 28,
+    'subseries': 29,
+    'species group': 30,
+    'species subgroup': 31,
+    'species': 32,
+    'forma specialis': 33,
+    'special form': 33,
+    'subspecies': 34,
+    'varietas': 35,
+    'morph': 35,
+    'form': 35,
+    'subvariety': 36,
+    'forma': 37,
+    'serogroup': 38,
+    'pathogroup': 38,
+    'serotype': 39,
+    'biotype': 39,
+    'genotype': 39,
+    'strain': 40,
+    'isolate': 41,
+}
 
 
 def get_features_from_file(
@@ -24,7 +86,8 @@ def get_features_from_file(
 
 def get_all_node_features(
         dir_name=DIR_CFG['FEATURE_STORE_DIR'],
-        dataset_cfg=None,
+        dataset_cfg=DATASET_CFG,
+        select_columns=['nodeId', 'labels', 'features']
 ):
     if not dataset_cfg:
         raise ValueError("Must provide dataset_cfg")
@@ -35,7 +98,6 @@ def get_all_node_features(
             dataset_cfg['NODE_META']
         )
     )
-    select_columns = ['nodeId', 'labels', 'features']
     nodes = utils.merge_files_to_df(
         node_file_paths,
         select_columns=select_columns,
@@ -43,6 +105,11 @@ def get_all_node_features(
     nodes = utils.deserialize_df(nodes)
     nodes.set_index('nodeId')
     return nodes
+
+
+def get_node_mapping(dataset_cfg=DATASET_CFG):
+    return get_all_node_features(dataset_cfg=dataset_cfg,
+                                 select_columns=['nodeId', 'appId'])
 
 
 def get_all_relationship_features(
@@ -78,7 +145,6 @@ class IdentityEncoder(object):
         if self.is_tensor:
             if self.is_list:
                 return torch.stack([torch.tensor(el) for el in df.values])
-            x = torch.from_numpy(df.values).to(self.dtype)
             return torch.from_numpy(df.values).to(self.dtype)
         else:
             return df
@@ -174,14 +240,14 @@ def encode_features(
         write_to_disk=False
 ):
     file_path = dir_name + filename
-    df = pd.read_csv(file_path, header=0)
+    df = pd.read_csv(file_path, header=0, index_col=False)
 
     if encoders is not None:
         encoded_cols = pd.concat([
             encoder(df[[col]])
             for col, encoder
             in encoders.items()
-        ])
+        ], axis=1)
         encoded_cols = encoded_cols.add_suffix('Encoded')
         df[encoded_cols.columns.values] = encoded_cols
 
@@ -192,7 +258,7 @@ def encode_features(
 
 
 def encode_node_properties(dataset_cfg=DATASET_CFG):
-    # TODO: consider moving encoder mappings to config file (?)
+    # TODO: consider moving encoder mappings to config file
     node_file_paths = list(
         map(
             (lambda cfg: cfg['FILE_NAME']),
@@ -214,7 +280,7 @@ def encode_node_properties(dataset_cfg=DATASET_CFG):
             filename='sotu_nodes.csv',
             write_to_disk=True,
             encoders={
-                'centroid': LabelEncoder(is_tensor=False),
+                'numPalmprints': IdentityEncoder(is_tensor=False),
             }
         )
 
@@ -269,7 +335,7 @@ def vectorize_node_properties(dataset_cfg=DATASET_CFG):
     if 'sotu_nodes.csv' in node_file_paths:
         vectorize_features(
             filename='sotu_nodes.csv',
-            select_columns=['centroidEncoded'],
+            select_columns=['numPalmprintsEncoded'],
             write_to_disk=True,
         )
 

@@ -4,19 +4,18 @@ from queries import projection_queries
 PROJECTION_VERSION = 4
 
 
-# TODO: better handle versioning to avoid duplicate/shared values
-def run(args):
-    projection_version = args.task if type(
-        args.task) == int else PROJECTION_VERSION
+# TODO: share data config from ml container
+def run():
+    print(PROJECTION_VERSION)
 
     # All versions include taxons
-    if projection_version >= 1:
+    if PROJECTION_VERSION >= 1:
         print('Processing Taxon nodes')
         query_results = projection_queries.get_taxon_nodes()
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='taxon_nodes.csv',
-            projection_version=projection_version,
+            projection_version=PROJECTION_VERSION,
         )
 
         print('Processing Taxon HAS_PARENT edges')
@@ -24,17 +23,17 @@ def run(args):
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='has_parent_edges.csv',
-            projection_version=projection_version,
+            projection_version=PROJECTION_VERSION,
         )
 
     # v1 uses all palmprints
-    if projection_version == 1:
+    if PROJECTION_VERSION == 1:
         print('Processing Palmprint nodes')
         query_results = projection_queries.get_palmprint_nodes()
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='palmprint_nodes.csv',
-            projection_version=projection_version,
+            projection_version=PROJECTION_VERSION,
         )
 
         print('Processing Palmprint HAS_SOTU edges')
@@ -42,7 +41,7 @@ def run(args):
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='has_sotu_edges.csv',
-            projection_version=projection_version,
+            projection_version=PROJECTION_VERSION,
         )
 
         print('Processing Palmprint HAS_HOST edges')
@@ -50,17 +49,17 @@ def run(args):
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='palmprint_has_host_edges.csv',
-            projection_version=projection_version,
+            projection_version=PROJECTION_VERSION,
         )
 
     #  > v2 uses only SOTU palmprints
-    if projection_version > 2:
+    if PROJECTION_VERSION > 2:
         print('Processing SOTU nodes')
         query_results = projection_queries.get_sotu_nodes()
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='sotu_nodes.csv',
-            projection_version=projection_version,
+            projection_version=PROJECTION_VERSION,
         )
 
         print('Processing SOTU HAS_HOST edges')
@@ -68,11 +67,11 @@ def run(args):
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='sotu_has_host_edges.csv',
-            projection_version=projection_version,
+            projection_version=PROJECTION_VERSION,
         )
 
     # v3 includes sequence alignment edges between SOTUs
-    if projection_version >= 3:
+    if PROJECTION_VERSION >= 3:
         print('Processing SOTU SEQUENCE_ALIGNMENT edges')
         query_results = []
         cursor = 0
@@ -85,7 +84,7 @@ def run(args):
             projection_queries.write_to_disk(
                 query_results=query_results,
                 file_name='sotu_sequence_alignment_edges.csv',
-                projection_version=projection_version,
+                projection_version=PROJECTION_VERSION,
                 mode='a' if cursor > 0 else 'w',
             )
             cursor += page_size
@@ -93,11 +92,11 @@ def run(args):
                 break
 
     # v4 includes has_potential_taxon edges between SOTU-Taxon
-    if projection_version >= 4:
+    if PROJECTION_VERSION >= 4:
         print('Processing SOTU HAS_POTENTIAL_TAXON edges')
         query_results = projection_queries.get_sotu_has_potential_taxon()
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='sotu_has_potential_taxon_edges.csv',
-            projection_version=projection_version,
+            projection_version=PROJECTION_VERSION,
         )

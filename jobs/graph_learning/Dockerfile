@@ -6,8 +6,6 @@ ARG HOME="/app/graph_learning"
 
 ARG WORKFLOW
 ENV WORKFLOW=${WORKFLOW}
-ARG TASK
-ENV TASK=${TASK}
 
 ENV HOME=${HOME}
 RUN groupadd --gid ${USER_ID} ${GROUP_ID} && \
@@ -25,4 +23,4 @@ COPY . .
 RUN chown -R ${USER_ID}:${GROUP_ID} ${HOME}
 USER ${USER_ID}
 
-CMD ["sh", "-c", "python3 main.py -w ${WORKFLOW} -t ${TASK}"]
+CMD ["sh", "-c", "python3 main.py -w ${WORKFLOW}"]

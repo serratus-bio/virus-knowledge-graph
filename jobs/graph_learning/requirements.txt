@@ -2,6 +2,7 @@ graphdatascience===1.6
 neo4j==5.7.0
 pandas==1.5.3
 dask==2023.4.1
+networkx==3.1
 -f https://download.pytorch.org/whl/cpu/torch_stable.html
 -f https://data.pyg.org/whl/torch-2.0.0+cpu.html
 torch==2.0.0+cpu
