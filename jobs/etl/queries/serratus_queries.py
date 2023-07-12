@@ -80,7 +80,9 @@ def get_sra_palmprint_df():
 
 
 def get_taxon_df():
-    query = ("SELECT *"
+    query = ("SELECT t1.tax_id, parent_tax_id, rank, genetic_code_id, "
+             "mitochondrial_genetic_code_id, tax_kingdom, tax_phylum, "
+             "tax_order, tax_family, tax_genus, tax_species "
              "FROM public.tax_nodes as t1 "
              "FULL JOIN public.tax_lineage as t2 "
              "ON t1.tax_id = t2.tax_id"
