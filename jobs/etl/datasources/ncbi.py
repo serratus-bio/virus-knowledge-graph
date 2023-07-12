@@ -3,13 +3,14 @@ import urllib.request as urllib
 import zipfile
 
 
-EXTRACT_DIR = '/tmp/new_taxdump'
+EXTRACT_DIR = '/mnt/graphdata/ncbi-data/'
 
 
 def download_and_extract_tax_dump():
     if os.path.isdir(EXTRACT_DIR):
         return
-    url = 'https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.zip'
+    url = \
+        'https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.zip'
     zip_path, _ = urllib.request.urlretrieve(url)
     with zipfile.ZipFile(zip_path, "r") as f:
         f.extractall(EXTRACT_DIR)
@@ -45,7 +46,8 @@ def parse_tax_dump():
         for line in in_file:
             tax_id, name_txt, unique_name, name_class, *other = line.split('|')
             tax_id, name_txt, unique_name, name_class = tax_id.strip(), \
-                name_txt.strip().replace('"', ''), unique_name.strip(), name_class.strip()
+                name_txt.strip().replace('"', ''), unique_name.strip(), \
+                name_class.strip()
             if name_class == 'scientific name':
                 taxon_nodes[tax_id].update({'scientific_name': name_txt})
                 sci_names[name_txt] = tax_id
