@@ -41,8 +41,7 @@ def get_palmprint_nodes():
 
 def get_sotu_nodes():
     query = '''
-            MATCH (n:SOTU)
-            OPTIONAL MATCH (n)<-[r:HAS_SOTU]-(:Palmprint)
+            MATCH (:Palmprint)-[r:HAS_SOTU*0..1]->(n:SOTU)
             RETURN
                 id(n) as nodeId,
                 n.palmId as appId,

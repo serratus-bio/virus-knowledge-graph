@@ -4,3 +4,4 @@ numpy
 scipy
 sklearn
 graphistry
+rpy2
