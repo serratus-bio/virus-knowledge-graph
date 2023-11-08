@@ -160,7 +160,6 @@ def add_sra_taxon_edges(rows):
             MATCH (s:SRA), (t:Taxon)
             WHERE s.runId = row.run_id AND t.taxId = row.tax_id
             MERGE (s)-[r:HAS_HOST]->(t)
-            SET t:Host
             '''
     return batch_insert_data(query, rows)
 

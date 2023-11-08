@@ -27,27 +27,9 @@ Find URL under `Neo4j-Graph` [Cloudformation stack outputs](https://us-east-1.co
 
 - Taxonomy data reference [README](https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/new_taxdump/taxdump_readme.txt)
 
-## Graph Schema
+### NCBI STAT
 
-### Nodes
-
-Labels:
-
-| Labels                                | Properties                                                                                                                                                                                 |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `SRA`                                 | `runId` <br /> `releaseDate` <br /> `avgLength` <br /> `experiment` <br /> `sraStudy` <br /> `projectId` <br /> etc                                                                        |
-| `Palmprint` <br /> `SOTU` if centroid | `palmId`<br />`sotu`<br />`centroid`<br />`taxPhylum`<br />`taxPhylum`<br />`taxClass`<br />`taxOrder`<br />`taxFamily`<br />`taxGenus`<br />`taxSpecies`<br />`nickname`<br />`palmprint` |
-| `Taxon` <br /> `Host` if host of SRA  | `scientificName` <br /> `taxId`                                                                                                                                                            |
-
-### Relationships
-
-| Types                 | Properties |
-| --------------------- | ---------- |
-| `SEQUENCE_ALIGNMENT`  | `percentIdentity` |
-| `HAS_HOST`            | `percentIdentity` |
-| `HAS_PALMPRINT`       |            |
-| `HAS_PARENT`          |            |
-| `HAS_POTENTIAL_TAXON` |            |
+- https://www.ncbi.nlm.nih.gov/sra/docs/sra-taxonomy-analysis-tool/
 
 ## Infrastructure and system management
 
