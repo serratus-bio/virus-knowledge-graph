@@ -5,3 +5,4 @@ scipy
 sklearn
 graphistry
 rpy2
+pydeseq2
