@@ -1,0 +1,743 @@
+nodeId,appId,palmId,labels,taxId,taxRank,taxOrder,isZoonotic
+7723908,u16025,u16025,"['Palmprint', 'SOTU']",1046251,no rank,Mononegavirales,False
+7714332,u8200,u8200,"['Palmprint', 'SOTU']",348013,no rank,Bunyavirales,False
+7710432,u7120,u7120,"['Palmprint', 'SOTU']",11089,species,Amarillovirales,True
+8422858,u613645,u613645,"['Palmprint', 'SOTU']",11089,species,Amarillovirales,True
+7768802,u38502,u38502,"['Palmprint', 'SOTU']",11089,species,Amarillovirales,True
+7720534,u12303,u12303,"['Palmprint', 'SOTU']",1679172,species,Reovirales,False
+7712523,u7492,u7492,"['Palmprint', 'SOTU']",64293,species,Amarillovirales,True
+7781099,u45333,u45333,"['Palmprint', 'SOTU']",64293,species,Amarillovirales,True
+8696700,u997851,u997851,"['Palmprint', 'SOTU']",11978,species,Picornavirales,False
+7709449,u6622,u6622,"['Palmprint', 'SOTU']",11978,species,Picornavirales,False
+7708698,u6048,u6048,"['Palmprint', 'SOTU']",77763,species,Reovirales,True
+8159153,u286260,u286260,"['Palmprint', 'SOTU']",77763,species,Reovirales,True
+8620019,u892960,u892960,"['Palmprint', 'SOTU']",77763,species,Reovirales,True
+7693712,u943,u943,"['Palmprint', 'SOTU']",2169991,species,Bunyavirales,True
+8474718,u703612,u703612,"['Palmprint', 'SOTU']",154121,species,Picornavirales,False
+7717107,u9975,u9975,"['Palmprint', 'SOTU']",154121,species,Picornavirales,False
+8637669,u913280,u913280,"['Palmprint', 'SOTU']",154121,species,Picornavirales,False
+8015678,u187822,u187822,"['Palmprint', 'SOTU']",154121,species,Picornavirales,False
+8624219,u898099,u898099,"['Palmprint', 'SOTU']",154121,species,Picornavirales,False
+8082032,u229982,u229982,"['Palmprint', 'SOTU']",40050,species,Reovirales,False
+7730586,u18951,u18951,"['Palmprint', 'SOTU']",2748253,species,Bunyavirales,False
+8743301,u1056565,u1056565,"['Palmprint', 'SOTU']",2748253,species,Bunyavirales,False
+7716181,u9230,u9230,"['Palmprint', 'SOTU']",80941,no rank,Bunyavirales,True
+8519550,u777054,u777054,"['Palmprint', 'SOTU']",80941,no rank,Bunyavirales,True
+7742319,u23058,u23058,"['Palmprint', 'SOTU']",70566,no rank,Bunyavirales,False
+7727084,u17460,u17460,"['Palmprint', 'SOTU']",40056,species,Reovirales,False
+7746147,u24766,u24766,"['Palmprint', 'SOTU']",64303,species,Amarillovirales,True
+8279650,u413034,u413034,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+8754670,u1073168,u1073168,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+8555679,u823254,u823254,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+8349498,u503605,u503605,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+7898578,u115522,u115522,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+8662057,u953210,u953210,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+8722560,u1034026,u1034026,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+7726917,u17442,u17442,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+8336647,u486314,u486314,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+8335046,u484236,u484236,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+7735217,u19952,u19952,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+7745425,u24454,u24454,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+7729343,u18463,u18463,"['Palmprint', 'SOTU']",1435485,species,Stellavirales,False
+7692207,u550,u550,"['Palmprint', 'SOTU']",33743,species,Amarillovirales,True
+7752190,u28728,u28728,"['Palmprint', 'SOTU']",1159195,species,Martellivirales,False
+7727173,u17481,u17481,"['Palmprint', 'SOTU']",318836,no rank,Mononegavirales,True
+7712590,u7529,u7529,"['Palmprint', 'SOTU']",11976,species,Picornavirales,False
+8664111,u956923,u956923,"['Palmprint', 'SOTU']",11976,species,Picornavirales,False
+8449882,u653854,u653854,"['Palmprint', 'SOTU']",11976,species,Picornavirales,False
+7725435,u16954,u16954,"['Palmprint', 'SOTU']",204269,species,Reovirales,True
+8562803,u833164,u833164,"['Palmprint', 'SOTU']",57482,no rank,Mononegavirales,True
+7737401,u21161,u21161,"['Palmprint', 'SOTU']",120499,no rank,Mononegavirales,False
+7715934,u9003,u9003,"['Palmprint', 'SOTU']",11272,no rank,Mononegavirales,True
+8696970,u998254,u998254,"['Palmprint', 'SOTU']",11272,no rank,Mononegavirales,True
+8159777,u286560,u286560,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8123504,u258874,u258874,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8155853,u283774,u283774,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+7858962,u85253,u85253,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+7876503,u95886,u95886,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+7994496,u174326,u174326,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8110413,u250044,u250044,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8538844,u800160,u800160,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8741734,u1054555,u1054555,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8430056,u623416,u623416,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8677234,u977953,u977953,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8485693,u726938,u726938,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8036122,u199659,u199659,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8063951,u217334,u217334,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8399669,u570343,u570343,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+7702942,u2833,u2833,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8253847,u383314,u383314,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8167443,u291421,u291421,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8662468,u954037,u954037,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8063659,u217152,u217152,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8002355,u179620,u179620,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8064298,u217598,u217598,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8149435,u278844,u278844,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+8092056,u237274,u237274,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+7791218,u48874,u48874,"['Palmprint', 'SOTU']",11277,no rank,Mononegavirales,True
+7714661,u8408,u8408,"['Palmprint', 'SOTU']",11241,species,Mononegavirales,False
+7741218,u22509,u22509,"['Palmprint', 'SOTU']",2547358,species,Reovirales,False
+7724627,u16483,u16483,"['Palmprint', 'SOTU']",249584,species,Mononegavirales,False
+7702882,u2793,u2793,"['Palmprint', 'SOTU']",28876,species,Reovirales,True
+7747790,u25569,u25569,"['Palmprint', 'SOTU']",28876,species,Reovirales,True
+7742712,u23246,u23246,"['Palmprint', 'SOTU']",28876,species,Reovirales,True
+7711410,u7290,u7290,"['Palmprint', 'SOTU']",28876,species,Reovirales,True
+8259305,u388976,u388976,"['Palmprint', 'SOTU']",54315,no rank,Amarillovirales,False
+8334583,u483645,u483645,"['Palmprint', 'SOTU']",54315,no rank,Amarillovirales,False
+7703875,u3278,u3278,"['Palmprint', 'SOTU']",54315,no rank,Amarillovirales,False
+7727371,u17557,u17557,"['Palmprint', 'SOTU']",40052,species,Reovirales,True
+7703962,u3295,u3295,"['Palmprint', 'SOTU']",40052,species,Reovirales,True
+7738154,u21412,u21412,"['Palmprint', 'SOTU']",40052,species,Reovirales,True
+7721352,u13023,u13023,"['Palmprint', 'SOTU']",40052,species,Reovirales,True
+7728218,u17974,u17974,"['Palmprint', 'SOTU']",40052,species,Reovirales,True
+8663295,u955577,u955577,"['Palmprint', 'SOTU']",40052,species,Reovirales,True
+7728215,u17968,u17968,"['Palmprint', 'SOTU']",35316,no rank,Bunyavirales,False
+7736038,u20538,u20538,"['Palmprint', 'SOTU']",35316,no rank,Bunyavirales,False
+7915524,u126989,u126989,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+8118451,u255311,u255311,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+7888151,u104919,u104919,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+7981966,u165396,u165396,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+8008736,u183355,u183355,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+7692881,u703,u703,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+7884056,u100580,u100580,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+8018275,u189592,u189592,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+8446052,u646907,u646907,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+8470975,u695856,u695856,"['Palmprint', 'SOTU']",11292,species,Mononegavirales,True
+7769353,u38985,u38985,"['Palmprint', 'SOTU']",44158,species,Martellivirales,True
+7702134,u2598,u2598,"['Palmprint', 'SOTU']",11072,species,Amarillovirales,True
+7736659,u20904,u20904,"['Palmprint', 'SOTU']",11047,no rank,Nidovirales,False
+8452814,u658409,u658409,"['Palmprint', 'SOTU']",11047,no rank,Nidovirales,False
+7696738,u1300,u1300,"['Palmprint', 'SOTU']",11587,no rank,Bunyavirales,True
+7718083,u10830,u10830,"['Palmprint', 'SOTU']",40051,species,Reovirales,False
+7740572,u22180,u22180,"['Palmprint', 'SOTU']",40051,species,Reovirales,False
+7728232,u17980,u17980,"['Palmprint', 'SOTU']",40051,species,Reovirales,False
+7725795,u17071,u17071,"['Palmprint', 'SOTU']",40051,species,Reovirales,False
+7752404,u29006,u29006,"['Palmprint', 'SOTU']",10366,species,Herpesvirales,False
+7715562,u8807,u8807,"['Palmprint', 'SOTU']",144752,species,Bunyavirales,False
+7752713,u29504,u29504,"['Palmprint', 'SOTU']",59305,species,Martellivirales,False
+8401776,u574468,u574468,"['Palmprint', 'SOTU']",11020,species,Martellivirales,True
+7714087,u8107,u8107,"['Palmprint', 'SOTU']",11020,species,Martellivirales,True
+7894977,u111830,u111830,"['Palmprint', 'SOTU']",31631,no rank,Nidovirales,False
+7713664,u7986,u7986,"['Palmprint', 'SOTU']",31631,no rank,Nidovirales,False
+7706842,u4758,u4758,"['Palmprint', 'SOTU']",64305,species,Amarillovirales,False
+7692712,u602,u602,"['Palmprint', 'SOTU']",118655,no rank,Bunyavirales,True
+7739420,u21664,u21664,"['Palmprint', 'SOTU']",380438,no rank,Mononegavirales,False
+7706577,u4543,u4543,"['Palmprint', 'SOTU']",1239566,species,Stellavirales,False
+8719607,u1030256,u1030256,"['Palmprint', 'SOTU']",1239566,species,Stellavirales,False
+7980725,u164307,u164307,"['Palmprint', 'SOTU']",1239574,species,Stellavirales,False
+7714938,u8520,u8520,"['Palmprint', 'SOTU']",1239574,species,Stellavirales,False
+8546609,u810483,u810483,"['Palmprint', 'SOTU']",62352,no rank,Reovirales,False
+7708597,u5828,u5828,"['Palmprint', 'SOTU']",1972568,species,Mononegavirales,False
+8310184,u452313,u452313,"['Palmprint', 'SOTU']",1972568,species,Mononegavirales,False
+7712171,u7423,u7423,"['Palmprint', 'SOTU']",64280,species,Amarillovirales,False
+8093342,u238237,u238237,"['Palmprint', 'SOTU']",37124,species,Martellivirales,True
+8675670,u975858,u975858,"['Palmprint', 'SOTU']",138949,species,Picornavirales,True
+7704918,u3824,u3824,"['Palmprint', 'SOTU']",44026,species,Amarillovirales,False
+7709076,u6349,u6349,"['Palmprint', 'SOTU']",80939,no rank,Bunyavirales,True
+7729555,u18583,u18583,"['Palmprint', 'SOTU']",1176484,species,Picornavirales,False
+7706957,u4902,u4902,"['Palmprint', 'SOTU']",1176484,species,Picornavirales,False
+8547099,u811277,u811277,"['Palmprint', 'SOTU']",1176484,species,Picornavirales,False
+7714985,u8555,u8555,"['Palmprint', 'SOTU']",59300,species,Martellivirales,True
+8322785,u466536,u466536,"['Palmprint', 'SOTU']",59300,species,Martellivirales,True
+7723905,u15992,u15992,"['Palmprint', 'SOTU']",64292,species,Amarillovirales,False
+8096988,u240772,u240772,"['Palmprint', 'SOTU']",12730,species,Mononegavirales,True
+8350646,u505053,u505053,"['Palmprint', 'SOTU']",12730,species,Mononegavirales,True
+7696998,u1513,u1513,"['Palmprint', 'SOTU']",12730,species,Mononegavirales,True
+8465636,u684732,u684732,"['Palmprint', 'SOTU']",12730,species,Mononegavirales,True
+7743108,u23531,u23531,"['Palmprint', 'SOTU']",64281,species,Amarillovirales,False
+7698675,u1971,u1971,"['Palmprint', 'SOTU']",40054,species,Reovirales,False
+8451552,u656057,u656057,"['Palmprint', 'SOTU']",40054,species,Reovirales,False
+7741219,u22510,u22510,"['Palmprint', 'SOTU']",2547357,species,Reovirales,False
+8245298,u372154,u372154,"['Palmprint', 'SOTU']",1980456,species,Bunyavirales,True
+7744193,u24280,u24280,"['Palmprint', 'SOTU']",1980456,species,Bunyavirales,True
+7701605,u2371,u2371,"['Palmprint', 'SOTU']",11263,species,Mononegavirales,True
+7709055,u6331,u6331,"['Palmprint', 'SOTU']",64294,species,Amarillovirales,False
+7731744,u19445,u19445,"['Palmprint', 'SOTU']",64294,species,Amarillovirales,False
+7709940,u6944,u6944,"['Palmprint', 'SOTU']",904698,no rank,Bunyavirales,False
+8453445,u659542,u659542,"['Palmprint', 'SOTU']",2748252,species,Bunyavirales,False
+8467670,u688967,u688967,"['Palmprint', 'SOTU']",154122,species,Picornavirales,False
+7747057,u25165,u25165,"['Palmprint', 'SOTU']",38143,no rank,Nidovirales,False
+7716618,u9527,u9527,"['Palmprint', 'SOTU']",38143,no rank,Nidovirales,False
+8687234,u988516,u988516,"['Palmprint', 'SOTU']",38143,no rank,Nidovirales,False
+7704271,u3548,u3548,"['Palmprint', 'SOTU']",11318,species,Articulavirales,True
+8639955,u916072,u916072,"['Palmprint', 'SOTU']",11318,species,Articulavirales,True
+8628446,u902785,u902785,"['Palmprint', 'SOTU']",11318,species,Articulavirales,True
+7702085,u2562,u2562,"['Palmprint', 'SOTU']",11303,no rank,Mononegavirales,False
+7750170,u27014,u27014,"['Palmprint', 'SOTU']",35307,no rank,Bunyavirales,True
+7735238,u19955,u19955,"['Palmprint', 'SOTU']",47000,species,Picornavirales,False
+8527906,u786704,u786704,"['Palmprint', 'SOTU']",138948,species,Picornavirales,True
+8432642,u626280,u626280,"['Palmprint', 'SOTU']",172314,no rank,Picornavirales,True
+8498128,u744974,u744974,"['Palmprint', 'SOTU']",172314,no rank,Picornavirales,True
+7700742,u2083,u2083,"['Palmprint', 'SOTU']",172314,no rank,Picornavirales,True
+7965619,u152971,u152971,"['Palmprint', 'SOTU']",172314,no rank,Picornavirales,True
+7731808,u19525,u19525,"['Palmprint', 'SOTU']",172314,no rank,Picornavirales,True
+7715224,u8640,u8640,"['Palmprint', 'SOTU']",44024,species,Amarillovirales,True
+7716325,u9322,u9322,"['Palmprint', 'SOTU']",44024,species,Amarillovirales,True
+7708118,u5523,u5523,"['Palmprint', 'SOTU']",904679,no rank,Bunyavirales,False
+7971675,u157886,u157886,"['Palmprint', 'SOTU']",11033,species,Martellivirales,True
+8599122,u869564,u869564,"['Palmprint', 'SOTU']",11033,species,Martellivirales,True
+8096621,u240559,u240559,"['Palmprint', 'SOTU']",11033,species,Martellivirales,True
+8712105,u1019643,u1019643,"['Palmprint', 'SOTU']",11033,species,Martellivirales,True
+7708749,u6076,u6076,"['Palmprint', 'SOTU']",64295,species,Amarillovirales,True
+7697506,u1631,u1631,"['Palmprint', 'SOTU']",11084,species,Amarillovirales,True
+8327057,u473002,u473002,"['Palmprint', 'SOTU']",352236,no rank,Articulavirales,False
+8392963,u559622,u559622,"['Palmprint', 'SOTU']",352236,no rank,Articulavirales,False
+7737838,u21349,u21349,"['Palmprint', 'SOTU']",352236,no rank,Articulavirales,False
+8678008,u978470,u978470,"['Palmprint', 'SOTU']",352236,no rank,Articulavirales,False
+8358393,u514679,u514679,"['Palmprint', 'SOTU']",352236,no rank,Articulavirales,False
+8406964,u583895,u583895,"['Palmprint', 'SOTU']",352236,no rank,Articulavirales,False
+7723920,u16052,u16052,"['Palmprint', 'SOTU']",75888,species,Reovirales,False
+8115822,u253503,u253503,"['Palmprint', 'SOTU']",2593991,no rank,Mononegavirales,False
+7722723,u14846,u14846,"['Palmprint', 'SOTU']",64298,species,Amarillovirales,False
+8446891,u648909,u648909,"['Palmprint', 'SOTU']",64298,species,Amarillovirales,False
+7732032,u19742,u19742,"['Palmprint', 'SOTU']",380434,no rank,Mononegavirales,False
+8720043,u1030898,u1030898,"['Palmprint', 'SOTU']",11036,species,Martellivirales,True
+7837180,u72811,u72811,"['Palmprint', 'SOTU']",11036,species,Martellivirales,True
+8199329,u321036,u321036,"['Palmprint', 'SOTU']",11036,species,Martellivirales,True
+8507866,u762480,u762480,"['Palmprint', 'SOTU']",11036,species,Martellivirales,True
+8509224,u764040,u764040,"['Palmprint', 'SOTU']",11036,species,Martellivirales,True
+7710320,u7106,u7106,"['Palmprint', 'SOTU']",11036,species,Martellivirales,True
+8459001,u670412,u670412,"['Palmprint', 'SOTU']",11036,species,Martellivirales,True
+7727858,u17707,u17707,"['Palmprint', 'SOTU']",64289,species,Amarillovirales,False
+8507042,u761698,u761698,"['Palmprint', 'SOTU']",64320,species,Amarillovirales,True
+7770258,u39248,u39248,"['Palmprint', 'SOTU']",64320,species,Amarillovirales,True
+8468863,u691399,u691399,"['Palmprint', 'SOTU']",64320,species,Amarillovirales,True
+8713646,u1021716,u1021716,"['Palmprint', 'SOTU']",64320,species,Amarillovirales,True
+7693113,u741,u741,"['Palmprint', 'SOTU']",64320,species,Amarillovirales,True
+7960299,u149303,u149303,"['Palmprint', 'SOTU']",351073,species,Reovirales,False
+7695498,u1041,u1041,"['Palmprint', 'SOTU']",12637,species,Amarillovirales,True
+8705560,u1011241,u1011241,"['Palmprint', 'SOTU']",12637,species,Amarillovirales,True
+8160965,u287478,u287478,"['Palmprint', 'SOTU']",12637,species,Amarillovirales,True
+8561570,u831531,u831531,"['Palmprint', 'SOTU']",12637,species,Amarillovirales,True
+7687472,u128,u128,"['Palmprint', 'SOTU']",12637,species,Amarillovirales,True
+7727208,u17501,u17501,"['Palmprint', 'SOTU']",1428581,no rank,Articulavirales,False
+8394806,u562401,u562401,"['Palmprint', 'SOTU']",1428581,no rank,Articulavirales,False
+8221325,u345572,u345572,"['Palmprint', 'SOTU']",11280,no rank,Mononegavirales,True
+8452948,u658563,u658563,"['Palmprint', 'SOTU']",206160,no rank,Bunyavirales,True
+7707513,u5265,u5265,"['Palmprint', 'SOTU']",206160,no rank,Bunyavirales,True
+7730587,u18952,u18952,"['Palmprint', 'SOTU']",2748254,species,Bunyavirales,False
+8647080,u928419,u928419,"['Palmprint', 'SOTU']",12104,no rank,Picornavirales,True
+8478034,u710626,u710626,"['Palmprint', 'SOTU']",12104,no rank,Picornavirales,True
+8146966,u276767,u276767,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+8036755,u200060,u200060,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+7695337,u994,u994,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+8010336,u184345,u184345,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+8100725,u243312,u243312,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+8497275,u743088,u743088,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+8491558,u736734,u736734,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+8100820,u243431,u243431,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+7697617,u1680,u1680,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+7895384,u112435,u112435,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+8259525,u389350,u389350,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+8010377,u184358,u184358,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+7735867,u20448,u20448,"['Palmprint', 'SOTU']",28344,no rank,Nidovirales,False
+8632211,u906831,u906831,"['Palmprint', 'SOTU']",50713,no rank,Mononegavirales,False
+7708119,u5525,u5525,"['Palmprint', 'SOTU']",2905917,no rank,Bunyavirales,True
+7729255,u18450,u18450,"['Palmprint', 'SOTU']",2560580,species,Mononegavirales,False
+7720999,u12790,u12790,"['Palmprint', 'SOTU']",64282,species,Amarillovirales,False
+7746602,u24970,u24970,"['Palmprint', 'SOTU']",356862,species,Reovirales,False
+7703744,u3234,u3234,"['Palmprint', 'SOTU']",11080,species,Amarillovirales,True
+7709078,u6359,u6359,"['Palmprint', 'SOTU']",909207,no rank,Mononegavirales,False
+8584345,u854923,u854923,"['Palmprint', 'SOTU']",11099,no rank,Amarillovirales,False
+8268578,u400723,u400723,"['Palmprint', 'SOTU']",11099,no rank,Amarillovirales,False
+8231007,u360560,u360560,"['Palmprint', 'SOTU']",11099,no rank,Amarillovirales,False
+8257780,u387312,u387312,"['Palmprint', 'SOTU']",11099,no rank,Amarillovirales,False
+8748780,u1065795,u1065795,"['Palmprint', 'SOTU']",11274,no rank,Mononegavirales,False
+7720621,u12395,u12395,"['Palmprint', 'SOTU']",11274,no rank,Mononegavirales,False
+8450617,u654834,u654834,"['Palmprint', 'SOTU']",11274,no rank,Mononegavirales,False
+8447076,u649358,u649358,"['Palmprint', 'SOTU']",11274,no rank,Mononegavirales,False
+8086165,u232730,u232730,"['Palmprint', 'SOTU']",11274,no rank,Mononegavirales,False
+7709719,u6854,u6854,"['Palmprint', 'SOTU']",64312,species,Amarillovirales,False
+7697498,u1620,u1620,"['Palmprint', 'SOTU']",11079,species,Amarillovirales,True
+7692194,u548,u548,"['Palmprint', 'SOTU']",2560525,species,Mononegavirales,True
+8678299,u978625,u978625,"['Palmprint', 'SOTU']",64299,species,Amarillovirales,False
+7711656,u7358,u7358,"['Palmprint', 'SOTU']",64299,species,Amarillovirales,False
+7707545,u5284,u5284,"['Palmprint', 'SOTU']",40062,species,Reovirales,False
+7722724,u14847,u14847,"['Palmprint', 'SOTU']",64301,species,Amarillovirales,False
+8655600,u942877,u942877,"['Palmprint', 'SOTU']",1239577,species,Stellavirales,False
+7724628,u16491,u16491,"['Palmprint', 'SOTU']",1239577,species,Stellavirales,False
+8399230,u569572,u569572,"['Palmprint', 'SOTU']",1239577,species,Stellavirales,False
+8548199,u812996,u812996,"['Palmprint', 'SOTU']",1239577,species,Stellavirales,False
+8631333,u905860,u905860,"['Palmprint', 'SOTU']",1239577,species,Stellavirales,False
+8653615,u939940,u939940,"['Palmprint', 'SOTU']",1239577,species,Stellavirales,False
+7713462,u7871,u7871,"['Palmprint', 'SOTU']",1712572,no rank,Bunyavirales,False
+8064805,u217989,u217989,"['Palmprint', 'SOTU']",106966,species,Picornavirales,False
+8070538,u222185,u222185,"['Palmprint', 'SOTU']",106966,species,Picornavirales,False
+8445671,u646070,u646070,"['Palmprint', 'SOTU']",106966,species,Picornavirales,False
+7771720,u39811,u39811,"['Palmprint', 'SOTU']",106966,species,Picornavirales,False
+8394081,u561267,u561267,"['Palmprint', 'SOTU']",106966,species,Picornavirales,False
+8474629,u703495,u703495,"['Palmprint', 'SOTU']",106966,species,Picornavirales,False
+8434943,u628596,u628596,"['Palmprint', 'SOTU']",106966,species,Picornavirales,False
+8526929,u785530,u785530,"['Palmprint', 'SOTU']",106966,species,Picornavirales,False
+7698370,u1958,u1958,"['Palmprint', 'SOTU']",106966,species,Picornavirales,False
+8558915,u827875,u827875,"['Palmprint', 'SOTU']",161675,species,Amarillovirales,False
+8339332,u489994,u489994,"['Palmprint', 'SOTU']",161675,species,Amarillovirales,False
+7707348,u5157,u5157,"['Palmprint', 'SOTU']",161675,species,Amarillovirales,False
+7706574,u4537,u4537,"['Palmprint', 'SOTU']",162013,no rank,Mononegavirales,True
+8641618,u918778,u918778,"['Palmprint', 'SOTU']",59302,species,Martellivirales,True
+7749040,u26157,u26157,"['Palmprint', 'SOTU']",59302,species,Martellivirales,True
+8471273,u696611,u696611,"['Palmprint', 'SOTU']",106333,no rank,Picornavirales,False
+7741706,u22735,u22735,"['Palmprint', 'SOTU']",106333,no rank,Picornavirales,False
+7749643,u26670,u26670,"['Palmprint', 'SOTU']",106333,no rank,Picornavirales,False
+7713904,u8030,u8030,"['Palmprint', 'SOTU']",106333,no rank,Picornavirales,False
+7738443,u21450,u21450,"['Palmprint', 'SOTU']",106333,no rank,Picornavirales,False
+8031041,u196758,u196758,"['Palmprint', 'SOTU']",106333,no rank,Picornavirales,False
+7709208,u6497,u6497,"['Palmprint', 'SOTU']",106333,no rank,Picornavirales,False
+7724613,u16477,u16477,"['Palmprint', 'SOTU']",106333,no rank,Picornavirales,False
+7742812,u23268,u23268,"['Palmprint', 'SOTU']",59563,species,Amarillovirales,True
+7701610,u2384,u2384,"['Palmprint', 'SOTU']",59563,species,Amarillovirales,True
+8488682,u733204,u733204,"['Palmprint', 'SOTU']",204711,no rank,Picornavirales,False
+8353633,u508699,u508699,"['Palmprint', 'SOTU']",204711,no rank,Picornavirales,False
+7704793,u3729,u3729,"['Palmprint', 'SOTU']",204711,no rank,Picornavirales,False
+7740293,u22066,u22066,"['Palmprint', 'SOTU']",40057,species,Reovirales,True
+7722671,u14724,u14724,"['Palmprint', 'SOTU']",590647,no rank,Mononegavirales,False
+8333247,u481710,u481710,"['Palmprint', 'SOTU']",11096,no rank,Amarillovirales,False
+7739390,u21649,u21649,"['Palmprint', 'SOTU']",1272953,no rank,Mononegavirales,False
+8525798,u784352,u784352,"['Palmprint', 'SOTU']",358764,no rank,Amarillovirales,False
+7743256,u23650,u23650,"['Palmprint', 'SOTU']",358764,no rank,Amarillovirales,False
+7720987,u12743,u12743,"['Palmprint', 'SOTU']",358764,no rank,Amarillovirales,False
+8667001,u961361,u961361,"['Palmprint', 'SOTU']",2905673,no rank,Mononegavirales,True
+8499738,u748646,u748646,"['Palmprint', 'SOTU']",2905673,no rank,Mononegavirales,True
+7959444,u148722,u148722,"['Palmprint', 'SOTU']",2905673,no rank,Mononegavirales,True
+7999668,u177462,u177462,"['Palmprint', 'SOTU']",40058,species,Reovirales,True
+7744076,u24190,u24190,"['Palmprint', 'SOTU']",40058,species,Reovirales,True
+8574433,u845135,u845135,"['Palmprint', 'SOTU']",162145,species,Mononegavirales,True
+7702441,u2716,u2716,"['Palmprint', 'SOTU']",162145,species,Mononegavirales,True
+7709624,u6734,u6734,"['Palmprint', 'SOTU']",31612,no rank,Mononegavirales,False
+8285679,u419816,u419816,"['Palmprint', 'SOTU']",31612,no rank,Mononegavirales,False
+8595928,u866296,u866296,"['Palmprint', 'SOTU']",31612,no rank,Mononegavirales,False
+8425346,u617110,u617110,"['Palmprint', 'SOTU']",31612,no rank,Mononegavirales,False
+7752969,u29609,u29609,"['Palmprint', 'SOTU']",64286,species,Amarillovirales,True
+7698115,u1801,u1801,"['Palmprint', 'SOTU']",164416,species,Amarillovirales,True
+7768822,u38509,u38509,"['Palmprint', 'SOTU']",12092,species,Picornavirales,True
+7688419,u405,u405,"['Palmprint', 'SOTU']",12092,species,Picornavirales,True
+8578418,u848819,u848819,"['Palmprint', 'SOTU']",12092,species,Picornavirales,True
+7872640,u93518,u93518,"['Palmprint', 'SOTU']",12092,species,Picornavirales,True
+8067041,u219517,u219517,"['Palmprint', 'SOTU']",12092,species,Picornavirales,True
+8754981,u1073759,u1073759,"['Palmprint', 'SOTU']",12092,species,Picornavirales,True
+7715198,u8613,u8613,"['Palmprint', 'SOTU']",12092,species,Picornavirales,True
+8585543,u856126,u856126,"['Palmprint', 'SOTU']",12092,species,Picornavirales,True
+7709716,u6845,u6845,"['Palmprint', 'SOTU']",12092,species,Picornavirales,True
+8514793,u770665,u770665,"['Palmprint', 'SOTU']",1453410,no rank,Bunyavirales,False
+7739053,u21558,u21558,"['Palmprint', 'SOTU']",1453410,no rank,Bunyavirales,False
+7722683,u14790,u14790,"['Palmprint', 'SOTU']",64302,species,Amarillovirales,False
+8570114,u840961,u840961,"['Palmprint', 'SOTU']",64302,species,Amarillovirales,False
+7767501,u38034,u38034,"['Palmprint', 'SOTU']",40067,species,Reovirales,False
+7705289,u4011,u4011,"['Palmprint', 'SOTU']",1623310,no rank,Bunyavirales,False
+8094631,u239287,u239287,"['Palmprint', 'SOTU']",118140,species,Picornavirales,False
+7882818,u99531,u99531,"['Palmprint', 'SOTU']",118140,species,Picornavirales,False
+7728067,u17854,u17854,"['Palmprint', 'SOTU']",118140,species,Picornavirales,False
+7703546,u3171,u3171,"['Palmprint', 'SOTU']",118140,species,Picornavirales,False
+7743461,u23818,u23818,"['Palmprint', 'SOTU']",40059,species,Reovirales,True
+8138031,u269474,u269474,"['Palmprint', 'SOTU']",40059,species,Reovirales,True
+7743870,u24052,u24052,"['Palmprint', 'SOTU']",11021,species,Martellivirales,True
+7698127,u1831,u1831,"['Palmprint', 'SOTU']",1803956,species,Picornavirales,False
+7759862,u34772,u34772,"['Palmprint', 'SOTU']",1803956,species,Picornavirales,False
+8562607,u832933,u832933,"['Palmprint', 'SOTU']",1803956,species,Picornavirales,False
+8639533,u915510,u915510,"['Palmprint', 'SOTU']",1803956,species,Picornavirales,False
+7709244,u6549,u6549,"['Palmprint', 'SOTU']",44025,species,Amarillovirales,True
+7695805,u1095,u1095,"['Palmprint', 'SOTU']",11520,species,Articulavirales,True
+8304511,u444385,u444385,"['Palmprint', 'SOTU']",11520,species,Articulavirales,True
+7708882,u6173,u6173,"['Palmprint', 'SOTU']",1313215,no rank,Picornavirales,False
+8093320,u238213,u238213,"['Palmprint', 'SOTU']",1313215,no rank,Picornavirales,False
+7707378,u5172,u5172,"['Palmprint', 'SOTU']",64283,species,Amarillovirales,False
+7725218,u16791,u16791,"['Palmprint', 'SOTU']",64309,species,Amarillovirales,False
+7693578,u824,u824,"['Palmprint', 'SOTU']",54290,no rank,Amarillovirales,True
+7749345,u26426,u26426,"['Palmprint', 'SOTU']",54290,no rank,Amarillovirales,True
+8335752,u485149,u485149,"['Palmprint', 'SOTU']",54290,no rank,Amarillovirales,True
+7718000,u10719,u10719,"['Palmprint', 'SOTU']",54290,no rank,Amarillovirales,True
+8385281,u547455,u547455,"['Palmprint', 'SOTU']",54290,no rank,Amarillovirales,True
+8389928,u555080,u555080,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8451935,u656582,u656582,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8336485,u486081,u486081,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7720436,u12233,u12233,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8156044,u283925,u283925,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8312273,u454830,u454830,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8301275,u439890,u439890,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8229143,u357352,u357352,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8020032,u190602,u190602,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8744765,u1059371,u1059371,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8733944,u1044971,u1044971,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8488632,u733019,u733019,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8597476,u867851,u867851,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7708121,u5536,u5536,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8704956,u1010160,u1010160,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7825141,u66257,u66257,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8573344,u844052,u844052,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8283756,u417481,u417481,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8713948,u1022176,u1022176,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8584945,u855507,u855507,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8713270,u1021156,u1021156,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7750054,u26958,u26958,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8522479,u780278,u780278,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7869239,u91440,u91440,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7696641,u1297,u1297,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8217702,u340505,u340505,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8347699,u501325,u501325,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8399447,u569955,u569955,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8344947,u497896,u497896,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8253967,u383457,u383457,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7868475,u90904,u90904,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8396895,u565405,u565405,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7747083,u25198,u25198,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8625377,u899400,u899400,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8478180,u710999,u710999,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8745901,u1061268,u1061268,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8359586,u516043,u516043,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8638400,u914141,u914141,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8274031,u406775,u406775,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8328750,u475080,u475080,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7721817,u13577,u13577,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8441263,u637708,u637708,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8013440,u186534,u186534,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+8212523,u334369,u334369,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7747281,u25341,u25341,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7912246,u125778,u125778,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7777059,u42720,u42720,"['Palmprint', 'SOTU']",291484,family,Hepelivirales,True
+7747030,u25133,u25133,"['Palmprint', 'SOTU']",380440,no rank,Mononegavirales,False
+7714377,u8238,u8238,"['Palmprint', 'SOTU']",11048,no rank,Nidovirales,False
+8554239,u821211,u821211,"['Palmprint', 'SOTU']",11048,no rank,Nidovirales,False
+7731576,u19341,u19341,"['Palmprint', 'SOTU']",11320,species,Articulavirales,True
+8048370,u207044,u207044,"['Palmprint', 'SOTU']",11320,species,Articulavirales,True
+8083098,u230586,u230586,"['Palmprint', 'SOTU']",11320,species,Articulavirales,True
+7741391,u22583,u22583,"['Palmprint', 'SOTU']",11320,species,Articulavirales,True
+7725078,u16704,u16704,"['Palmprint', 'SOTU']",11320,species,Articulavirales,True
+8560000,u829404,u829404,"['Palmprint', 'SOTU']",11320,species,Articulavirales,True
+8744350,u1058528,u1058528,"['Palmprint', 'SOTU']",11320,species,Articulavirales,True
+8523433,u781489,u781489,"['Palmprint', 'SOTU']",11320,species,Articulavirales,True
+7724800,u16596,u16596,"['Palmprint', 'SOTU']",11320,species,Articulavirales,True
+7709063,u6346,u6346,"['Palmprint', 'SOTU']",11041,no rank,Hepelivirales,False
+8703605,u1008085,u1008085,"['Palmprint', 'SOTU']",11569,species,Articulavirales,True
+8650780,u935062,u935062,"['Palmprint', 'SOTU']",11569,species,Articulavirales,True
+7860156,u85830,u85830,"['Palmprint', 'SOTU']",11569,species,Articulavirales,True
+8472178,u698555,u698555,"['Palmprint', 'SOTU']",11569,species,Articulavirales,True
+8064127,u217468,u217468,"['Palmprint', 'SOTU']",11569,species,Articulavirales,True
+7706870,u4842,u4842,"['Palmprint', 'SOTU']",11569,species,Articulavirales,True
+7709103,u6381,u6381,"['Palmprint', 'SOTU']",2886894,no rank,Bunyavirales,False
+7743429,u23780,u23780,"['Palmprint', 'SOTU']",307164,no rank,Bunyavirales,False
+8423309,u614350,u614350,"['Palmprint', 'SOTU']",237020,species,Nidovirales,False
+8337986,u488146,u488146,"['Palmprint', 'SOTU']",237020,species,Nidovirales,False
+8592740,u863136,u863136,"['Palmprint', 'SOTU']",237020,species,Nidovirales,False
+8489176,u734031,u734031,"['Palmprint', 'SOTU']",237020,species,Nidovirales,False
+8614014,u885735,u885735,"['Palmprint', 'SOTU']",237020,species,Nidovirales,False
+7708808,u6152,u6152,"['Palmprint', 'SOTU']",686984,species,Picornavirales,False
+7704606,u3632,u3632,"['Palmprint', 'SOTU']",686984,species,Picornavirales,False
+7722956,u15161,u15161,"['Palmprint', 'SOTU']",686984,species,Picornavirales,False
+8160805,u287350,u287350,"['Palmprint', 'SOTU']",1868658,species,Stellavirales,False
+8186817,u307751,u307751,"['Palmprint', 'SOTU']",1868658,species,Stellavirales,False
+8525051,u783410,u783410,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8569972,u840779,u840779,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8513987,u769573,u769573,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8455988,u663748,u663748,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8479021,u712577,u712577,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7954195,u145364,u145364,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8643398,u921774,u921774,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8723423,u1035166,u1035166,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7749576,u26638,u26638,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7747937,u25668,u25668,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8430119,u623499,u623499,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8143673,u273894,u273894,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8741690,u1054502,u1054502,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7931616,u133030,u133030,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8705104,u1010387,u1010387,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8582555,u852907,u852907,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8359996,u516495,u516495,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8412861,u594738,u594738,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8480912,u716720,u716720,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7901286,u118111,u118111,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7881953,u99033,u99033,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7874524,u94624,u94624,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8457044,u665602,u665602,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8505096,u759354,u759354,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8148466,u278017,u278017,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8032061,u197266,u197266,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8112958,u251755,u251755,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8338204,u488449,u488449,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8032005,u197235,u197235,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7746810,u25022,u25022,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7923865,u130032,u130032,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7896480,u113609,u113609,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8663456,u955792,u955792,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8438285,u632416,u632416,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8474579,u703398,u703398,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8752960,u1070879,u1070879,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7725039,u16688,u16688,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7720969,u12737,u12737,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7819027,u63187,u63187,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7743586,u23964,u23964,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8064924,u218034,u218034,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8006374,u181959,u181959,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7907742,u123944,u123944,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8478043,u710664,u710664,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8612596,u884170,u884170,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8629112,u903542,u903542,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8516099,u772614,u772614,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8608592,u879538,u879538,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8099873,u242765,u242765,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8062047,u216153,u216153,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7747934,u25666,u25666,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8632345,u906969,u906969,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8330823,u477937,u477937,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8391503,u557424,u557424,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8442248,u639572,u639572,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8417707,u604911,u604911,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8166437,u291146,u291146,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8385577,u547955,u547955,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7918233,u127846,u127846,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8005068,u181218,u181218,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8470060,u694014,u694014,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8739967,u1052321,u1052321,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8065118,u218174,u218174,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8562637,u833002,u833002,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8597586,u867966,u867966,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8494363,u739669,u739669,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8499364,u747745,u747745,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7932172,u133261,u133261,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8547501,u811886,u811886,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8660132,u950481,u950481,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8396904,u565422,u565422,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7981660,u165183,u165183,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7803923,u54781,u54781,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7913996,u126467,u126467,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8652244,u937773,u937773,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8634854,u910073,u910073,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7878347,u97022,u97022,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8569918,u840738,u840738,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8519062,u776492,u776492,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8354592,u509861,u509861,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8174009,u296287,u296287,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8021568,u191609,u191609,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8707973,u1015003,u1015003,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7997488,u176060,u176060,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8309303,u451195,u451195,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8082866,u230477,u230477,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8366646,u523488,u523488,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8011479,u185108,u185108,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7917627,u127577,u127577,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7854331,u82504,u82504,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8410786,u590865,u590865,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8011173,u184946,u184946,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7805063,u55400,u55400,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8346365,u499655,u499655,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8485715,u726993,u726993,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8322270,u465710,u465710,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8553916,u820616,u820616,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7927328,u131402,u131402,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7983609,u166714,u166714,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8002520,u179725,u179725,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7968893,u155578,u155578,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7834426,u71199,u71199,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7887608,u104103,u104103,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8564691,u835542,u835542,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8461538,u676232,u676232,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8444960,u644637,u644637,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8402443,u575788,u575788,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8225203,u351616,u351616,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8304036,u443602,u443602,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8197117,u318910,u318910,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7909487,u124810,u124810,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8683738,u983706,u983706,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7889491,u106572,u106572,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8594082,u864352,u864352,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7854483,u82622,u82622,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8612019,u883540,u883540,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7742715,u23264,u23264,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8298487,u436299,u436299,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8224720,u350772,u350772,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8686321,u987572,u987572,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7927215,u131345,u131345,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7879419,u97714,u97714,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8090752,u236284,u236284,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7936864,u135168,u135168,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7709137,u6438,u6438,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8582723,u853061,u853061,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8134454,u266872,u266872,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8103897,u245564,u245564,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7938283,u135661,u135661,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8061033,u215418,u215418,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7808937,u57410,u57410,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8465871,u685229,u685229,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8671297,u968483,u968483,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8480061,u714854,u714854,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8083095,u230585,u230585,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7924273,u130249,u130249,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8657873,u946442,u946442,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7719616,u11550,u11550,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7820780,u64094,u64094,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8465506,u684408,u684408,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8516581,u773284,u773284,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8612376,u883959,u883959,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7882377,u99287,u99287,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7946781,u140522,u140522,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8078432,u227542,u227542,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8132309,u265050,u265050,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7877295,u96358,u96358,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8625268,u899296,u899296,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8467576,u688747,u688747,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8572926,u843595,u843595,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8724392,u1036577,u1036577,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8478799,u712143,u712143,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8124605,u259712,u259712,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8033508,u198165,u198165,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7719558,u11435,u11435,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8429244,u622542,u622542,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8741281,u1053892,u1053892,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8693507,u994615,u994615,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8741926,u1054761,u1054761,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8090897,u236419,u236419,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8692594,u993885,u993885,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8385574,u547944,u547944,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8002399,u179645,u179645,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7949780,u142278,u142278,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7993488,u173580,u173580,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8755685,u1075117,u1075117,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8597531,u867909,u867909,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8487890,u731707,u731707,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8650061,u933646,u933646,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8537414,u798111,u798111,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8467983,u689532,u689532,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8650062,u933647,u933647,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7844934,u77705,u77705,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8599946,u870411,u870411,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8609384,u880467,u880467,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8559473,u828768,u828768,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7813770,u59849,u59849,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7878896,u97371,u97371,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8021025,u191348,u191348,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8144979,u275103,u275103,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8170199,u292569,u292569,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7934317,u134036,u134036,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8242288,u368715,u368715,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8471077,u696081,u696081,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8334165,u482954,u482954,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8090842,u236372,u236372,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8093118,u238089,u238089,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8170908,u293151,u293151,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7728942,u18285,u18285,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8579861,u850318,u850318,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8669170,u964814,u964814,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8469010,u691725,u691725,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8269324,u401579,u401579,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7979568,u163316,u163316,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8619035,u891749,u891749,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8411478,u592303,u592303,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7901240,u118068,u118068,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7731020,u19204,u19204,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8660317,u950783,u950783,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8446532,u648086,u648086,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8321177,u464317,u464317,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7721666,u13498,u13498,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8690776,u992242,u992242,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8616026,u888122,u888122,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8551666,u817475,u817475,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8259420,u389160,u389160,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8659132,u948716,u948716,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7935516,u134524,u134524,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7997196,u175903,u175903,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8092079,u237288,u237288,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8128178,u261906,u261906,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7918242,u127849,u127849,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7915803,u127057,u127057,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+8465096,u683515,u683515,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7803064,u54306,u54306,"['Palmprint', 'SOTU']",145856,no rank,Durnavirales,True
+7702072,u2539,u2539,"['Palmprint', 'SOTU']",1980493,no rank,Bunyavirales,False
+7727198,u17499,u17499,"['Palmprint', 'SOTU']",201490,species,Reovirales,False
+7715427,u8719,u8719,"['Palmprint', 'SOTU']",290008,no rank,Mononegavirales,True
+7687950,u258,u258,"['Palmprint', 'SOTU']",59301,species,Martellivirales,True
+7768786,u38468,u38468,"['Palmprint', 'SOTU']",152219,no rank,Mononegavirales,True
+7707433,u5190,u5190,"['Palmprint', 'SOTU']",152219,no rank,Mononegavirales,True
+7731945,u19626,u19626,"['Palmprint', 'SOTU']",629735,no rank,Bunyavirales,False
+7711350,u7256,u7256,"['Palmprint', 'SOTU']",11137,species,Nidovirales,True
+7706759,u4687,u4687,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+7701773,u2449,u2449,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8034149,u198452,u198452,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8034980,u198969,u198969,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8426755,u618960,u618960,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8451397,u655859,u655859,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+7718812,u11178,u11178,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8532768,u792303,u792303,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8182258,u303211,u303211,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+7994679,u174487,u174487,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+7730258,u18720,u18720,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8340636,u491643,u491643,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+7722954,u15152,u15152,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+7751632,u28250,u28250,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8158062,u285409,u285409,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8133728,u266165,u266165,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8555954,u823709,u823709,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8506236,u760703,u760703,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+7730425,u18825,u18825,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+8674249,u973577,u973577,"['Palmprint', 'SOTU']",28875,species,Reovirales,True
+7707286,u5029,u5029,"['Palmprint', 'SOTU']",38837,species,Amarillovirales,True
+8411582,u592585,u592585,"['Palmprint', 'SOTU']",12542,species,Amarillovirales,True
+7707781,u5475,u5475,"['Palmprint', 'SOTU']",64285,species,Amarillovirales,True
+8549624,u814919,u814919,"['Palmprint', 'SOTU']",147712,species,Picornavirales,False
+8133949,u266312,u266312,"['Palmprint', 'SOTU']",147712,species,Picornavirales,False
+7703781,u3243,u3243,"['Palmprint', 'SOTU']",147712,species,Picornavirales,False
+7880402,u98207,u98207,"['Palmprint', 'SOTU']",147712,species,Picornavirales,False
+7782020,u45689,u45689,"['Palmprint', 'SOTU']",147712,species,Picornavirales,False
+8345687,u498697,u498697,"['Palmprint', 'SOTU']",11034,species,Martellivirales,True
+8482331,u719641,u719641,"['Palmprint', 'SOTU']",11034,species,Martellivirales,True
+7725156,u16775,u16775,"['Palmprint', 'SOTU']",11034,species,Martellivirales,True
+7941997,u137647,u137647,"['Palmprint', 'SOTU']",11034,species,Martellivirales,True
+7963096,u151385,u151385,"['Palmprint', 'SOTU']",11034,species,Martellivirales,True
+7703543,u3166,u3166,"['Palmprint', 'SOTU']",1678230,species,Bunyavirales,True
+7710347,u7112,u7112,"['Palmprint', 'SOTU']",292278,no rank,Bunyavirales,True
+8649566,u932721,u932721,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+7700762,u2133,u2133,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+8697059,u998385,u998385,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+7702489,u2740,u2740,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+8744257,u1058387,u1058387,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+8293539,u430772,u430772,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+8673274,u972008,u972008,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+7763321,u36766,u36766,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+7713979,u8055,u8055,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+7752614,u29403,u29403,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+7752992,u29610,u29610,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+8366061,u522875,u522875,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+7766454,u37877,u37877,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+8673467,u972337,u972337,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+7703823,u3250,u3250,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+7706517,u4497,u4497,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+8640411,u916774,u916774,"['Palmprint', 'SOTU']",147711,species,Picornavirales,False
+8466478,u686595,u686595,"['Palmprint', 'SOTU']",688436,species,Articulavirales,False
+7747073,u25189,u25189,"['Palmprint', 'SOTU']",688436,species,Articulavirales,False
+7721371,u13039,u13039,"['Palmprint', 'SOTU']",380433,no rank,Mononegavirales,False
+7723601,u15499,u15499,"['Palmprint', 'SOTU']",92129,no rank,Mononegavirales,False
+7693288,u754,u754,"['Palmprint', 'SOTU']",186540,species,Mononegavirales,False
+7743098,u23519,u23519,"['Palmprint', 'SOTU']",64300,species,Amarillovirales,True
+8523603,u781695,u781695,"['Palmprint', 'SOTU']",46839,no rank,Reovirales,True
+8481900,u718542,u718542,"['Palmprint', 'SOTU']",46839,no rank,Reovirales,True
+8467101,u687848,u687848,"['Palmprint', 'SOTU']",46839,no rank,Reovirales,True
+8477160,u708769,u708769,"['Palmprint', 'SOTU']",46839,no rank,Reovirales,True
+8292047,u428681,u428681,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8406038,u582294,u582294,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8604091,u874340,u874340,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8622758,u896319,u896319,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8581564,u851981,u851981,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8707132,u1013662,u1013662,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8741735,u1054557,u1054557,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+7743961,u24121,u24121,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+7725917,u17107,u17107,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8386824,u550190,u550190,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+7713488,u7892,u7892,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8341388,u492552,u492552,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+7902049,u118871,u118871,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+7766399,u37868,u37868,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8085484,u232264,u232264,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8347946,u501640,u501640,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8017721,u189209,u189209,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+7744199,u24285,u24285,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8205257,u327480,u327480,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8451253,u655660,u655660,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8282845,u416424,u416424,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8606919,u877453,u877453,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8640515,u916935,u916935,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8720285,u1031306,u1031306,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8391007,u556668,u556668,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8083112,u230589,u230589,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8317829,u460607,u460607,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8021208,u191472,u191472,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8124876,u259922,u259922,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+8739167,u1051646,u1051646,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False
+7725949,u17125,u17125,"['Palmprint', 'SOTU']",1239567,species,Stellavirales,False

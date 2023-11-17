@@ -1,0 +1,186 @@
+nodeId,appId,taxId,labels,taxRank,taxOrder,hostClass
+8755906,29,29,['Taxon'],order,Myxococcales,Bacteria
+8756157,356,356,"['Taxon', 'Host']",order,Hyphomicrobiales,Bacteria
+8756954,1385,1385,['Taxon'],order,Bacillales,Bacteria
+8757513,2085,2085,['Taxon'],order,Mycoplasmatales,Bacteria
+8758279,3042,3042,['Taxon'],order,Chlamydomonadales,Plant
+8758425,3215,3215,['Taxon'],order,Funariales,Plant
+8758678,3502,3502,['Taxon'],order,Fagales,Plant
+8758804,3646,3646,['Taxon'],order,Malpighiales,Plant
+8758852,3699,3699,['Taxon'],order,Brassicales,Plant
+8758892,3744,3744,['Taxon'],order,Rosales,Plant
+8759158,4036,4036,['Taxon'],order,Apiales,Plant
+8759188,4069,4069,['Taxon'],order,Solanales,Plant
+8759249,4143,4143,['Taxon'],order,Lamiales,Plant
+8759313,4209,4209,['Taxon'],order,Asterales,Plant
+8759655,4618,4618,['Taxon'],order,Zingiberales,Plant
+8759893,4892,4892,['Taxon'],order,Saccharomycetales,Fungi
+8759971,5014,5014,['Taxon'],order,Dothideales,Fungi
+8759989,5042,5042,['Taxon'],order,Eurotiales,Fungi
+8760044,5125,5125,"['Taxon', 'Host']",order,Hypocreales,Fungi
+8760086,5178,5178,['Taxon'],order,Helotiales,Fungi
+8760209,5338,5338,"['Taxon', 'Host']",order,Agaricales,Fungi
+8760558,5819,5819,['Taxon'],order,Haemosporida,Parasite
+8760778,6103,6103,"['Taxon', 'Host']",order,Actiniaria,Other
+8760844,6180,6180,['Taxon'],order,Strigeidida,Other
+8760896,6236,6236,['Taxon'],order,Rhabditida,Other
+8761158,6562,6562,['Taxon'],order,Ostreida,Other
+8761217,6638,6638,['Taxon'],order,Octopoda,Other
+8761254,6683,6683,['Taxon'],order,Decapoda,Anthropod
+8761437,6893,6893,['Taxon'],order,Araneae,Anthropod
+8761470,6935,6935,['Taxon'],order,Ixodida,Anthropod
+8761558,7041,7041,"['Taxon', 'Host']",order,Coleoptera,Anthropod
+8761599,7088,7088,"['Taxon', 'Host']",order,Lepidoptera,Anthropod
+8761645,7147,7147,"['Taxon', 'Host']",order,Diptera,Anthropod
+8761827,7399,7399,"['Taxon', 'Host']",order,Hymenoptera,Anthropod
+8761918,7524,7524,"['Taxon', 'Host']",order,Hemiptera,Anthropod
+8762248,7952,7952,['Taxon'],order,Cypriniformes,Other
+8762280,7995,7995,['Taxon'],order,Siluriformes,Other
+8762290,8006,8006,['Taxon'],order,Salmoniformes,Other
+8762383,8111,8111,['Taxon'],order,Perciformes,Other
+8762491,8252,8252,"['Taxon', 'Host']",order,Pleuronectiformes,Other
+8762657,8459,8459,['Taxon'],order,Testudines,Other
+8762699,8509,8509,"['Taxon', 'Host']",order,Squamata,Other
+8762959,8826,8826,['Taxon'],order,Anseriformes,Other
+8763051,8929,8929,['Taxon'],order,Columbiformes,Other
+8763096,8976,8976,['Taxon'],order,Galliformes,Other
+8763217,9126,9126,"['Taxon', 'Host']",order,Passeriformes,Other
+8763414,9362,9362,['Taxon'],order,Eulipotyphla,Mammal
+8763442,9392,9392,['Taxon'],order,Scandentia,Mammal
+8763446,9397,9397,"['Taxon', 'Host']",order,Chiroptera,Mammal
+8763487,9443,9443,['Taxon'],order,Primates,Mammal
+8763782,9787,9787,['Taxon'],order,Perissodactyla,Mammal
+8763925,9971,9971,['Taxon'],order,Pholidota,Mammal
+8763929,9975,9975,['Taxon'],order,Lagomorpha,Mammal
+8763941,9989,9989,"['Taxon', 'Host']",order,Rodentia,Mammal
+8764832,11157,11157,['Taxon'],order,Mononegavirales,Virus
+8768230,28738,28738,['Taxon'],order,Cyprinodontiformes,Other
+8769916,31022,31022,['Taxon'],order,Tetraodontiformes,Other
+8770057,31277,31277,['Taxon'],order,Hymenostomatida,Parasite
+8771537,33554,33554,['Taxon'],order,Carnivora,Mammal
+8774096,36750,36750,['Taxon'],order,Glomerales,Fungi
+8775680,38605,38605,['Taxon'],order,Didelphimorphia,Mammal
+8775817,38748,38748,['Taxon'],order,Naviculales,Other
+8775876,38820,38820,['Taxon'],order,Poales,Plant
+8777348,40551,40551,['Taxon'],order,Arecales,Plant
+8777909,41166,41166,['Taxon'],order,Valvatida,Other
+8778578,41937,41937,['Taxon'],order,Sapindales,Plant
+8778579,41938,41938,['Taxon'],order,Malvales,Plant
+8778581,41944,41944,['Taxon'],order,Myrtales,Plant
+8778582,41945,41945,['Taxon'],order,Ericales,Plant
+8803538,71239,71239,['Taxon'],order,Cucurbitales,Plant
+8804246,72025,72025,['Taxon'],order,Fabales,Plant
+8804468,72274,72274,"['Taxon', 'Host']",order,Pseudomonadales,Bacteria
+8805581,73496,73496,['Taxon'],order,Asparagales,Plant
+8807528,75739,75739,['Taxon'],order,Eucoccidiorida,Parasite
+8808502,76804,76804,"['Taxon', 'Host']",order,Nidovirales,Virus
+8812122,80840,80840,"['Taxon', 'Host']",order,Burkholderiales,Bacteria
+8814080,83136,83136,['Taxon'],order,Trombidiformes,Anthropod
+8815773,85007,85007,['Taxon'],order,Mycobacteriales,Bacteria
+8816488,85823,85823,['Taxon'],order,Blattodea,Anthropod
+8821359,91347,91347,"['Taxon', 'Host']",order,Enterobacterales,Bacteria
+8821550,91561,91561,['Taxon'],order,Artiodactyla,Mammal
+8824373,94695,94695,['Taxon'],order,Methanosarcinales,Other
+8834326,106218,106218,['Taxon'],order,Pectinida,Other
+8854850,129912,129912,['Taxon'],order,Syngnathiformes,Other
+8859896,135614,135614,"['Taxon', 'Host']",order,Xanthomonadales,Bacteria
+8859905,135623,135623,['Taxon'],order,Vibrionales,Bacteria
+8859906,135624,135624,"['Taxon', 'Host']",order,Aeromonadales,Bacteria
+8859907,135625,135625,['Taxon'],order,Pasteurellales,Bacteria
+8891608,171549,171549,"['Taxon', 'Host']",order,Bacteroidales,Bacteria
+8905531,186802,186802,"['Taxon', 'Host']",order,Eubacteriales,Bacteria
+8905550,186826,186826,"['Taxon', 'Host']",order,Lactobacillales,Bacteria
+8907919,189479,189479,['Taxon'],order,Orbiliales,Fungi
+8920499,203491,203491,['Taxon'],order,Fusobacteriales,Bacteria
+8923155,206351,206351,['Taxon'],order,Neisseriales,Bacteria
+8929917,213849,213849,['Taxon'],order,Campylobacterales,Bacteria
+8946366,232378,232378,['Taxon'],order,Proteales,Plant
+9095232,403667,403667,['Taxon'],order,Vitales,Plant
+9149498,464095,464095,['Taxon'],order,Picornavirales,Virus
+9307270,675063,675063,['Taxon'],order,Tymovirales,Virus
+9546504,1028384,1028384,['Taxon'],order,Glomerellales,Fungi
+10302863,1890424,1890424,"['Taxon', 'Host']",order,Synechococcales,Bacteria
+10381874,1980410,1980410,['Taxon'],order,Bunyavirales,Virus
+10542956,2169561,2169561,"['Taxon', 'Host']",order,Ortervirales,Virus
+10827134,2499411,2499411,['Taxon'],order,Articulavirales,Virus
+11005570,2704949,2704949,['Taxon'],order,Trypanosomatida,Other
+11030243,2732414,2732414,['Taxon'],order,Petitvirales,Virus
+11030334,2732515,2732515,['Taxon'],order,Blubervirales,Virus
+11030346,2732527,2732527,['Taxon'],order,Chitovirales,Virus
+11030353,2732534,2732534,['Taxon'],order,Piccovirales,Virus
+11030355,2732536,2732536,['Taxon'],order,Cirlivirales,Virus
+11030360,2732541,2732541,['Taxon'],order,Reovirales,Virus
+11030363,2732544,2732544,['Taxon'],order,Martellivirales,Virus
+11030364,2732545,2732545,['Taxon'],order,Amarillovirales,Virus
+11030370,2732551,2732551,['Taxon'],order,Stellavirales,Virus
+11161498,2887326,2887326,['Taxon'],order,Moraxellales,Bacteria
+11172182,2899670,2899670,['Taxon'],order,Balanomorpha,Anthropod
+8755987,136,136,['Taxon'],order,Spirochaetales,Bacteria
+8756749,1118,1118,['Taxon'],order,Chroococcales,Bacteria
+8756767,1150,1150,['Taxon'],order,Oscillatoriales,Bacteria
+8756776,1161,1161,['Taxon'],order,Nostocales,Bacteria
+8757480,2037,2037,['Taxon'],order,Actinomycetales,Bacteria
+8757581,2158,2158,"['Taxon', 'Host']",order,Methanobacteriales,Other
+8757681,2281,2281,['Taxon'],order,Sulfolobales,Other
+8758449,3244,3244,['Taxon'],order,Selaginellales,Plant
+8758698,3524,3524,['Taxon'],order,Caryophyllales,Plant
+8759177,4055,4055,['Taxon'],order,Gentianales,Plant
+8759796,4776,4776,['Taxon'],order,Peronosporales,Other
+8760054,5139,5139,['Taxon'],order,Sordariales,Fungi
+8760065,5151,5151,['Taxon'],order,Ophiostomatales,Fungi
+8760129,5234,5234,['Taxon'],order,Tremellales,Fungi
+8760179,5303,5303,['Taxon'],order,Polyporales,Fungi
+8760497,5738,5738,['Taxon'],order,Diplomonadida,Other
+8760599,5863,5863,['Taxon'],order,Piroplasmida,Parasite
+8760797,6125,6125,"['Taxon', 'Host']",order,Scleractinia,Other
+8761173,6580,6580,['Taxon'],order,Venerida,Other
+8761378,6821,6821,['Taxon'],order,Amphipoda,Anthropod
+8761519,6993,6993,['Taxon'],order,Orthoptera,Anthropod
+8762167,7858,7858,['Taxon'],order,Rajiformes,Other
+8762231,7933,7933,['Taxon'],order,Anguilliformes,Other
+8762516,8288,8288,['Taxon'],order,Polypteriformes,Other
+8762561,8342,8342,['Taxon'],order,Anura,Other
+8763769,9774,9774,['Taxon'],order,Sirenia,Mammal
+8766416,13792,13792,['Taxon'],order,Mamiellales,Plant
+8769465,30262,30262,['Taxon'],order,Thysanoptera,Anthropod
+8770584,31932,31932,['Taxon'],order,Nitrosopumilales,Other
+8771303,33183,33183,['Taxon'],order,Onygenales,Fungi
+8772207,34346,34346,['Taxon'],order,Schizosaccharomycetales,Fungi
+8772427,34634,34634,['Taxon'],order,Mesostigmata,Anthropod
+8773049,35460,35460,['Taxon'],order,Chlorellales,Plant
+8773543,36064,36064,['Taxon'],order,Cantharellales,Fungi
+8775683,38608,38608,['Taxon'],order,Dasyuromorphia,Mammal
+8775684,38609,38609,['Taxon'],order,Diprotodontia,Mammal
+8778516,41872,41872,['Taxon'],order,Mugiliformes,Other
+8784224,48461,48461,['Taxon'],order,Verrucomicrobiales,Bacteria
+8801554,68889,68889,['Taxon'],order,Boletales,Fungi
+8804467,72273,72273,['Taxon'],order,Thiotrichales,Bacteria
+8807823,76071,76071,['Taxon'],order,Beloniformes,Other
+8815160,84337,84337,['Taxon'],order,Diplostraca,Anthropod
+8815771,85004,85004,['Taxon'],order,Bifidobacteriales,Bacteria
+8815772,85006,85006,['Taxon'],order,Micrococcales,Bacteria
+8815775,85009,85009,['Taxon'],order,Propionibacteriales,Bacteria
+8815777,85011,85011,['Taxon'],order,Kitasatosporales,Bacteria
+8822721,92860,92860,"['Taxon', 'Host']",order,Pleosporales,Fungi
+8859901,135619,135619,['Taxon'],order,Oceanospirillales,Bacteria
+8859904,135622,135622,['Taxon'],order,Alteromonadales,Bacteria
+8883552,162474,162474,['Taxon'],order,Malasseziales,Fungi
+8917933,200666,200666,['Taxon'],order,Sphingobacteriales,Bacteria
+9097738,406427,406427,['Taxon'],order,Anthoathecata,Other
+9138755,452342,452342,['Taxon'],order,Russulales,Fungi
+9276798,639021,639021,['Taxon'],order,Magnaporthales,Fungi
+9491446,948951,948951,['Taxon'],order,Cingulata,Mammal
+9630448,1127829,1127829,['Taxon'],order,Candidatus Brocadiales,Bacteria
+9946556,1485168,1485168,['Taxon'],order,Longamoebia,Other
+9950732,1489876,1489876,['Taxon'],order,Kurtiformes,Other
+9950755,1489900,1489900,['Taxon'],order,Anabantiformes,Other
+9950766,1489911,1489911,['Taxon'],order,Cichliformes,Other
+9950782,1489931,1489931,['Taxon'],order,Spariformes,Other
+9950788,1489940,1489940,['Taxon'],order,Centrarchiformes,Other
+10087120,1643688,1643688,['Taxon'],order,Leptospirales,Bacteria
+10260777,1843489,1843489,['Taxon'],order,Veillonellales,Bacteria
+10450078,2058949,2058949,['Taxon'],order,Dictyosteliales,Other
+10882472,2558200,2558200,['Taxon'],order,Accipitriformes,Other
+10990127,2682482,2682482,['Taxon'],order,Mastigamoebida,Other
+11025236,2726947,2726947,['Taxon'],order,Mycosphaerellales,Fungi
+11176787,2905377,2905377,['Taxon'],order,Methanotrichales,Other

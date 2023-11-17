@@ -1,0 +1,586 @@
+Adelaide River virus
+Adeno-associated virus-1
+Adeno-associated virus-2
+Adeno-associated virus-5
+African green monkey polyomavirus
+African green monkey simian foamy virus
+African horse sickness virus
+African swine fever virus
+Aichi virus
+Akabane virus
+Alcelaphine herpesvirus 1
+Alcelaphine herpesvirus 2
+Aleutian mink disease virus
+Allpaahuayo virus
+Amapari virus
+Andes virus
+Anopheles A virus
+Anopheles B virus
+Apoi virus
+Araguari virus
+Aravan virus
+Arctic squirrel hepatitis virus
+Aroa virus
+Arumowot virus
+Ateline herpesvirus 1
+Ateline herpesvirus 2
+Aura virus
+Australian bat lyssavirus
+Baboon orthoreovirus
+Baboon polyomavirus 2
+Bakau virus
+Bangui virus
+Banna virus
+Banzi virus
+Barmah Forest virus
+Barur virus
+Bayou virus
+Bear Canyon virus
+Bebaru virus
+Berrimah virus
+Bhanja virus
+Bimiti virus
+Bivens Arm virus
+BK polyomavirus
+Black Creek Canal virus
+Bluetongue virus
+Border disease virus
+Borna disease virus
+Bouboui virus
+Bovine adenovirus A
+Bovine adenovirus B
+Bovine adenovirus C
+Bovine adenovirus D
+Bovine adenovirus E
+Bovine astrovirus
+Bovine coronavirus
+Bovine enteric calicivirus strain NB
+Bovine ephemeral fever virus
+Bovine foamy virus
+Bovine herpesvirus 1
+Bovine herpesvirus 2
+Bovine herpesvirus 4
+Bovine herpesvirus 5
+Bovine immunodeficiency virus
+Bovine leukemia virus
+Bovine norovirus-CH126
+Bovine norovirus-Jena
+Bovine papillomavirus 1
+Bovine papillomavirus 3
+Bovine papillomavirus 5
+Bovine papular stomatitis virus
+Bovine parainfluenza virus 3
+Bovine parvovirus
+Bovine polyomavirus
+Bovine respiratory syncytial virus
+Bovine torovirus
+Bovine viral diarrhea virus 1
+Bovine viral diarrhea virus 2
+Bubaline herpesvirus 1
+Bujaru virus
+Bukalasa bat virus
+Bunyamwera virus
+Bwamba virus
+Cabassou virus
+Cacipacore virus
+California encephalitis virus
+Callitrichine herpesvirus 1
+Callitrichine herpesvirus 3
+Camelpox virus
+Canid herpesvirus 1
+Canine adenovirus
+Canine calicivirus
+Canine coronavirus
+Canine distemper virus
+Canine minute virus
+Canine oral papillomavirus
+Cano Delgadito virus
+Caprine arthritis encephalitis virus
+Caprine herpesvirus 1
+Caraparu virus
+Carey Island virus
+Catu virus
+Caviid herpesvirus 1
+Caviid herpesvirus 2
+Caviid herpesvirus 3
+Cercopithecine herpesvirus 1
+Cercopithecine herpesvirus 12
+Cercopithecine herpesvirus 14
+Cercopithecine herpesvirus 15
+Cercopithecine herpesvirus 16
+Cercopithecine herpesvirus 17
+Cercopithecine herpesvirus 2
+Cercopithecine herpesvirus 5
+Cercopithecine herpesvirus 8
+Cercopithecine herpesvirus 9
+Cervid herpesvirus 1
+Cervid herpesvirus 2
+Cetacean morbillivirus virus
+Chagres virus
+Chandipura virus
+Candiru virus
+Changuinola virus
+Chikungunya virus
+Chipmunk parvovirus
+Chobar Gorge virus
+Classical swine fever virus
+Cocal virus
+Colorado tick fever virus
+Corriparta virus
+Cote d'Ivoire ebolavirus
+Cottontail rabbit papillomavirus
+Cowbone Ridge virus
+Cowpox virus
+Cricetid herpesvirus
+Crimean-Congo hemorrhagic fever virus
+Cupixi virus
+Dakar bat virus
+Deer adenovirus
+Deer papillomavirus
+Dengue virus
+Dera Ghazi Khan virus
+Dhori virus
+Dobrava-Belgrade virus
+Dugbe virus
+Duvenhage virus
+Eastern equine encephalitis virus
+Ectromelia virus
+El Moro Canyon virus
+Encephalomyocarditis virus
+Entebbe bat virus
+Epizootic hemorrhagic disease virus
+Equid herpesvirus 1
+Equid herpesvirus 2
+Equid herpesvirus 3
+Equid herpesvirus 4
+Equid herpesvirus 5
+Equid herpesvirus 7
+Equid herpesvirus 8
+Equid herpesvirus 9
+Equine adenovirus A
+Equine adenovirus B
+Equine arteritis virus
+Equine encephalosis virus
+Equine foamy virus
+Equine infectious anemia virus
+Equine papillomavirus 1
+Equine rhinitis A virus
+Equine rhinitis B virus
+Equine torovirus
+Eubenangee virus
+European bat lyssavirus 1
+European bat lyssavirus 2
+European brown hare syndrome virus
+European elk papillomavirus
+Everglades virus
+Eyach virus
+Felid herpesvirus 1
+Feline astrovirus
+Feline calicivirus
+Feline coronavirus
+Feline foamy virus
+Feline immunodeficiency virus
+Feline leukemia virus
+Feline panleukopenia virus
+Feline papillomavirus
+Flexal virus
+Foot-and-mouth disease virus
+Gan Gan virus
+GB virus A
+GB virus B
+GB virus C
+Getah virus
+Gibbon ape leukemia virus
+Goat adenovirus
+Goatpox virus
+Great Island virus
+Ground squirrel hepatitis virus
+Guama virus
+Guanarito virus
+Guaroa virus
+Guinea pig adenovirus
+Guinea pig type-C oncovirus
+H-1 parvovirus
+Hamster oral papillomavirus
+Hamster parvovirus
+Hamster polyomavirus
+Hantaan virus
+Hare fibroma virus
+Hendra virus
+Hepatitis A virus
+Hepatitis B virus
+Hepatitis C virus
+Hepatitis delta virus
+Hepatitis E virus
+Highlands J virus
+Hippotragine herpesvirus 1
+Human adenovirus A
+Human adenovirus B
+Human adenovirus C
+Human adenovirus D
+Human adenovirus E
+Human adenovirus F
+Human astrovirus
+Human coronavirus 229E
+Human coronavirus OC43
+Human enterovirus A
+Human enterovirus B
+Human enterovirus C
+Human enterovirus D
+Human herpesvirus 1
+Human herpesvirus 2
+Human herpesvirus 3
+Human herpesvirus 4
+Human herpesvirus 5
+Human herpesvirus 6
+Human herpesvirus 7
+Human herpesvirus 8
+Human immunodeficiency virus 1
+Human immunodeficiency virus 2
+Human metapneumovirus
+Human norovirus-Alphatron
+Human papillomavirus 1
+Human papillomavirus 10
+Human papillomavirus 16
+Human papillomavirus 18
+Human papillomavirus 2
+Human papillomavirus 26
+Human papillomavirus 32
+Human papillomavirus 34
+Human papillomavirus 4
+Human papillomavirus 41
+Human papillomavirus 48
+Human papillomavirus 49
+Human papillomavirus 5
+Human papillomavirus 50
+Human papillomavirus 53
+Human papillomavirus 54
+Human papillomavirus 6
+Human papillomavirus 60
+Human papillomavirus 61
+Human papillomavirus 63
+Human papillomavirus 7
+Human papillomavirus 71
+Human papillomavirus 88
+Human papillomavirus 9
+Human papillomavirus cand90
+Human papillomavirus cand92
+Human papillomavirus cand96
+Human parainfluenza virus 1
+Human parainfluenza virus 2
+Human parainfluenza virus 3
+Human parainfluenza virus 4
+Human parechovirus
+Human parvovirus B19
+Human picobirnavirus
+Human polyomavirus
+Human respiratory syncytial virus
+Human rhinovirus A
+Human rhinovirus B
+Human torovirus
+Ife virus
+Ilheus virus
+Influenza A virus
+Influenza B virus
+Influenza C virus
+Ippy virus
+Irkut virus
+Isfahan virus
+Isla Vista virus
+Issyk-Kul virus
+Itaporanga virus
+Jaagsiekte sheep retrovirus
+Japanaut virus
+Japanese encephalitis virus
+JC polyomavirus
+Jugra virus
+Junin virus
+Jurona virus
+Jutiapa virus
+Kaeng Khoi virus
+Kairi virus
+Kasokero virus
+Kern Canyon virus
+Keuraliba virus
+Khabarovsk virus
+Khujand virus
+Kilham rat virus
+Kokobera virus
+Koongol virus
+Kotonkan virus
+Koutango virus
+Kyasanur Forest disease virus
+Lactate dehydrogenase-elevating virus
+Lagos bat virus
+Laguna Negra virus
+Lake Victoria marburgvirus
+Langur virus
+Lapine parvovirus
+Lassa virus
+Latino virus
+Lebombo virus
+Ljungan virus
+Louping ill virus
+Lumpy skin disease virus
+Lymphocytic choriomeningitis virus
+Macaque simian foamy virus
+Machupo virus
+Macropodid herpesvirus 1
+Macropodid herpesvirus 2
+Madrid virus
+Main Drain virus
+Mammalian orthoreovirus
+Manzanilla virus
+Mapuera virus
+Maraba virus
+Marituba virus
+Marmodid herpesvirus 1
+Mason-Pfizer monkey virus
+Mastomys natalensis papillomavirus
+Mayaro virus
+Measles virus
+Menangle virus
+Middelburg virus
+Minatitlan virus
+Mink astrovirus
+Mink calicivirus
+Mink enteric sapovirus
+Minute virus of mice
+Mobala virus
+Modoc virus
+Mokola virus
+Molluscum contagiosum virus
+Moloney murine sarcoma virus
+Monkeypox virus
+Montana myotis leukoencephalitis virus
+Mopeia virus
+Mosso das Pedras virus 78V3531
+Mount Elgon bat virus
+Mouse mammary tumor virus
+Mouse parvovirus 1
+Mucambo virus
+Muleshoe virus
+Mumps virus
+Murid herpesvirus 1
+Murid herpesvirus 2
+Murid herpesvirus 3
+Murid herpesvirus 4
+Murid herpesvirus 5
+Murine adenovirus A
+Murine adenovirus B
+Murine hepatitis virus
+Murine leukemia virus
+Murine norovirus 1
+Murine pneumonia virus
+Murine pneumotropic virus
+Murine polyomavirus
+Murray Valley encephalitis virus
+Mustelid herpesvirus 1
+Myxoma virus
+Nariva virus
+Ndumu virus
+Nelson Bay orthoreovirus
+New York virus
+Newcastle disease virus
+Nipah virus
+Norwalk virus
+Ntaya virus
+Nyando virus
+O'nyong-nyong virus
+Oita virus
+Okola virus
+Oliveros virus
+Omsk hemorrhagic fever virus
+Orf virus
+Oriboca virus
+Oropouche virus
+Orungo virus
+Ovine adenovirus A
+Ovine adenovirus D
+Ovine astrovirus
+Ovine herpesvirus 2
+Ovine papillomavirus 1
+Palyam virus
+Pampa virus
+Parainfluenza virus 5
+Parana virus
+Parapoxvirus of red deer in New Zealand
+Patois virus
+Peruvian horse sickness virus
+Peste-des-petits-ruminants virus
+Phnom Penh bat virus
+Phocid herpesvirus 1
+Phocine distemper virus
+Phocoena spinipinnis papillomavirus
+Pichinde virus
+Pig-tailed macaque parvovirus
+Pirital virus
+Piry virus
+Pixuna virus
+Poliovirus
+Pongine herpesvirus 1
+Pongine herpesvirus 2
+Pongine herpesvirus 3
+Pongine herpesvirus 4
+Porcine adenovirus A
+Porcine adenovirus B
+Porcine adenovirus C
+Porcine astrovirus
+Porcine circovirus-1
+Porcine circovirus-2
+Porcine enteric sapovirus
+Porcine enterovirus A
+Porcine enterovirus B
+Porcine epidemic diarrhea virus
+Porcine hemagglutinating encephalomyelitis virus
+Porcine parvovirus
+Porcine reproductive and respiratory syndrome virus
+Porcine rubulavirus
+Porcine teschovirus
+Porcine torovirus
+Porcine type-C oncovirus
+Possum adenovirus
+Powassan virus
+Primate T-lymphotropic virus 1
+Primate T-lymphotropic virus 2
+Primate T-lymphotropic virus 3
+Prospect Hill virus
+Pseudocowpox virus
+Puma lentivirus
+Punta Toro virus
+Puumala virus
+Qalyub virus
+Quaranfil virus
+Rabbit coronavirus
+Rabbit fibroma virus
+Rabbit hemorrhagic disease virus
+Rabbit kidney vacuolating virus
+Rabbit oral papillomavirus
+Rabies virus
+Racoonpox virus
+Rat coronavirus
+Rat minute virus 1
+Rat parvovirus 1
+Reston ebolavirus
+Rhesus macaque parvovirus
+Rhesus monkey papillomavirus 1
+Rift Valley fever virus
+Rinderpest virus
+Rio Bravo virus
+Rio Mamore virus
+Rio Negro virus
+Rio Segundo virus
+Ross River virus
+Rotavirus A
+Rotavirus B
+Rotavirus C
+Rotavirus E
+Rubella virus
+Sabia virus
+Saboya virus
+Saimiriine herpesvirus 1
+Saimiriine herpesvirus 2
+Sal Vieja virus
+Salehabad virus
+Salem virus
+San Perlita virus
+Sandfly fever Naples virus
+Sandfly fever Sicilian virus
+Sapporo virus
+Sathuperi virus
+Sciurid herpesvirus 1
+Sciurid herpesvirus 2
+Sealpox virus
+Semliki Forest virus
+Sendai virus
+Seoul virus
+Sepik virus
+Severe acute respiratory syndrome-related coronavirus
+Shamonda virus
+Sheeppox virus
+Shuni virus
+Simbu virus
+Simian adenovirus
+Simian enterovirus A
+Simian foamy virus
+Simian hemorrhagic fever virus
+Simian immunodeficiency virus
+Simian parvovirus
+Simian virus 10
+Simian virus 12
+Simian virus 40
+Simian virus 5
+Sin Nombre virus
+Sindbis virus
+Southern elephant seal virus
+Squirrel adenovirus
+Squirrel fibroma virus
+Squirrel monkey retrovirus
+Squirrel parapoxvirus
+St. Louis encephalitis virus
+Sudan ebolavirus
+Suid herpesvirus 1
+Swine norovirus
+Swinepox virus
+Tacaiuma virus
+Tacaribe virus
+Tamana bat virus
+Tamdy virus
+Tamiami virus
+Tanapox virus
+Tataguine virus
+Taterapox virus
+Tembusu virus
+Thailand virus
+Theilovirus
+Thiafora virus
+Thogoto virus
+Thottapalayam virus
+Tick-borne encephalitis virus
+Tioman virus
+Tonate virus
+Topografov virus
+Torque Teno virus
+Transmissible gastroenteritis virus
+Tree shrew adenovirus
+Trubanaman virus
+Tula virus
+Tupaia paramyxovirus
+Tupaiid herpesvirus 1
+Turlock virus
+Uganda S virus
+Una virus
+Upolu virus
+Usutu virus
+Uukuniemi virus
+Vaccinia virus
+Variola virus
+Venezuelan equine encephalitis virus
+Vesicular exanthema of swine virus
+Vesicular stomatitis Alagoas virus
+Vesicular stomatitis Indiana virus
+Vesicular stomatitis New Jersey virus
+Visna/maedi virus
+Volepox virus
+Wad Medani virus
+Wallal virus
+Walrus calicivirus
+Wanowrie virus
+Warrego virus
+Wesselsbron virus
+West Caucasian bat virus
+West Nile virus
+Western equine encephalitis virus
+Whitewater Arroyo virus
+Witwatersrand virus
+Wongorr virus
+Woodchuck hepatitis virus
+Woolly monkey sarcoma virus
+Wyeomyia virus
+Yaba monkey tumor virus
+Yellow fever virus
+Yogue virus
+Yokose virus
+Zaire ebolavirus
+Zegla virus
+Zika virus
