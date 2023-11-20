@@ -13,7 +13,8 @@ def run():
     df_palmprint = serratus_queries.get_palmprint_df()
     graph_queries.add_palmprint_nodes(df_palmprint)
     graph_queries.add_sotu_labels()
-    graph_queries.add_palmprint_sotu_edges()
+    df_palmprint_sotu = serratus_queries.get_palmprint_sotu_df()
+    graph_queries.add_palmprint_sotu_edges(df_palmprint_sotu)
 
     df_palmprint_msa = serratus_queries.get_palmprint_msa_df()
     graph_queries.add_palmprint_msa_edges(df_palmprint_msa)
