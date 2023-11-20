@@ -103,7 +103,7 @@ def add_palmprint_sotu_edges(rows):
             WHERE s.palmId = row.palm_id
                 AND t.palmId = row.sotu
             MERGE (s)-[r:HAS_SOTU]->(t)
-            SET r.percentIdentity = toFloat(row.percent_identity)
+            SET r.percentIdentity = toFloat(row.percent_identity)/100
             '''
     return batch_insert_data(query, rows)
 
