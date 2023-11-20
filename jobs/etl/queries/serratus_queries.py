@@ -79,6 +79,15 @@ def get_sra_palmprint_df():
     )
 
 
+def get_palmprint_sotu_df():
+    query = ("SELECT palm_id, sotu, percent_identity "
+             "FROM public.palmdb2")
+    return get_query_results(
+        query=query,
+        cache_filename='sql_palmprint_sotu_edges.csv'
+    )
+
+
 def get_taxon_df():
     query = ("SELECT t1.tax_id, parent_tax_id, rank, genetic_code_id, "
              "mitochondrial_genetic_code_id, tax_kingdom, tax_phylum, "
