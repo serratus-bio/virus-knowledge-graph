@@ -96,15 +96,16 @@ def add_palmprint_msa_edges(rows):
     return batch_insert_data(query, rows)
 
 
-def add_palmprint_sotu_edges():
+def add_palmprint_sotu_edges(rows):
     query = '''
+            UNWIND $rows as row
             MATCH (s:Palmprint), (t:Palmprint)
-            WHERE s.centroid = false AND t.palmId = s.sotu
+            WHERE s.palmId = row.palm_id
+                AND t.palmId = row.sotu
             MERGE (s)-[r:HAS_SOTU]->(t)
+            SET r.percentIdentity = toFloat(row.percent_identity)
             '''
-    conn.query(
-        query=query
-    )
+    return batch_insert_data(query, rows)
 
 
 # Taxon #
