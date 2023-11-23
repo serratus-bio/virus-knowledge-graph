@@ -102,11 +102,22 @@ def get_taxon_df():
     )
 
 
-def get_sra_taxon_df():
+def get_sra_has_host_metadata_df():
     query = "SELECT srarun.run as run_id, tax_id FROM srarun"
     return get_query_results(
         query=query,
-        cache_filename='sql_sra_taxon_edges_original.csv'
+        cache_filename='sql_sra_host_metadata_edges.csv'
+    )
+
+
+def get_sra_has_host_stat_df():
+    query = ("SELECT sra_stat.run as run_id, sra_stat.taxid as tax_id, "
+             "kmer, total_kmers, kmer_perc "
+             "FROM sra_stat "
+             )
+    return get_query_results(
+        query=query,
+        cache_filename='sql_sra_host_stat_edges.csv'
     )
 
 
