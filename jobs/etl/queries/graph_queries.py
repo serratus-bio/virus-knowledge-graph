@@ -160,7 +160,7 @@ def add_sra_taxon_edges(rows):
             UNWIND $rows as row
             MATCH (s:SRA), (t:Taxon)
             WHERE s.runId = row.run_id AND t.taxId = row.tax_id
-            MERGE (s)-[r:HAS_HOST]->(t)
+            MERGE (s)-[r:HAS_HOST_METADATA]->(t)
             '''
     return batch_insert_data(query, rows)
 
@@ -170,7 +170,7 @@ def add_palmprint_taxon_edges(rows):
             UNWIND $rows as row
             MATCH (p:Palmprint), (t:Taxon)
             WHERE p.palmId = row.palm_id AND t.taxId = row.tax_id
-            MERGE (p)-[r:HAS_POTENTIAL_TAXON]->(t)
+            MERGE (p)-[r:HAS_INFERRED_TAXON]->(t)
             SET r += {
                 percentIdentity: toFloat(row.percent_identity),
                 palmprintCoverage: toFloat(row.pp_cov)

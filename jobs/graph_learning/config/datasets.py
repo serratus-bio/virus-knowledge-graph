@@ -34,19 +34,19 @@ REL_PALMPRINT_HAS_SOTU = {
 }
 REL_PALMPRINT_HAS_HOST = {
     'FILE_NAME': 'palmprint_has_host_edges.csv',
-    'TYPES': ['HAS_HOST'],
+    'TYPES': ['HAS_HOST_METADATA'],
 }
 REL_SOTU_HAS_HOST = {
-    'FILE_NAME': 'sotu_has_host_edges.csv',
-    'TYPES': ['HAS_HOST'],
+    'FILE_NAME': 'sotu_has_host_metadata_edges.csv',
+    'TYPES': ['HAS_HOST_METADATA'],
 }
 REL_SOTU_SEQUENCE_ALIGNMENT = {
     'FILE_NAME': 'sotu_sequence_alignment_edges.csv',
     'TYPES': ['SEQUENCE_ALIGNMENT'],
 }
-REL_SOTU_HAS_POTENTIAL_TAXON = {
-    'FILE_NAME': 'sotu_has_potential_taxon_edges.csv',
-    'TYPES': ['HAS_POTENTIAL_TAXON'],
+REL_SOTU_HAS_INFERRED_TAXON = {
+    'FILE_NAME': 'sotu_has_inferred_taxon_edges.csv',
+    'TYPES': ['HAS_INFERRED_TAXON'],
 }
 
 
@@ -55,14 +55,14 @@ DATASET_CFGS = {
         'NODE_META': [NODE_PALMPRINT, NODE_TAXON],
         'REL_META': [REL_TAXON_HAS_PARENT, REL_PALMPRINT_HAS_HOST,
                      REL_PALMPRINT_HAS_SOTU],
-        'TARGET_REL_TYPE': ['HAS_HOST'],
+        'TARGET_REL_TYPE': ['HAS_HOST_METADATA'],
         'SOURCE_NODE_LABEL': 'Palmprint',
         'TARGET_NODE_LABEL': 'Taxon',
     },
     DATASET_VERSION_2: {
         'NODE_META': [NODE_SOTU, NODE_TAXON],
         'REL_META': [REL_TAXON_HAS_PARENT, REL_SOTU_HAS_HOST],
-        'TARGET_REL_TYPE': ['HAS_HOST'],
+        'TARGET_REL_TYPE': ['HAS_HOST_METADATA'],
         'SOURCE_NODE_LABEL': 'SOTU',
         'TARGET_NODE_LABEL': 'Taxon',
     },
@@ -70,16 +70,16 @@ DATASET_CFGS = {
         'NODE_META': [NODE_SOTU, NODE_TAXON],
         'REL_META': [REL_TAXON_HAS_PARENT, REL_SOTU_HAS_HOST,
                      REL_SOTU_SEQUENCE_ALIGNMENT],
-        'TARGET_REL_TYPE': ['HAS_HOST'],
+        'TARGET_REL_TYPE': ['HAS_HOST_METADATA'],
         'SOURCE_NODE_LABEL': 'SOTU',
         'TARGET_NODE_LABEL': 'Taxon',
     },
     DATASET_VERSION_4: {
         'NODE_META': [NODE_SOTU, NODE_TAXON],
         'REL_META': [REL_TAXON_HAS_PARENT, REL_SOTU_HAS_HOST,
-                     REL_SOTU_SEQUENCE_ALIGNMENT, REL_SOTU_HAS_POTENTIAL_TAXON,
+                     REL_SOTU_SEQUENCE_ALIGNMENT, REL_SOTU_HAS_INFERRED_TAXON,
                      ],
-        'TARGET_REL_TYPE': ['HAS_HOST'],
+        'TARGET_REL_TYPE': ['HAS_HOST_METADATA'],
         'SOURCE_NODE_LABEL': 'SOTU',
         'TARGET_NODE_LABEL': 'Taxon',
     }
