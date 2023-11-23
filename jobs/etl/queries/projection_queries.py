@@ -114,7 +114,7 @@ def get_palmprint_has_host_edges():
     return conn.query(query=query)
 
 
-def get_sotu_has_host_edges():
+def get_sotu_has_host_metadata_edges():
     # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
     # exclude all hosts that are descendants of unclassified Taxon 12908
     query = '''
@@ -134,6 +134,37 @@ def get_sotu_has_host_edges():
                 avg(r.percentIdentity) as avgPercentIdentity,
                 avg(r.percentIdentity) as weight
             '''
+    return conn.query(query=query)
+
+
+def get_sotu_has_host_stat_edges():
+    # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
+    # Hardcode stat_threshold to 0.8
+    query = '''
+        CALL {
+            MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
+                <-[r:HAS_PALMPRINT]-(s:SRA)-[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {rank: 'order'})
+            WHERE q.percentIdentity >= 0.8
+            RETURN p, t, r, q
+            UNION
+            MATCH (p:SOTU)<-[r:HAS_PALMPRINT]-(s:SRA)
+                -[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {rank: 'order'})
+            WHERE q.percentIdentity >= 0.8
+            RETURN p, t, r, q
+        }
+        WITH p, t, r, q
+        RETURN
+            id(p) as sourceNodeId,
+            p.palmId as sourceAppId,
+            id(t) as targetNodeId,
+            t.taxId as targetAppId,
+            'HAS_HOST_STAT' as relationshipType,
+            count(*) AS count,
+            avg(r.percentIdentity) as avgPercentIdentityPalmprint,
+            avg(q.percentIdentity) as avgPercentIdentityStatKmers,
+            avg(q.percentIdentityFull) as avgPercentIdentityStatSpots,
+            avg(q.percentIdentity) * avg(r.percentIdentity) as weight
+    '''
     return conn.query(query=query)
 
 

@@ -1,10 +1,10 @@
 from queries import projection_queries
 
 
-PROJECTION_VERSION = 4
-
-
 # TODO: share data config from ml container
+PROJECTION_VERSION = 5
+
+
 def run():
     print(PROJECTION_VERSION)
 
@@ -63,7 +63,7 @@ def run():
         )
 
         print('Processing SOTU HAS_HOST_METADATA edges')
-        query_results = projection_queries.get_sotu_has_host_edges()
+        query_results = projection_queries.get_sotu_has_host_metadata_edges()
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='sotu_has_host_metadata_edges.csv',
@@ -98,5 +98,15 @@ def run():
         projection_queries.write_to_disk(
             query_results=query_results,
             file_name='sotu_has_inferred_taxon_edges.csv',
+            projection_version=PROJECTION_VERSION,
+        )
+
+    # v5 includes has_host_stat edges between SOTU-Taxon
+    if PROJECTION_VERSION >= 5:
+        print('Processing SOTU HAS_HOST_STAT edges')
+        query_results = projection_queries.get_sotu_has_host_stat_edges()
+        projection_queries.write_to_disk(
+            query_results=query_results,
+            file_name='sotu_has_host_stat_edges.csv',
             projection_version=PROJECTION_VERSION,
         )
