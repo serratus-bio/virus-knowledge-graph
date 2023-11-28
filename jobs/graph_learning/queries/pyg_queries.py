@@ -80,9 +80,9 @@ def create_pyg_graph(
         data['sotu'].x = torch.arange(0, len(sotu_mapping))
         mappings['sotu'] = sotu_mapping
 
-    if 'sotu_has_host_edges.csv' in rel_file_paths:
+    if 'sotu_has_host_metadata_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/sotu_has_host_edges.csv',
+            filename=f'{dir_name}/sotu_has_host_metadata_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
@@ -125,9 +125,9 @@ def create_pyg_graph(
         data['sotu', 'sequence_alignment', 'sotu'].edge_index = edge_index
         data['sotu', 'sequence_alignment', 'sotu'].edge_label = edge_label
 
-    if 'sotu_has_potential_taxon.csv' in rel_file_paths:
+    if 'sotu_has_inferred_taxon.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/sotu_has_potential_taxon.csv',
+            filename=f'{dir_name}/sotu_has_inferred_taxon.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
@@ -136,8 +136,8 @@ def create_pyg_graph(
                 'weight': IdentityEncoder(dtype=torch.float, is_tensor=True)
             },
         )
-        data['sotu', 'has_potential_taxon', 'taxon'].edge_index = edge_index
-        data['sotu', 'has_potential_taxon', 'taxon'].edge_label = edge_label
+        data['sotu', 'has_inferred_taxon', 'taxon'].edge_index = edge_index
+        data['sotu', 'has_inferred_taxon', 'taxon'].edge_label = edge_label
 
     node_types, edge_types = data.metadata()
     if not ('taxon', 'rev_has_host', 'sotu') in edge_types:

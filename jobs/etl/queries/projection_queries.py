@@ -99,14 +99,14 @@ def get_palmprint_has_host_edges():
     # exclude all hosts that are descendants of unclassified Taxon 12908
     query = '''
             MATCH (s:Palmprint)<-[r:HAS_PALMPRINT]-(:SRA)
-                -[:HAS_HOST]->(t:Taxon)
+                -[:HAS_HOST_METADATA]->(t:Taxon)
             WHERE not (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
             RETURN
                 id(s) as sourceNodeId,
                 s.palmId as sourceAppId,
                 id(t) as targetNodeId,
                 t.taxId as targetAppId,
-                'HAS_HOST' as relationshipType,
+                'HAS_HOST_METADATA' as relationshipType,
                 count(*) AS count,
                 avg(r.percentIdentity) as avgPercentIdentity,
                 avg(r.percentIdentity) as weight
@@ -114,26 +114,57 @@ def get_palmprint_has_host_edges():
     return conn.query(query=query)
 
 
-def get_sotu_has_host_edges():
+def get_sotu_has_host_metadata_edges():
     # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
     # exclude all hosts that are descendants of unclassified Taxon 12908
     query = '''
             MATCH (s:SOTU)<-[:HAS_SOTU]-(:Palmprint)
-                    <-[r:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST]->(t:Taxon)
+                    <-[r:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST_METADATA]->(t:Taxon)
             WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
             OPTIONAL MATCH (s:SOTU)<-[r:HAS_PALMPRINT]-(:SRA)
-                    -[:HAS_HOST]->(t:Taxon)
+                    -[:HAS_HOST_METADATA]->(t:Taxon)
             WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
             RETURN
                 id(s) as sourceNodeId,
                 s.palmId as sourceAppId,
                 id(t) as targetNodeId,
                 t.taxId as targetAppId,
-                'HAS_HOST' as relationshipType,
+                'HAS_HOST_METADATA' as relationshipType,
                 count(*) AS count,
                 avg(r.percentIdentity) as avgPercentIdentity,
                 avg(r.percentIdentity) as weight
             '''
+    return conn.query(query=query)
+
+
+def get_sotu_has_host_stat_edges():
+    # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
+    # Hardcode stat_threshold to 0.8
+    query = '''
+        CALL {
+            MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
+                <-[r:HAS_PALMPRINT]-(s:SRA)-[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {rank: 'order'})
+            WHERE q.percentIdentity >= 0.8
+            RETURN p, t, r, q
+            UNION
+            MATCH (p:SOTU)<-[r:HAS_PALMPRINT]-(s:SRA)
+                -[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {rank: 'order'})
+            WHERE q.percentIdentity >= 0.8
+            RETURN p, t, r, q
+        }
+        WITH p, t, r, q
+        RETURN
+            id(p) as sourceNodeId,
+            p.palmId as sourceAppId,
+            id(t) as targetNodeId,
+            t.taxId as targetAppId,
+            'HAS_HOST_STAT' as relationshipType,
+            count(*) AS count,
+            avg(r.percentIdentity) as avgPercentIdentityPalmprint,
+            avg(q.percentIdentity) as avgPercentIdentityStatKmers,
+            avg(q.percentIdentityFull) as avgPercentIdentityStatSpots,
+            avg(q.percentIdentity) * avg(r.percentIdentity) as weight
+    '''
     return conn.query(query=query)
 
 
@@ -165,15 +196,15 @@ def get_sotu_sequnce_aligment_edges(
     )
 
 
-def get_sotu_has_potential_taxon():
+def get_sotu_has_inferred_taxon():
     # Get inferred SOTU -> Taxon has potential taxon edges
     # from Palmprint -> SOTU -> Taxon
     # exclude all hosts that are descendants of unclassified Taxon 12908
     query = '''
             MATCH (s:SOTU)<-[:HAS_SOTU]-(:Palmprint)
-                    -[r:HAS_POTENTIAL_TAXON]->(t:Taxon)
+                    -[r:HAS_INFERRED_TAXON]->(t:Taxon)
             WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
-            OPTIONAL MATCH (s:SOTU)-[r:HAS_POTENTIAL_TAXON]->(t:Taxon)
+            OPTIONAL MATCH (s:SOTU)-[r:HAS_INFERRED_TAXON]->(t:Taxon)
             WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
             RETURN
                 id(s) as sourceNodeId,

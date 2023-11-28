@@ -1,10 +1,10 @@
 from queries import projection_queries
 
 
-PROJECTION_VERSION = 4
-
-
 # TODO: share data config from ml container
+PROJECTION_VERSION = 5
+
+
 def run():
     print(PROJECTION_VERSION)
 
@@ -44,7 +44,7 @@ def run():
             projection_version=PROJECTION_VERSION,
         )
 
-        print('Processing Palmprint HAS_HOST edges')
+        print('Processing Palmprint HAS_HOST_METADATA edges')
         query_results = projection_queries.get_palmprint_has_host_edges()
         projection_queries.write_to_disk(
             query_results=query_results,
@@ -62,11 +62,11 @@ def run():
             projection_version=PROJECTION_VERSION,
         )
 
-        print('Processing SOTU HAS_HOST edges')
-        query_results = projection_queries.get_sotu_has_host_edges()
+        print('Processing SOTU HAS_HOST_METADATA edges')
+        query_results = projection_queries.get_sotu_has_host_metadata_edges()
         projection_queries.write_to_disk(
             query_results=query_results,
-            file_name='sotu_has_host_edges.csv',
+            file_name='sotu_has_host_metadata_edges.csv',
             projection_version=PROJECTION_VERSION,
         )
 
@@ -91,12 +91,22 @@ def run():
             if len(query_results) < page_size:
                 break
 
-    # v4 includes has_potential_taxon edges between SOTU-Taxon
+    # v4 includes has_inferred_taxon edges between SOTU-Taxon
     if PROJECTION_VERSION >= 4:
-        print('Processing SOTU HAS_POTENTIAL_TAXON edges')
-        query_results = projection_queries.get_sotu_has_potential_taxon()
+        print('Processing SOTU HAS_INFERRED_TAXON edges')
+        query_results = projection_queries.get_sotu_has_inferred_taxon()
         projection_queries.write_to_disk(
             query_results=query_results,
-            file_name='sotu_has_potential_taxon_edges.csv',
+            file_name='sotu_has_inferred_taxon_edges.csv',
+            projection_version=PROJECTION_VERSION,
+        )
+
+    # v5 includes has_host_stat edges between SOTU-Taxon
+    if PROJECTION_VERSION >= 5:
+        print('Processing SOTU HAS_HOST_STAT edges')
+        query_results = projection_queries.get_sotu_has_host_stat_edges()
+        projection_queries.write_to_disk(
+            query_results=query_results,
+            file_name='sotu_has_host_stat_edges.csv',
             projection_version=PROJECTION_VERSION,
         )

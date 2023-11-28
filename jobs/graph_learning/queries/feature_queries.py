@@ -265,6 +265,7 @@ def encode_node_properties(dataset_cfg=DATASET_CFG):
             dataset_cfg['NODE_META']
         )
     )
+
     if 'taxon_nodes.csv' in node_file_paths:
         encode_features(
             filename='taxon_nodes.csv',

@@ -155,12 +155,33 @@ def add_sra_palmprint_edges(rows):
     return batch_insert_data(query, rows)
 
 
-def add_sra_taxon_edges(rows):
+def add_sra_has_host_metadata_edges(rows):
     query = '''
             UNWIND $rows as row
             MATCH (s:SRA), (t:Taxon)
             WHERE s.runId = row.run_id AND t.taxId = row.tax_id
-            MERGE (s)-[r:HAS_HOST]->(t)
+            MERGE (s)-[r:HAS_HOST_METADATA]->(t)
+            '''
+    return batch_insert_data(query, rows)
+
+
+def add_sra_has_host_stat_edges(rows):
+    query = '''
+            UNWIND $rows as row
+            MATCH (s:SRA), (t:Taxon)
+            WHERE s.runId = toString(row.run_id)
+            AND t.taxId = toString(row.tax_id)
+            AND round(toFloat(row.kmer_perc / 100), 4) > 0
+            MERGE (s)-[r:HAS_HOST_STAT]->(t)
+            SET r += {
+                percentIdentity: round(toFloat(row.kmer_perc / 100), 4),
+                percentIdentityFull: CASE WHEN s.spots > 0
+                    THEN round(toFloat(row.kmer) / toFloat(s.spots), 4)
+                    ELSE 0.0 END,
+                kmer: row.kmer,
+                totalKmers: row.total_kmers,
+                totalSpots: s.spots
+            }
             '''
     return batch_insert_data(query, rows)
 
@@ -170,7 +191,7 @@ def add_palmprint_taxon_edges(rows):
             UNWIND $rows as row
             MATCH (p:Palmprint), (t:Taxon)
             WHERE p.palmId = row.palm_id AND t.taxId = row.tax_id
-            MERGE (p)-[r:HAS_POTENTIAL_TAXON]->(t)
+            MERGE (p)-[r:HAS_INFERRED_TAXON]->(t)
             SET r += {
                 percentIdentity: toFloat(row.percent_identity),
                 palmprintCoverage: toFloat(row.pp_cov)

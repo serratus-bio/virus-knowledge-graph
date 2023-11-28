@@ -28,8 +28,11 @@ def run():
     df_sra_palmprint = serratus_queries.get_sra_palmprint_df()
     graph_queries.add_sra_palmprint_edges(df_sra_palmprint)
 
-    df_sra_taxon = serratus_queries.get_sra_taxon_df()
-    graph_queries.add_sra_taxon_edges(df_sra_taxon)
+    df_sra_taxon = serratus_queries.get_sra_has_host_metadata_df()
+    graph_queries.add_sra_has_host_metadata_edges(df_sra_taxon)
+
+    df_sra_taxon = serratus_queries.get_sra_has_host_stat_df()
+    graph_queries.add_sra_has_host_stat_edges(df_sra_taxon)
 
     df_palmprint_taxon_edges = \
         serratus_queries.get_palmprint_taxon_edges_df()
