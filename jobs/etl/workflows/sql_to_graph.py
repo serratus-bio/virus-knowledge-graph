@@ -1,5 +1,6 @@
 from queries import serratus_queries
 from queries import graph_queries
+from queries import owl_queries
 
 
 def run():
@@ -24,6 +25,16 @@ def run():
     graph_queries.add_taxon_nodes(df_taxon)
     graph_queries.add_taxon_edges(df_taxon)
 
+    print('Processing Tissues')
+    df_tissue_nodes = owl_queries.get_tissue_nodes_df()
+    graph_queries.add_tissue_nodes(df_tissue_nodes)
+    df_tissue_edges = owl_queries.get_tissue_edges()
+    graph_queries.add_tissue_edges(df_tissue_edges)
+
+    df_sra_tissue = serratus_queries.get_sra_tissue_df()
+    graph_queries.add_sra_tissue_edges(df_sra_tissue)
+
+
     print('Processing heterogenous edges')
     df_sra_palmprint = serratus_queries.get_sra_palmprint_df()
     graph_queries.add_sra_palmprint_edges(df_sra_palmprint)
@@ -37,3 +48,4 @@ def run():
     df_palmprint_taxon_edges = \
         serratus_queries.get_palmprint_taxon_edges_df()
     graph_queries.add_palmprint_taxon_edges(df_palmprint_taxon_edges)
+

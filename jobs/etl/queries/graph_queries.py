@@ -141,6 +141,46 @@ def add_taxon_edges(rows):
     return batch_insert_data(query, rows)
 
 
+# Tissues #
+
+
+def add_tissue_nodes(rows):
+    query = '''
+            UNWIND $rows as row
+            MERGE (n:Tissue {
+                btoId: toString(row.bto_id))
+            })
+            SET n += {
+                scientificName: row.name
+            }
+            '''
+    return batch_insert_data(query, rows)
+
+
+def add_tissue_edges(rows):
+    query = '''
+            UNWIND $rows as row
+            MATCH (s:Tissue), (t:Tissue)
+            WHERE s.btoId = row.bto_id AND t.btoId = row.parent_bto_id
+            MERGE (s)-[r:HAS_PARENT]->(t)
+            '''
+    return batch_insert_data(query, rows)
+
+
+def add_sra_tissue_edges(rows):
+    query = '''
+            UNWIND $rows as row
+            MATCH (s:SRA), (t:Tissue)
+            WHERE s.biosample = row.biosample_id AND t.btoId = row.bto_id
+            MERGE (s)-[r:HAS_TISSUE_METADATA]->(t)
+            SET  r += {
+                sourceKey: row.source,
+                sourceValue: row.text
+            }
+            '''
+    return batch_insert_data(query, rows)
+
+
 # Heterogenous edges #
 
 
