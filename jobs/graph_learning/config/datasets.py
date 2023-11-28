@@ -17,12 +17,7 @@ NODE_SOTU = {
 }
 NODE_TAXON = {
     'FILE_NAME': 'taxon_nodes.csv',
-    'LABELS': ['Host', 'Taxon'],
-    'APP_ID': ['taxId'],
-}
-NODE_HOST = {
-    'FILE_NAME': 'taxon_nodes.csv',
-    'LABELS': ['Host'],
+    'LABELS': ['Taxon'],
     'APP_ID': ['taxId'],
 }
 REL_TAXON_HAS_PARENT = {

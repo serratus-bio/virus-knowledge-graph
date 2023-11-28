@@ -118,7 +118,7 @@ def create_lp_pipeline(
     ]
     context_node_labels = list(
         filter(
-            (lambda x: x not in ['Host', 'SOTU', 'Palmprint', 'Taxon']),
+            (lambda x: x not in ['SOTU', 'Palmprint', 'Taxon']),
             all_node_labels
         )
     )
