@@ -148,7 +148,7 @@ def add_tissue_nodes(rows):
     query = '''
             UNWIND $rows as row
             MERGE (n:Tissue {
-                btoId: toString(row.bto_id))
+                btoId: toString(row.bto_id)
             })
             SET n += {
                 scientificName: row.name
@@ -168,16 +168,36 @@ def add_tissue_edges(rows):
 
 
 def add_sra_tissue_edges(rows):
+    # alt_query = '''
+    #     CALL apoc.periodic.iterate(
+    #     "
+    #         LOAD CSV WITH HEADERS FROM 'file:///sql_biosample_tissue_edges.csv' AS row
+    #         MATCH (s:SRA), (t:Tissue)
+    #         RETURN s, t, row
+    #     ","
+    #         WITH s, t, row
+    #         MERGE (s)-[r:HAS_TISSUE_METADATA]->(t)
+    #         SET r += {
+    #             sourceKey: row.source,
+    #             sourceValue: row.text
+    #         }
+    #     ",
+    #     {batchSize:100000, parallel:True, retries: 3})
+    #     YIELD batches, total, errorMessages
+    #     RETURN batches, total, errorMessages
+    # '''
+    # conn.query( query=alt_query)
+
     query = '''
-            UNWIND $rows as row
-            MATCH (s:SRA), (t:Tissue)
-            WHERE s.biosample = row.biosample_id AND t.btoId = row.bto_id
-            MERGE (s)-[r:HAS_TISSUE_METADATA]->(t)
-            SET  r += {
-                sourceKey: row.source,
-                sourceValue: row.text
-            }
-            '''
+        UNWIND $rows as row
+        MATCH (s:SRA), (t:Tissue)
+        WHERE s.bioSample = row.biosample_id AND t.btoId = row.bto_id
+        CREATE (s)-[r:HAS_TISSUE_METADATA]->(t)
+        SET r += {
+            sourceKey: row.source,
+            sourceValue: row.text
+        }
+    '''
     return batch_insert_data(query, rows)
 
 

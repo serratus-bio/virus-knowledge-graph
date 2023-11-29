@@ -5,11 +5,12 @@ MOUNT_DIR=/mnt/graphdata
 
 # Mount EBS Volume
 mkdir -p $MOUNT_DIR
-sudo chown $USER $MOUNT_DIR
-sudo chgrp $USER $MOUNT_DIR
-# Only run the following if the volume is not already formatted
-# Otherwise data will be lost
-sudo mkfs -t ext4 /dev/$DEVICE_NAME
+sudo chown ec2-user $MOUNT_DIR
+sudo chgrp ec2-user $MOUNT_DIR
+
+## Only run the following if the volume is not already formatted
+## Otherwise data will be lost
+# sudo mkfs -t ext4 /dev/$DEVICE_NAME
 sudo mount /dev/$DEVICE_NAME $MOUNT_DIR
 
 # Automount EBS Volume on Reboot

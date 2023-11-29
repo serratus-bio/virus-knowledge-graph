@@ -34,7 +34,6 @@ def run():
     df_sra_tissue = serratus_queries.get_sra_tissue_df()
     graph_queries.add_sra_tissue_edges(df_sra_tissue)
 
-
     print('Processing heterogenous edges')
     df_sra_palmprint = serratus_queries.get_sra_palmprint_df()
     graph_queries.add_sra_palmprint_edges(df_sra_palmprint)
@@ -48,4 +47,3 @@ def run():
     df_palmprint_taxon_edges = \
         serratus_queries.get_palmprint_taxon_edges_df()
     graph_queries.add_palmprint_taxon_edges(df_palmprint_taxon_edges)
-
