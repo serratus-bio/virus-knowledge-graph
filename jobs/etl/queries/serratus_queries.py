@@ -128,8 +128,13 @@ def get_palmprint_taxon_edges_df():
         cache_filename='sql_palmprint_taxon_edges.csv'
     )
 
+
 def get_sra_tissue_df():
-    query = "SELECT * FROM public.biosample_tissue"
+    query = ("SELECT bt.biosample_id, bt.bto_id, bt.source, bt.text "
+             "FROM public.biosample_tissue as bt "
+             "INNER JOIN public.srarun as sr "
+             "ON bt.biosample_id = sr.bio_sample "
+             )
     return get_query_results(
         query=query,
         cache_filename='sql_biosample_tissue_edges.csv'

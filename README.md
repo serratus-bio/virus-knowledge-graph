@@ -4,11 +4,11 @@
 
 ### Credentials
 
-Admin user credentials are stored in [AWS secrets - Neo4j-Graph](https://us-east-1.console.aws.amazon.com/secretsmanager/secret?name=Neo4j-Graph&region=us-east-1). Click "Retrieve secret value" in AWS Console.
+Admin user credentials are stored in [AWS secrets](https://us-east-1.console.aws.amazon.com/secretsmanager/listsecrets?region=us-east-1). Read-only server is under `Neo4j-Graph-ReadOnly`, Read-Write is under `Neo4j-Graph`. Click "Retrieve secret value" in AWS Console.
 
 ### Web browser URL
 
-Find URL under `Neo4j-Graph` [Cloudformation stack outputs](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/).
+Find URL in [Cloudformation stack "Outputs"](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/). Read-only CF stack is under `neo4j-graph-server`, Read-write CF stack is under `neo4j-graph-server`.
 
 ### (Optional) Desktop app
 
@@ -31,6 +31,10 @@ Find URL under `Neo4j-Graph` [Cloudformation stack outputs](https://us-east-1.co
 
 - https://www.ncbi.nlm.nih.gov/sra/docs/sra-taxonomy-analysis-tool/
 
+### Brenda Tissue Ontology (BTO)
+
+- https://www.ebi.ac.uk/ols4/ontologies/bto
+
 ## Infrastructure and system management
 
 ### Running jobs
@@ -38,13 +42,13 @@ Find URL under `Neo4j-Graph` [Cloudformation stack outputs](https://us-east-1.co
 See [Machines README](./machines/README) for machine setup and neo4j config managment.
 See [Makefile](./Makefile) for available commands to run jobs.
 
+### Neo4j community edition
+
+- Role-based security is an Enterprise Edition feature, high-availability clusters are also enterprise only
+- In the future, we may want to upgrade to enterprise or rely on infrastructure as code (IaC) + GH actions (CI/CD) to write updates to the database while allowing users read-only access when writing is completed
+
 ### Cloudformation
 
 - [Reference](https://github.com/neo4j-partners/amazon-cloud-formation-neo4j)
 
 ![architecture diagram](./machines/cloudformation/aws-community.png)
-
-### Neo4j community edition
-
-- Role-based security is an Enterprise Edition feature, high-availability clusters are also enterprise only
-- In the future, we may want to upgrade to enterprise or rely on infrastructure as code (IaC) + GH actions (CI/CD) to write updates to the database while allowing users read-only access when writing is completed

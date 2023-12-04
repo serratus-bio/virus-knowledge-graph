@@ -1,6 +1,7 @@
 from datasources.owl import get_bto_ontology
 
 import pandas as pd
+import dask.dataframe as dd
 from owlready2 import (
     owl,
     Restriction,
@@ -11,10 +12,11 @@ from owlready2 import (
 def get_tissue_nodes_df():
     onto = get_bto_ontology()
     rows_list = [
-        { 'bto_id': c.name, 'name': c.label.first() }
+        {'bto_id': c.name, 'name': c.label.first()}
         for c in onto.classes()
     ]
-    return pd.DataFrame(rows_list, columns=['bto_id'])
+    df = pd.DataFrame(rows_list, columns=['bto_id', 'name'])
+    return dd.from_pandas(df, npartitions=1)
 
 
 def get_tissue_edges():
@@ -39,4 +41,5 @@ def get_tissue_edges():
                         'bto_id': bto_obj.name,
                         'parent_bto_id': bto_parent_class.value.name,
                     })
-    return pd.DataFrame(rows_list, columns=['bto_id', 'parent_bto_id'])
+    df = pd.DataFrame(rows_list, columns=['bto_id', 'parent_bto_id'])
+    return dd.from_pandas(df, npartitions=1)

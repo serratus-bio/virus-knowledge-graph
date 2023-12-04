@@ -181,7 +181,7 @@ Resources:
     Type: AWS::EC2::Instance
     CreationPolicy:
       ResourceSignal:
-        Timeout: PT8M
+        Timeout: PT20M
         Count: 1
     Properties:
       SubnetId: !Ref Neo4jSubnet
@@ -275,19 +275,29 @@ Resources:
             - "  sed -i s/#server.bolt.listen_address=:7687/server.bolt.listen_address=\"${privateIP}\":7687/g /etc/neo4j/neo4j.conf\n"
             - "  sed -i s/#server.bolt.advertised_address=:7687/server.bolt.advertised_address=\"${publicIP}\":7687/g /etc/neo4j/neo4j.conf\n"
             - "  echo \"internal.dbms.cypher_ip_blocklist=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.169.0/24,fc00::/7,fe80::/10,ff00::/8\" >> /etc/neo4j/neo4j.conf\n"
+            - "  echo \"internal.dbms.tx_log.fail_on_corrupted_log_files=false\" >> /etc/neo4j/neo4j.conf\n"
             - "  neo4j-admin server memory-recommendation | grep -v ^# >> /etc/neo4j/neo4j.conf\n"
             - "}\n"
 
             - "configure_ml_worker() {\n"
             - "  if [[ \"${isMLWorker}\" == Yes ]]; then\n"
             - "    echo \"Installing Graph Data Science...\"\n"
-            - "    wget \"https://graphdatascience.ninja/neo4j-graph-data-science-2.5.2.zip\" -P /tmp/ \n"
+            - "    NEO4J_VERSION=$(curl --fail http://versions.neo4j-templates.com/target.json | jq -r '.aws.\"5\"' || echo \"\")\n"
+            - "    GDS_VERSION=$(curl --fail https://graphdatascience.ninja/versions.json |  jq -r --arg pkg_version \"$NEO4J_VERSION\" '.[] | select(.neo4j == $pkg_version) | .version' || echo \"\")\n"
+            - "    wget \"https://graphdatascience.ninja/neo4j-graph-data-science-$GDS_VERSION.zip\" -P /tmp/ \n"
             - "    unzip /tmp/neo4j-graph-data-science-*.zip  -d /var/lib/neo4j/plugins \n"
             - "    echo \"Disable page cache requirements\"\n"
             - "    sed -i s/server.memory.pagecache.size=10g/#server.memory.pagecache.size=10g/g /etc/neo4j/neo4j.conf\n"
-            - "    sed -i s|server.directories.data=/var/lib/neo4j/data|server.directories.data=/mnt/graphdata/neo4j/data|g /etc/neo4j/neo4j.conf\n"
-            - "    echo \"gds.export.location=/mnt/graphdata\" >> /etc/neo4j/neo4j.conf\n"
-            - "    echo \"gds.model.store_location=/home/ec2-user/workspace/virus-host-graph\" >> /etc/neo4j/neo4j.conf\n"
+            - "    echo \"# Uncomment the following lines after mounting EBS\" >> /etc/neo4j/neo4j.conf\n"
+            - "    echo \"#gds.export.location=/mnt/graphdata\" >> /etc/neo4j/neo4j.conf\n"
+            - "    echo \"#gds.model.store_location=/home/ec2-user/workspace/virus-host-graph\" >> /etc/neo4j/neo4j.conf\n"
+            - "  fi\n"
+            - "}\n"
+
+            - "configure_read_server() {\n"
+            - "  if [[ \"${isMLWorker}\" == No ]]; then\n"
+            - "    echo \"Enable read-only mode\"\n"
+            - "    echo \"server.databases.default_to_read_only=true\" >> /etc/neo4j/neo4j.conf\n"
             - "  fi\n"
             - "}\n"
 
@@ -306,6 +316,7 @@ Resources:
             - "extension_config\n"
             - "build_neo4j_conf_file\n"
             - "configure_ml_worker\n"
+            - "configure_read_server\n"
             - "start_neo4j && /opt/aws/bin/cfn-signal -e $? --stack \"${stackName}\" --resource Neo4jEC2Instance --region \"${region}\"\n"
 
 Outputs:

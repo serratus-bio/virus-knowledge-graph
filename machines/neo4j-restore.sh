@@ -9,5 +9,5 @@ if [[! "${sudo systemctl stop neo4j}"]]; then
   done;
 fi
 
-/bin/neo4j-admin database load --from-path=$BACKUP_DIR/neo4j.dump neo4j --overwrite-destination=true
+sudo -u neo4j /bin/neo4j-admin database load --from-path=$BACKUP_DIR neo4j --overwrite-destination=true
 sudo systemctl start neo4j
