@@ -17,9 +17,11 @@ def batch_insert_data(query, df):
 
 def add_constraints():
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SRA) ON n.runId')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SRA) ON n.bioSample')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Palmprint) ON n.palmId')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.taxId')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.scientificName')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Tissue) ON n.btoId')
 
 
 # SRA #
@@ -173,6 +175,7 @@ def add_sra_tissue_edges(rows):
     #     "
     #         LOAD CSV WITH HEADERS FROM 'file:///sql_biosample_tissue_edges.csv' AS row
     #         MATCH (s:SRA), (t:Tissue)
+    #         WHERE s.bioSample = row.biosample_id AND t.btoId = row.bto_id
     #         RETURN s, t, row
     #     ","
     #         WITH s, t, row
