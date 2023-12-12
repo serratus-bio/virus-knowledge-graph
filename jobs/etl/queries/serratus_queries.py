@@ -111,9 +111,12 @@ def get_sra_has_host_metadata_df():
 
 
 def get_sra_has_host_stat_df():
-    query = ("SELECT sra_stat.run as run_id, sra_stat.taxid as tax_id, "
-             "kmer, total_kmers, kmer_perc "
-             "FROM sra_stat "
+    query = ("SELECT DISTINCT stat.run as run_id, stat.taxid as tax_id, "
+             "stat.kmer, stat.total_kmers, stat.kmer_perc "
+             "FROM public.sra_stat as stat "
+             "INNER JOIN public.srarun as sra "
+             "ON sra.run = stat.run "
+             "WHERE stat.kmer_perc > 1.0 "
              )
     return get_query_results(
         query=query,

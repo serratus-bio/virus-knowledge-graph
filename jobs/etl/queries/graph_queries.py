@@ -234,10 +234,10 @@ def add_sra_has_host_stat_edges(rows):
             MATCH (s:SRA), (t:Taxon)
             WHERE s.runId = toString(row.run_id)
             AND t.taxId = toString(row.tax_id)
-            AND round(toFloat(row.kmer_perc / 100), 4) > 0
+            AND round(toFloat(row.kmer_perc) / 100, 4) > 0
             MERGE (s)-[r:HAS_HOST_STAT]->(t)
             SET r += {
-                percentIdentity: round(toFloat(row.kmer_perc / 100), 4),
+                percentIdentity: round(toFloat(row.kmer_perc) / 100, 4),
                 percentIdentityFull: CASE WHEN s.spots > 0
                     THEN round(toFloat(row.kmer) / toFloat(s.spots), 4)
                     ELSE 0.0 END,

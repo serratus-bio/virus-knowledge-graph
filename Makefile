@@ -27,6 +27,9 @@ neo4j-restart: neo4j-stop neo4j-start
 neo4j-logs:
 	tail -f  /var/log/neo4j/neo4j.log
 
+neo4j-check:
+	sudo /bin/neo4j-admin database check neo4j
+
 ## Docker
 
 docker-start:
