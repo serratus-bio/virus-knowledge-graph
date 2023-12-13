@@ -9,6 +9,7 @@ DATASET_CFG = DATASET_CFGS[CUR_DATASET_VERSION]
 
 
 DIR_CFG = {
+    'QUERY_CACHE_DIR': '/mnt/graphdata/query_cache/',
     'FEATURE_STORE_DIR': '/mnt/graphdata/features/'
     + CUR_DATASET_VERSION + '/',
     'DATASETS_DIR': '/mnt/graphdata/datasets/'

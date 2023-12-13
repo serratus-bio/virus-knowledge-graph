@@ -42,7 +42,7 @@ def create_projection_from_dataset(
     undirected_relationship_types = list(
         map(
             (lambda cfg: cfg['TYPES'][0]),
-            dataset_cfg['REL_META']
+            dataset_cfg['REL_TYPES']
         )
     )
     return gds.alpha.graph.construct(
@@ -68,7 +68,7 @@ def create_random_walk_subgraph(
     relationship_types = list(
         map(
             (lambda cfg: cfg['TYPES'][0]),
-            DATASET_CFG['REL_META']
+            DATASET_CFG['REL_TYPES']
         )
     )
 
@@ -98,7 +98,7 @@ def create_lp_pipeline(
     all_relationship_types = list(
         map(
             (lambda cfg: cfg['TYPES'][0]),
-            dataset_cfg['REL_META']
+            dataset_cfg['REL_TYPES']
         )
     )
     context_relationship_types = list(
@@ -109,7 +109,7 @@ def create_lp_pipeline(
     all_node_labels = list(
         map(
             (lambda cfg: cfg['LABELS']),
-            dataset_cfg['NODE_META']
+            dataset_cfg['NODE_TYPES']
         )
     )
     all_node_labels = [
@@ -298,7 +298,7 @@ def export_projection(G, sampling_ratio=1, dataset_cfg=DATASET_CFG):
 
     for entity_type, entity_mappings in zip(
         ['nodes', 'rels'],
-        [dataset_cfg['NODE_META'], dataset_cfg['REL_META']]
+        [dataset_cfg['NODE_TYPES'], dataset_cfg['REL_TYPES']]
     ):
         for mapping in entity_mappings:
             if entity_type == 'nodes':

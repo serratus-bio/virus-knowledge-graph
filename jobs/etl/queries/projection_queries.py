@@ -6,21 +6,16 @@ from datasources.neo4j import get_connection
 
 conn = get_connection()
 
-# TODO: use query_cache dir instead of features dir
-FEATURE_STORE_DIR = '/mnt/graphdata/features/'
+QUERY_CACHE_DIR = '/mnt/graphdata/query_cache/'
 
 
 def write_to_disk(
     query_results,
     file_name='',
-    projection_version='',
     mode='w',
 ):
     df = pd.DataFrame([dict(record) for record in query_results])
-    version_dir = f"data-v{projection_version}"
-    dir_name = FEATURE_STORE_DIR + version_dir + '/'
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
+    dir_name = QUERY_CACHE_DIR 
     file_path = dir_name + file_name
     header = True if mode == 'w' else False
     df.to_csv(file_path, index=False, mode=mode, header=header)
@@ -80,7 +75,7 @@ def get_taxon_nodes():
     return conn.query(query=query)
 
 
-def get_has_parent_edges():
+def get_taxon_has_parent_edges():
     query = '''
             MATCH (s:Taxon)-[r:HAS_PARENT]->(t:Taxon)
             RETURN
@@ -116,14 +111,12 @@ def get_palmprint_has_host_edges():
 
 def get_sotu_has_host_metadata_edges():
     # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
-    # exclude all hosts that are descendants of unclassified Taxon 12908
+    # // WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
     query = '''
             MATCH (s:SOTU)<-[:HAS_SOTU]-(:Palmprint)
                     <-[r:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST_METADATA]->(t:Taxon)
-            WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
             OPTIONAL MATCH (s:SOTU)<-[r:HAS_PALMPRINT]-(:SRA)
                     -[:HAS_HOST_METADATA]->(t:Taxon)
-            WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
             RETURN
                 id(s) as sourceNodeId,
                 s.palmId as sourceAppId,
@@ -139,17 +132,17 @@ def get_sotu_has_host_metadata_edges():
 
 def get_sotu_has_host_stat_edges():
     # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
-    # Hardcode stat_threshold to 0.8
+    # Hardcode stat_threshold to 0.5
     query = '''
         CALL {
             MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
                 <-[r:HAS_PALMPRINT]-(s:SRA)-[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {rank: 'order'})
-            WHERE q.percentIdentity >= 0.8
+            WHERE q.percentIdentity >= 0.5
             RETURN p, t, r, q
             UNION
             MATCH (p:SOTU)<-[r:HAS_PALMPRINT]-(s:SRA)
                 -[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {rank: 'order'})
-            WHERE q.percentIdentity >= 0.8
+            WHERE q.percentIdentity >= 0.5
             RETURN p, t, r, q
         }
         WITH p, t, r, q
@@ -174,7 +167,7 @@ def get_sotu_sequnce_aligment_edges(
 ):
     query = '''
         MATCH (s:SOTU)-[r:SEQUENCE_ALIGNMENT]->(t:SOTU)
-        WHERE r.percentIdentity > 0.7
+        WHERE r.percentIdentity > 0.5
         RETURN
             id(s) as sourceNodeId,
             s.palmId as sourceAppId,
@@ -216,4 +209,57 @@ def get_sotu_has_inferred_taxon():
                 avg(r.percentIdentity) as avgPercentIdentity,
                 avg(r.percentIdentity) as weight
             '''
+    return conn.query(query=query)
+
+
+def get_tissue_nodes():
+    query = '''
+            MATCH (n:Tissue)
+            RETURN
+                id(n) as nodeId,
+                n.btoId as btoId,
+                n.scientificName as scientificName,
+                labels(n) as labels
+            '''
+    return conn.query(query=query)
+
+
+def get_tissue_has_parent_edges():
+    query = '''
+            MATCH (s:Tissue)-[r:HAS_PARENT]->(t:Tissue)
+            RETURN
+                id(s) as sourceNodeId,
+                s.btoId as sourceBtoId,
+                id(t) as targetNodeId,
+                t.btoId as targetBtoId,
+                type(r) as relationshipType,
+                1 as weight
+            '''
+    return conn.query(query=query)
+
+
+
+def get_sotu_has_tissue_metadata_edges():
+    # Get inferred SOTU -> Tissue edges from Palmprint -> SOTU -> SRA -> Tissue
+    query = '''
+        CALL {
+            MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
+                <-[r:HAS_PALMPRINT]-(s:SRA)-[q:HAS_TISSUE_METADATA]->(t:Tissue)
+            RETURN p, t, r, q
+            UNION
+            MATCH (p:SOTU)<-[r:HAS_PALMPRINT]-(s:SRA)
+                -[q:HAS_TISSUE_METADATA]->(t:Tissue)
+            RETURN p, t, r, q
+        }
+        WITH p, t, r, q
+        RETURN
+            id(p) as sourceNodeId,
+            p.palmId as sourceAppId,
+            id(t) as targetNodeId,
+            t.btoId as targetAppId,
+            type(q) as relationshipType,
+            count(*) AS count,
+            avg(r.percentIdentity) as avgPercentIdentityPalmprint,
+            avg(r.percentIdentity) as weight
+    '''
     return conn.query(query=query)

@@ -44,19 +44,19 @@ def create_pyg_graph(
     node_file_paths = list(
         map(
             (lambda cfg: cfg['FILE_NAME']),
-            dataset_cfg['NODE_META']
+            dataset_cfg['NODE_TYPES']
         )
     )
     rel_file_paths = list(
         map(
             (lambda cfg: cfg['FILE_NAME']),
-            dataset_cfg['REL_META']
+            dataset_cfg['REL_TYPES']
         )
     )
 
-    if 'taxon_nodes.csv' in node_file_paths:
+    if 'n4j_taxon_nodes.csv' in node_file_paths:
         taxon_x, taxon_mapping = load_node_tensor(
-            filename=f'{dir_name}/taxon_nodes.csv',
+            filename=f'{dir_name}/n4j_taxon_nodes.csv',
             index_col='appId',
             encoders={
                 # 'rankEncoded': IdentityEncoder(
@@ -67,9 +67,9 @@ def create_pyg_graph(
         data['taxon'].x = taxon_x
         mappings['taxon'] = taxon_mapping
 
-    if 'sotu_nodes.csv' in node_file_paths:
+    if 'n4j_sotu_nodes.csv' in node_file_paths:
         sotu_x, sotu_mapping = load_node_tensor(
-            filename=f'{dir_name}/sotu_nodes.csv',
+            filename=f'{dir_name}/n4j_sotu_nodes.csv',
             index_col='appId',
             encoders={
                 # 'centroidEncoded': IdentityEncoder(
@@ -80,9 +80,9 @@ def create_pyg_graph(
         data['sotu'].x = torch.arange(0, len(sotu_mapping))
         mappings['sotu'] = sotu_mapping
 
-    if 'sotu_has_host_metadata_edges.csv' in rel_file_paths:
+    if 'n4j_sotu_has_host_metadata_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/sotu_has_host_metadata_edges.csv',
+            filename=f'{dir_name}/n4j_sotu_has_host_metadata_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
@@ -97,9 +97,9 @@ def create_pyg_graph(
         data['sotu', 'has_host', 'taxon'].edge_index = edge_index
         data['sotu', 'has_host', 'taxon'].edge_label = edge_label
 
-    if 'has_parent_edges.csv' in rel_file_paths:
+    if 'n4j_taxon_has_parent_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/has_parent_edges.csv',
+            filename=f'{dir_name}/n4j_taxon_has_parent_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=taxon_mapping,
             dst_index_col='targetAppId',
@@ -111,9 +111,9 @@ def create_pyg_graph(
         data['taxon', 'has_parent', 'taxon'].edge_index = edge_index
         data['taxon', 'has_parent', 'taxon'].edge_label = edge_label
 
-    if 'sotu_sequence_alignment_edges.csv' in rel_file_paths:
+    if 'n4j_sotu_sequence_alignment_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/sotu_sequence_alignment_edges.csv',
+            filename=f'{dir_name}/n4j_sotu_sequence_alignment_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
@@ -125,9 +125,9 @@ def create_pyg_graph(
         data['sotu', 'sequence_alignment', 'sotu'].edge_index = edge_index
         data['sotu', 'sequence_alignment', 'sotu'].edge_label = edge_label
 
-    if 'sotu_has_inferred_taxon.csv' in rel_file_paths:
+    if 'n4j_sotu_has_inferred_taxon.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/sotu_has_inferred_taxon.csv',
+            filename=f'{dir_name}/n4j_sotu_has_inferred_taxon.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',

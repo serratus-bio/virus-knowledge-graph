@@ -95,7 +95,7 @@ def get_all_node_features(
     node_file_paths = list(
         map(
             (lambda cfg: dir_name + cfg['FILE_NAME']),
-            dataset_cfg['NODE_META']
+            dataset_cfg['NODE_TYPES']
         )
     )
     nodes = utils.merge_files_to_df(
@@ -122,7 +122,7 @@ def get_all_relationship_features(
     relationship_file_paths = list(
         map(
             (lambda cfg: dir_name + cfg['FILE_NAME']),
-            dataset_cfg['REL_META']
+            dataset_cfg['REL_TYPES']
         )
     )
     relationships = utils.merge_files_to_df(
@@ -262,7 +262,7 @@ def encode_node_properties(dataset_cfg=DATASET_CFG):
     node_file_paths = list(
         map(
             (lambda cfg: cfg['FILE_NAME']),
-            dataset_cfg['NODE_META']
+            dataset_cfg['NODE_TYPES']
         )
     )
 
@@ -323,7 +323,7 @@ def vectorize_node_properties(dataset_cfg=DATASET_CFG):
     node_file_paths = list(
         map(
             (lambda cfg: cfg['FILE_NAME']),
-            dataset_cfg['NODE_META'],
+            dataset_cfg['NODE_TYPES'],
         )
     )
     if 'taxon_nodes.csv' in node_file_paths:
