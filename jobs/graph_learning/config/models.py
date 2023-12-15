@@ -8,8 +8,6 @@ from .datasets import (
     DATASET_VERSION_7,
     DATASET_VERSION_8,
     DATASET_VERSION_9,
-    DATASET_VERSION_10,
-    DATASET_VERSION_11,
 )
 
 MODEL_VERSION_1 = 'model-v1'
@@ -20,9 +18,9 @@ MODEL_VERSION_5 = 'model-v5'
 MODEL_VERSION_6 = 'model-v6'
 MODEL_VERSION_7 = 'model-v7'
 MODEL_VERSION_8 = 'model-v8'
-MODEL_VERSION_8 = 'model-v9'
-MODEL_VERSION_8 = 'model-v10'
-MODEL_VERSION_8 = 'model-v11'
+MODEL_VERSION_9 = 'model-v9'
+MODEL_VERSION_10 = 'model-v10'
+MODEL_VERSION_11 = 'model-v11'
 
 CUR_MODEL_VERSION = MODEL_VERSION_9
 
