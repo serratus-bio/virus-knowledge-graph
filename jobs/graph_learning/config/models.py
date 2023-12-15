@@ -24,7 +24,7 @@ MODEL_VERSION_8 = 'model-v9'
 MODEL_VERSION_8 = 'model-v10'
 MODEL_VERSION_8 = 'model-v11'
 
-CUR_MODEL_VERSION = MODEL_VERSION_1
+CUR_MODEL_VERSION = MODEL_VERSION_9
 
 BASE_MODEL_CFG = {
     'PROJECTION_NAME': 'virus-host-projection',
@@ -38,7 +38,7 @@ BASE_MODEL_CFG = {
     'MAX_EPOCHS': 100,
     'LR': 0.001,
     'PREDICTION_THRESHOLD': 0.2,
-    'SAMPLING_RATIO': 0.25,
+    'SAMPLING_RATIO': 0.1,
     'NEGATIVE_SAMPLING_RATIO': 1,
     'NEGATIVE_CLASS_WEIGHT': 1,
 }
@@ -48,55 +48,55 @@ MODEL_CFGS = {
         **BASE_MODEL_CFG,
         'PROJECTION_NAME': 'incl-palmprint-excl-sotu',
         'DATASET_VERSION': DATASET_VERSION_1,
-        'SAMPLING_RATIO': 0.25,
+        'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_2: {
         **BASE_MODEL_CFG,
         'PROJECTION_NAME': 'excl-palmprint-incl-sotu',
         'DATASET_VERSION': DATASET_VERSION_2,
-        'SAMPLING_RATIO': 0.25,
+        'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_3: {
         **BASE_MODEL_CFG,
         'PROJECTION_NAME': 'incl-stat-excl-metadata',
         'DATASET_VERSION': DATASET_VERSION_3,
-        'SAMPLING_RATIO': 0.25,
+        'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_4: {
         **BASE_MODEL_CFG,
         'PROJECTION_NAME': 'incl-metadata-incl-stat',
         'DATASET_VERSION': DATASET_VERSION_4,
-        'SAMPLING_RATIO': 0.25,
+        'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_5: {
         **BASE_MODEL_CFG,
         'PROJECTION_NAME': 'incl-taxon-parent',
         'DATASET_VERSION': DATASET_VERSION_5,
-        'SAMPLING_RATIO': 0.25,
+        'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_6: {
         **BASE_MODEL_CFG,
         'PROJECTION_NAME': 'incl-seq-alignment',
         'DATASET_VERSION': DATASET_VERSION_6,
-        'SAMPLING_RATIO': 0.25,
+        'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_7: {
         **BASE_MODEL_CFG,
         'PROJECTION_NAME': 'incl-inferred-tax',
         'DATASET_VERSION': DATASET_VERSION_7,
-        'SAMPLING_RATIO': 0.25,
+        'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_8: {
         **BASE_MODEL_CFG,
         'PROJECTION_NAME': 'incl-tissue',
         'DATASET_VERSION': DATASET_VERSION_8,
-        'SAMPLING_RATIO': 0.25,
+        'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_9: {
         **BASE_MODEL_CFG,
         'PROJECTION_NAME': 'incl-best-1',
         'DATASET_VERSION': DATASET_VERSION_9,
-        'SAMPLING_RATIO': 0.25,
+        'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_10: {
         **BASE_MODEL_CFG,

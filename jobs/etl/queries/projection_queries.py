@@ -89,7 +89,7 @@ def get_taxon_has_parent_edges():
     return conn.query(query=query)
 
 
-def get_palmprint_has_host_edges():
+def get_palmprint_has_host_metadata_edges():
     # Get inferred Palmprint -> Taxon edges from Palmprint -> SRA -> Taxon
     # exclude all hosts that are descendants of unclassified Taxon 12908
     query = '''
@@ -111,12 +111,14 @@ def get_palmprint_has_host_edges():
 
 def get_sotu_has_host_metadata_edges():
     # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
-    # // WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
+    # exclude all hosts that are descendants of unclassified Taxon 12908
     query = '''
             MATCH (s:SOTU)<-[:HAS_SOTU]-(:Palmprint)
                     <-[r:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST_METADATA]->(t:Taxon)
+            WHERE not (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
             OPTIONAL MATCH (s:SOTU)<-[r:HAS_PALMPRINT]-(:SRA)
                     -[:HAS_HOST_METADATA]->(t:Taxon)
+            WHERE not (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
             RETURN
                 id(s) as sourceNodeId,
                 s.palmId as sourceAppId,
