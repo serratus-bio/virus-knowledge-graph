@@ -29,8 +29,8 @@ BASE_MODEL_CFG = {
     'PIPELINE_NAME': 'lp-pipeline',
     'MODEL_NAME': 'lp-model',
     'RANDOM_SEED': 42,
-    'TEST_FRACTION': 0.2, # fraction of total data
-    'TRAIN_FRACTION': 0.2, # fraction of test complement for training, remaining is used for features
+    'TEST_FRACTION': 0.25, # fraction of total data
+    'TRAIN_FRACTION': 0.6, # fraction of test complement for training, remaining is used for features
     'VALIDATION_FOLDS': 10,
     'MIN_EPOCHS': 1,
     'MAX_EPOCHS': 100,
