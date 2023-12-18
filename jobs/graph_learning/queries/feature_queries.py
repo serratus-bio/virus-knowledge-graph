@@ -133,6 +133,15 @@ def get_all_relationship_features(
     return relationships
 
 
+def init_nodes_with_embeddings(df_nodes, embedding_type):
+    dir_name = DIR_CFG['EMBEDDINGS_DIR']
+    df_emb = dd.Dataframe()
+
+    df_nodes = df_nodes.merge(
+
+    )
+
+
 class IdentityEncoder(object):
     # The 'IdentityEncoder' takes the raw column values and converts them to
     # PyTorch tensors.

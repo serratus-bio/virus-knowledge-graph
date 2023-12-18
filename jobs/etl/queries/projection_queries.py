@@ -6,7 +6,7 @@ from datasources.neo4j import get_connection
 
 conn = get_connection()
 
-QUERY_CACHE_DIR = '/mnt/graphdata/query_cache/'
+QUERY_CACHE_DIR = '/mnt/graphdata/query_cache/neo4j/'
 
 
 def write_to_disk(

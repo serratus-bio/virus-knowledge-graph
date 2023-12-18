@@ -173,7 +173,7 @@ def add_sra_tissue_edges(rows):
     # alt_query = '''
     #     CALL apoc.periodic.iterate(
     #     "
-    #         LOAD CSV WITH HEADERS FROM 'file:///sql_biosample_tissue_edges.csv' AS row
+    #         LOAD CSV WITH HEADERS FROM 'file:///biosample_tissue_edges.csv' AS row
     #         MATCH (s:SRA), (t:Tissue)
     #         WHERE s.bioSample = row.biosample_id AND t.btoId = row.bto_id
     #         RETURN s, t, row
