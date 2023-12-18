@@ -58,7 +58,7 @@ REL_SOTU_HAS_INFERRED_TAXON = {
     'TYPES': ['HAS_INFERRED_TAXON'],
 }
 REL_SOTU_HAS_TISSUE_METADATA = {
-    'FILE_NAME': 'sotu_has_tissue_metadata.csv',
+    'FILE_NAME': 'sotu_has_tissue_metadata_edges.csv',
     'TYPES': ['HAS_TISSUE_METADATA'],
 }
 

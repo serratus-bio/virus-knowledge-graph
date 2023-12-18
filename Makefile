@@ -27,8 +27,11 @@ neo4j-restart: neo4j-stop neo4j-start
 neo4j-logs:
 	tail -f  /var/log/neo4j/neo4j.log
 
-neo4j-check:
+neo4j-check-consitency:
 	sudo /bin/neo4j-admin database check neo4j
+
+neo4j-check-memory:
+	du -hc /var/lib/neo4j/data/databases/neo4j/*store.db* | tail -n 1
 
 ## Docker
 

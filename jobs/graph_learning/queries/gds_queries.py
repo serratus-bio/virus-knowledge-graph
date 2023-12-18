@@ -22,8 +22,8 @@ def create_projection_from_dataset(
         f"{model_cfg['PROJECTION_NAME']}_{sampling_ratio}"
 
     if gds.graph.exists(graph_name)['exists']:
-        # return gds.graph.get(graph_name)
-        gds.graph.drop(gds.graph.get(graph_name))
+        return gds.graph.get(graph_name)
+        # gds.graph.drop(gds.graph.get(graph_name))
 
     if sampling_ratio < 1:
         dir_name = f"{DIR_CFG['DATASETS_DIR']}{sampling_ratio}/"
@@ -36,16 +36,10 @@ def create_projection_from_dataset(
         dir_name=dir_name,
         dataset_cfg=dataset_cfg,
     )
-    relationship = feature_queries.get_all_relationship_features(
+    relationships = feature_queries.get_all_relationship_features(
         dir_name=dir_name,
         dataset_cfg=dataset_cfg,
     )
-
-    if sampling_ration == 1:
-        nodes = feature_queries.init_nodes_with_embeddings(
-            nodes,
-            'FastRP'
-        ) 
 
     undirected_relationship_types = list(
         map(
@@ -66,6 +60,7 @@ def create_random_walk_subgraph(
     G,
     sampling_ratio=MODEL_CFG['SAMPLING_RATIO'],
     model_cfg=MODEL_CFG,
+    start_nodes=None
 ):
     graph_name = \
         f"{model_cfg['PROJECTION_NAME']}_{sampling_ratio}"
@@ -89,6 +84,7 @@ def create_random_walk_subgraph(
         nodeLabelStratification=True,
         relationshipWeightProperty='weight',
         relationshipTypes=relationship_types,
+        startNodes=start_nodes,
     )
     return G_dataset
 
@@ -297,9 +293,9 @@ def mutate_predictions(G, model, dataset_cfg=DATASET_CFG):
 
 # TODO: simplify code
 # use alt conditional branching (nodes/rels, features/dataset)
-def export_projection(G, sampling_ratio=1, dataset_cfg=DATASET_CFG):
+def export_projection(G, export_prefix=1, dataset_cfg=DATASET_CFG):
 
-    destination_dir = f"{DIR_CFG['DATASETS_DIR']}{sampling_ratio}/"
+    destination_dir = f"{DIR_CFG['DATASETS_DIR']}{export_prefix}/"
 
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)
@@ -370,20 +366,19 @@ def create_homogenous_projection(graph_name='homogenous-graph'):
     return projection
 
 
-def generate_shallow_embeddings():
-    random_seed = 42
-    projection_name = 'homogenous'
-
-    create_homogenous_projection(projection_name)
-
-    gds.fastRP.mutate(
-        G=gds.graph.get(projection_name),
+def generate_shallow_embeddings(
+    G,
+    model_cfg=MODEL_CFG,
+):
+    return gds.fastRP.mutate(
+        G=G,
         nodeLabels=['Taxon', 'Tissue', 'SOTU'],
-        relationshipTypes=['HAS_PARENT', 'SEQUENCE_ALIGNMENT'],
-        randomSeed=random_seed,
+        relationshipTypes=['HAS_PARENT', 'SEQUENCE_ALIGNMENT', 'HAS_INFERRED_TAXON', 'HAS_TISSUE_METADATA'],
+        randomSeed=MODEL_CFG['RANDOM_SEED'],
         embeddingDimension=128,
-        mutateProperty='features'
-        # relationshipWeightProperty='weight',
+        featureProperties='features',
+        mutateProperty='features',
+        relationshipWeightProperty='weight',
     )
 
 

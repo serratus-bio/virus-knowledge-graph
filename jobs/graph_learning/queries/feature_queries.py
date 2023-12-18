@@ -244,7 +244,7 @@ def load_edge_tensor(filename, src_index_col, src_mapping,
 
 def encode_features(
         filename,
-        dir_name=DIR_CFG['FEATURE_STORE_DIR'],
+        dir_name=DIR_CFG['QUERY_CACHE_DIR'],
         encoders=None,
         write_to_disk=False
 ):
@@ -282,6 +282,7 @@ def encode_node_properties(dataset_cfg=DATASET_CFG):
             encoders={
                 'rank': LabelEncoder(
                     is_tensor=False, mapping=TAXON_RANK_LABELS),
+                'hasParentDegree': IdentityEncoder(is_tensor=False),
             }
         )
 
@@ -303,6 +304,15 @@ def encode_node_properties(dataset_cfg=DATASET_CFG):
             }
         )
 
+    if 'tissue_nodes.csv' in node_file_paths:
+        encode_features(
+            filename='tissue_nodes.csv',
+            write_to_disk=True,
+            encoders={
+                'hasParentDegree': IdentityEncoder(is_tensor=False),
+            }
+        )
+
 
 def encode_relationship_properties():
     # TODO: decide on better encoding for weight, cur using avg pidentity
@@ -313,7 +323,7 @@ def encode_relationship_properties():
 # this is needed to support heterogenous nodes in GDS
 def vectorize_features(
     filename,
-    dir_name=DIR_CFG['FEATURE_STORE_DIR'],
+    dir_name=DIR_CFG['QUERY_CACHE_DIR'],
     select_columns=[],
     write_to_disk=False,
 ):
@@ -338,7 +348,7 @@ def vectorize_node_properties(dataset_cfg=DATASET_CFG):
     if 'taxon_nodes.csv' in node_file_paths:
         vectorize_features(
             filename='taxon_nodes.csv',
-            select_columns=['rankEncoded'],
+            select_columns=['rankEncoded', 'hasParentDegreeEncoded'],
             write_to_disk=True,
         )
 
@@ -353,5 +363,12 @@ def vectorize_node_properties(dataset_cfg=DATASET_CFG):
         vectorize_features(
             filename='palmprint_nodes.csv',
             select_columns=['centroidEncoded'],
+            write_to_disk=True,
+        )
+
+    if 'tissue_nodes.csv' in node_file_paths:
+        vectorize_features(
+            filename='tissue_nodes.csv',
+            select_columns=['hasParentDegreeEncoded'],
             write_to_disk=True,
         )

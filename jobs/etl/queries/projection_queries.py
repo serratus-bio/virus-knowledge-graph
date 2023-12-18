@@ -70,7 +70,10 @@ def get_taxon_nodes():
                 n.taxId as appId,
                 n.taxId as taxId,
                 labels(n) as labels,
-                n.rank as rank
+                n.rank as rank,
+                apoc.node.degree(n, "HAS_PARENT") as hasParentDegree,
+                apoc.node.degree(n, "HAS_PARENT>") as hasParentOutDegree,
+                apoc.node.degree(n, "<HAS_PARENT") as hasParentInDegree
             '''
     return conn.query(query=query)
 
@@ -221,7 +224,10 @@ def get_tissue_nodes():
                 id(n) as nodeId,
                 n.btoId as btoId,
                 n.scientificName as scientificName,
-                labels(n) as labels
+                labels(n) as labels,
+                apoc.node.degree(n, "HAS_PARENT") as hasParentDegree,
+                apoc.node.degree(n, "HAS_PARENT>") as hasParentOutDegree,
+                apoc.node.degree(n, "<HAS_PARENT") as hasParentInDegree
             '''
     return conn.query(query=query)
 
@@ -265,3 +271,55 @@ def get_sotu_has_tissue_metadata_edges():
             avg(r.percentIdentity) as weight
     '''
     return conn.query(query=query)
+
+
+
+def get_apicomplexa_sotu_nodes():
+    query = '''
+        CALL {
+            MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
+                <-[r:HAS_PALMPRINT]-(s:SRA)-[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {taxId: '5794'})
+            WHERE q.percentIdentity >= 0.5
+            RETURN p, t, r, q
+            UNION
+            MATCH (p:SOTU)<-[r:HAS_PALMPRINT]-(s:SRA)
+                -[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {rank: 'order'})
+            WHERE q.percentIdentity >= 0.5
+            RETURN p, t, r, q
+        }
+        WITH p, t, r, q
+        RETURN
+            id(p) as nodeId,
+            p.palmId as appId,
+            p.palmId as palmId,
+            labels(p) as labels,
+            p.centroid as centroid,
+            count(r) as numPalmprints
+        '''
+    return conn.query(query=query)
+
+
+def get_lenarviricota_sotu_nodes():
+    query = '''
+        CALL {
+            MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
+                -[q:HAS_INFERRED_TAXON]->()-[:HAS_PARENT*0..]->(t:Taxon {taxId: '2732407'})
+            WHERE q.percentIdentity >= 0.5
+            RETURN p, t, q
+            UNION
+            MATCH (p:SOTU)-[q:HAS_INFERRED_TAXON]
+                ->()-[:HAS_PARENT*0..]->(t:Taxon {taxId: '2732407'})
+            WHERE q.percentIdentity >= 0.5
+            RETURN p, t, q
+        }
+        WITH p, t, q
+        RETURN
+            id(p) as nodeId,
+            p.palmId as appId,
+            p.palmId as palmId,
+            labels(p) as labels,
+            p.centroid as centroid,
+            count(q) as numPalmprints
+        '''
+    return conn.query(query=query)
+    

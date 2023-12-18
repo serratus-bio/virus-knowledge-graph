@@ -103,3 +103,17 @@ def run():
         query_results=query_results,
         file_name='sotu_has_tissue_metadata_edges.csv',
     )
+
+    print('Processing Apicomplexa SOTU nodes')
+    query_results = projection_queries.get_apicomplexa_sotu_nodes()
+    projection_queries.write_to_disk(
+        query_results=query_results,
+        file_name='sotu_apicomplexa_nodes.csv',
+    )
+
+    print('Processing Lenarviricota SOTU nodes')
+    query_results = projection_queries.get_lenarviricota_sotu_nodes()
+    projection_queries.write_to_disk(
+        query_results=query_results,
+        file_name='sotu_lenarviricota_nodes.csv',
+    )
