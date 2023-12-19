@@ -12,7 +12,7 @@ def run():
     G_full = gds_queries.create_projection_from_dataset(sampling_ratio=1)
 
     # print('Generate shallow feature embeddings and mutate projection')
-    # G_full = gds_queries.generate_shallow_embeddings(G_full)
+    # gds_queries.generate_shallow_embeddings(G_full)
 
     print('Creating dataset with sampling ratio: 1.0')
     gds_queries.export_projection(

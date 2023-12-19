@@ -223,6 +223,7 @@ def get_tissue_nodes():
             RETURN
                 id(n) as nodeId,
                 n.btoId as btoId,
+                n.btoId as appId,
                 n.scientificName as scientificName,
                 labels(n) as labels,
                 apoc.node.degree(n, "HAS_PARENT") as hasParentDegree,
