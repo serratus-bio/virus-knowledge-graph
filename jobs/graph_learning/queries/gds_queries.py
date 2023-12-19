@@ -64,6 +64,11 @@ def create_random_walk_subgraph(
 ):
     graph_name = \
         f"{model_cfg['PROJECTION_NAME']}_{sampling_ratio}"
+  
+    if start_nodes:
+        graph_name = \
+        f"{model_cfg['PROJECTION_NAME']}_{sampling_ratio}_start1"
+  
     if gds.graph.exists(graph_name)['exists']:
         # return gds.graph.get(graph_name)
         gds.graph.drop(gds.graph.get(graph_name))
@@ -74,14 +79,14 @@ def create_random_walk_subgraph(
             DATASET_CFG['REL_TYPES']
         )
     )
-
-    G_dataset, _ = gds.alpha.graph.sample.rwr(
+    # gds.alpha.graph.sample.rwr 
+    G_dataset, _ = gds.graph.sample.cnarw(
         graph_name=graph_name,
         from_G=G,
-        concurrency=1,
-        randomSeed=model_cfg['RANDOM_SEED'],
+        concurrency=1 if start_nodes is None else 4,
+        randomSeed=model_cfg['RANDOM_SEED'] if start_nodes is None else None,
         samplingRatio=sampling_ratio,
-        nodeLabelStratification=True,
+        nodeLabelStratification=False,
         relationshipWeightProperty='weight',
         relationshipTypes=relationship_types,
         startNodes=start_nodes,
@@ -346,27 +351,6 @@ def export_projection(G, export_prefix=1, dataset_cfg=DATASET_CFG):
             merged.to_csv(destination_dir + mapping['FILE_NAME'], index=False)
 
 
-
-def create_homogenous_projection(graph_name='homogenous-graph'):
-    if gds.graph.exists(graph_name)['exists']:
-        return gds.graph.get(graph_name)
-        gds.graph.drop(gds.graph.get(graph_name))
-
-    projection = gds.graph.project(
-        graph_name=graph_name,
-        node_spec=[
-            'Taxon',
-            'Tissue',
-            'SOTU',
-        ],
-        relationship_spec={
-            'HAS_PARENT': {'orientation': 'UNDIRECTED'},
-            'SEQUENCE_ALIGNMENT': {'orientation': 'UNDIRECTED'},
-        },
-    )
-    return projection
-
-
 def generate_shallow_embeddings(
     G,
     model_cfg=MODEL_CFG,
@@ -381,64 +365,17 @@ def generate_shallow_embeddings(
         mutateProperty='FastRP_embedding',
         relationshipWeightProperty='weight',
     )
-
-
-# TODO: mutate projection then use export_projection instead of stream
-def generate_shallow_embeddings_alt():
-    random_seed = 42
-    projection_name = 'homogenous'
-
-    projection_cfgs = [
-        {
-            'node_labels': ['Taxon'],
-            'relationship_types': ['HAS_PARENT'],
-            'appId': 'taxId',
-        },
-        {
-            'node_labels': ['Tissue'],
-            'relationship_types': ['HAS_PARENT'],
-            'appId': 'btoId',
-        },
-        {
-            'node_labels': ['SOTU'],
-            'relationship_types': ['SEQUENCE_ALIGNMENT'],
-            'appId': 'palmId',
-        },
-    ]
-
-    create_homogenous_projection(projection_name)
-
-    for cfg in projection_cfgs:
-        cur_type = cfg['node_labels'][0]
-        
-        gds.fastRP.mutate(
-            G=gds.graph.get(projection_name),
-            nodeLabels=cfg['node_labels'],
-            relationshipTypes=cfg['relationship_types'],
-            randomSeed=random_seed,
-            embeddingDimension=128,
-            mutateProperty='features'
-            # relationshipWeightProperty='weight',
-        )
-        df_emb = utils.df_to_ddf(df_emb)
-        filename = 'FastRP_' + cur_type + '.csv'
-        df_emb.to_csv(DIR_CFG['EMBEDDINGS_DIR'] + filename, single_file=True, index=False)
-
-        # df_emb = gds.hashgnn.stream(
-        #     G=gds.graph.get(projection_name),
-        #     nodeLabels=cfg['node_labels'],
-        #     relationshipTypes=cfg['relationship_types'],
-        #     randomSeed=random_seed,
-        #     generateFeatures={
-        #         'dimension': 256, # dimension of the embedding vector
-        #         'densityLevel': 1, # number of initial values equalling 1
-        #     },
-        #     iterations=5, # maximum number of hops
-        #     embeddingDensity=128,
-        #     neighborInfluence=1.0,
-        # )
-        # df_emb = utils.df_to_ddf(df_emb)
-        # filename = 'HashGNN_' + cur_type + '.csv'
-        # df_emb.to_csv(DIR_CFG['EMBEDDINGS_DIR'] + filename, single_file=True, index=False)
-
-    gds.graph.drop(gds.graph.get(projection_name))
+    # gds.hashgnn.mutate(
+    #     G=G,
+    #     nodeLabels=['Taxon', 'Tissue', 'SOTU'],
+    #     relationshipTypes=['HAS_PARENT', 'SEQUENCE_ALIGNMENT', 'HAS_INFERRED_TAXON', 'HAS_TISSUE_METADATA'],
+    #     randomSeed=MODEL_CFG['RANDOM_SEED'],
+    #     generateFeatures={
+    #         'dimension': 256, # dimension of the embedding vector
+    #         'densityLevel': 1, # number of initial values equalling 1
+    #     },
+    #     iterations=5, # maximum number of hops
+    #     embeddingDensity=128,
+    #     neighborInfluence=1.0,
+    #     mutateProperty='FastRP_embedding',
+    # )

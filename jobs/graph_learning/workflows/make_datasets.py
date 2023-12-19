@@ -4,17 +4,17 @@ from config.base import DIR_CFG
 
 
 def run():
-    # print('Encoding base properties and storing in feature vector to support HGNNs in GDS')
-    # feature_queries.encode_node_properties()
-    # feature_queries.vectorize_node_properties()
+    print('Encoding base properties and storing in feature vector to support HGNNs in GDS')
+    feature_queries.encode_node_properties()
+    feature_queries.vectorize_node_properties()
 
     print('Creating full graph projection using base features')
     G_full = gds_queries.create_projection_from_dataset(sampling_ratio=1)
 
-    # print('Generate shallow feature embeddings and mutate projection')
-    # gds_queries.generate_shallow_embeddings(G_full)
+    print('Generate shallow feature embeddings and mutate projection')
+    gds_queries.generate_shallow_embeddings(G_full)
 
-    print('Creating dataset with sampling ratio: 1.0')
+    print('Exporting dataset with sampling ratio: 1.0')
     gds_queries.export_projection(
         G_full,
         export_prefix=1,
@@ -28,45 +28,37 @@ def run():
             sampling_ratio=sampling_ratio,
         )
     
-        print('Generating and writing dataset with features')
+        print('Exporting dataset with sampling ratio:', sampling_ratio')
         gds_queries.export_projection(
             G_dataset,
             export_prefix=sampling_ratio,
         )
         G_dataset.drop()
+    G_full.drop()
 
-    print('Creating dataset with Apicomplexa-associated nodes')
-    apicomplexa_start_nodes = feature_queries.get_features_from_file(
-        file_name='sotu_apicomplexa_nodes.csv',
-        dir_name=DIR_CFG['QUERY_CACHE'],
-        select_columns=['nodeId'],
-    )
-    G_dataset = gds_queries.create_random_walk_subgraph(
-        G_full,
-        sampling_ratio=sampling_ratio,
-        start_nodes=apicomplexa_start_nodes['nodeId'].tolist(),
-    )
-    gds_queries.export_projection(
-        G_dataset,
-        export_prefix='apicomplexa',
-    )
-    G_dataset.drop()
+    print('Creating viral family and host specific datasets')
+    for dataset_target in ['apicomplexa','lenarviricota']:
+        print(f'Creating dataset with {dataset_target}-associated nodes')
 
-    print('Creating dataset with Lenarviricota-associated nodes')
-    lenarviricota_start_nodes = feature_queries.get_features_from_file(
-        file_name='sotu_lenarviricota_nodes.csv',
-        dir_name=DIR_CFG['QUERY_CACHE'],
-        select_columns=['nodeId'],
-    )
-    G_dataset = gds_queries.create_random_walk_subgraph(
-        G_full,
-        export_prefix='lenarviricota',
-        start_nodes=lenarviricota_start_nodes['nodeId'].tolist(),
-    )
-    gds_queries.export_projection(
-        G_dataset,
-        export_prefix='apicomplexa',
-    )
-    G_dataset.drop()
+        start_nodes_df = feature_queries.get_features_from_file(
+            file_name=f'sotu_{dataset_target}_nodes.csv',
+            dir_name=DIR_CFG['QUERY_CACHE_DIR'],
+            select_columns=['nodeId'],
+        )
+        start_nodes = start_nodes_df.compute()['nodeId'].astype(int).values.tolist()
+        
+        G_dataset = gds_queries.create_random_walk_subgraph(
+            G_full,
+            sampling_ratio=1,
+            start_nodes=start_nodes,
+        )
+        gds_queries.generate_shallow_embeddings(G_dataset)
+        
+        print(f'Exporting dataset with {dataset_target}-associated nodes')
+        gds_queries.export_projection(
+            G_dataset,
+            export_prefix=dataset_target,
+        )
+        G_dataset.drop()
 
-    # G_full.drop()
+    G_full.drop()

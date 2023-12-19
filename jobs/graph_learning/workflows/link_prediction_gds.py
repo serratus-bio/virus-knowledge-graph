@@ -19,9 +19,9 @@ def run():
     utils.store_run_artifact(run_uid, pipeline, 'pipeline')
 
     print('Training model')
-    model, eval = gds_queries.train_model(G_dataset, pipeline)
+    model, evals = gds_queries.train_model(G_dataset, pipeline)
     utils.store_run_artifact(run_uid, model, 'model')
-    utils.store_run_artifact(run_uid, eval, 'eval')
+    utils.store_run_artifact(run_uid, evals, 'eval')
 
     print('Streaming approx predictions')
     approx_predictions = gds_queries.stream_approx_predictions(
