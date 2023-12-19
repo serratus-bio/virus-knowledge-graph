@@ -11,13 +11,13 @@ def run():
     print('Creating full graph projection using base features')
     G_full = gds_queries.create_projection_from_dataset(sampling_ratio=1)
 
-    print('Generate shallow feature embeddings and mutate projection')
-    G_embeddings = gds_queries.generate_shallow_embeddings(G_full)
+    # print('Generate shallow feature embeddings and mutate projection')
+    # G_full = gds_queries.generate_shallow_embeddings(G_full)
 
     print('Creating dataset with sampling ratio: 1.0')
     gds_queries.export_projection(
-        G_dataset,
-        export_prefix=sampling_ratio,
+        G_full,
+        export_prefix=1,
     )
 
     for sampling_ratio in [0.1]:  # [0.1, 0.25, 0.5, 0.75, 1]:
@@ -34,7 +34,6 @@ def run():
             export_prefix=sampling_ratio,
         )
         G_dataset.drop()
-    # G_full.drop()
 
     print('Creating dataset with Apicomplexa-associated nodes')
     apicomplexa_start_nodes = feature_queries.get_features_from_file(
@@ -51,17 +50,23 @@ def run():
         G_dataset,
         export_prefix='apicomplexa',
     )
-
+    G_dataset.drop()
 
     print('Creating dataset with Lenarviricota-associated nodes')
-    lenaviricota_start_nodes = feature_queries.get_features_from_file(
-        file_name='sotu_lenaviricota_nodes.csv',
+    lenarviricota_start_nodes = feature_queries.get_features_from_file(
+        file_name='sotu_lenarviricota_nodes.csv',
         dir_name=DIR_CFG['QUERY_CACHE'],
         select_columns=['nodeId'],
     )
     G_dataset = gds_queries.create_random_walk_subgraph(
         G_full,
-        export_prefix='lenaviricota',
-        start_nodes=lenaviricota_start_nodes['nodeId'].tolist(),
+        export_prefix='lenarviricota',
+        start_nodes=lenarviricota_start_nodes['nodeId'].tolist(),
     )
+    gds_queries.export_projection(
+        G_dataset,
+        export_prefix='apicomplexa',
+    )
+    G_dataset.drop()
 
+    # G_full.drop()

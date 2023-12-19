@@ -348,7 +348,7 @@ def vectorize_node_properties(dataset_cfg=DATASET_CFG):
     if 'taxon_nodes.csv' in node_file_paths:
         vectorize_features(
             filename='taxon_nodes.csv',
-            select_columns=['rankEncoded', 'hasParentDegreeEncoded'],
+            select_columns=['hasParentDegreeEncoded'],
             write_to_disk=True,
         )
 

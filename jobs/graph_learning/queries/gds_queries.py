@@ -308,7 +308,7 @@ def export_projection(G, export_prefix=1, dataset_cfg=DATASET_CFG):
             if entity_type == 'nodes':
                 stream_fnc = gds.graph.nodeProperties.stream
                 stream_fnc_args = {
-                    'node_properties': ['features'],
+                    'node_properties': ['features', 'FastRP_embedding'],
                     'node_labels': mapping['LABELS'],
                     'separate_property_columns': True,
                     'db_node_properties': mapping['APP_ID'],
@@ -323,15 +323,17 @@ def export_projection(G, export_prefix=1, dataset_cfg=DATASET_CFG):
                 merge_left_on = ['sourceNodeId', 'targetNodeId']
                 merge_right_on = ['sourceNodeId', 'targetNodeId']
 
-            df_fts = feature_queries.get_features_from_file(
-                mapping['FILE_NAME'])
-            df_fts = df_fts.astype(str)
+            df_attributes = feature_queries.get_features_from_file(
+                mapping['FILE_NAME'],
+                DIR_CFG['QUERY_CACHE_DIR'],
+            )
+            df_attributes = df_attributes.astype(str)
             df_projection = stream_fnc(G, **stream_fnc_args)
             df_projection = utils.df_to_ddf(df_projection)
             df_projection = df_projection.astype(str)
 
             merged = df_projection.merge(
-                df_fts,
+                df_attributes,
                 left_on=merge_left_on,
                 right_on=merge_right_on,
                 how='left',
@@ -341,8 +343,7 @@ def export_projection(G, export_prefix=1, dataset_cfg=DATASET_CFG):
             merged = merged.loc[:, ~merged.columns.str.contains('_dup$')]
             merged = merged.compute()
 
-            merged.to_csv(
-                destination_dir + mapping['FILE_NAME'], index=False)
+            merged.to_csv(destination_dir + mapping['FILE_NAME'], index=False)
 
 
 
@@ -376,8 +377,8 @@ def generate_shallow_embeddings(
         relationshipTypes=['HAS_PARENT', 'SEQUENCE_ALIGNMENT', 'HAS_INFERRED_TAXON', 'HAS_TISSUE_METADATA'],
         randomSeed=MODEL_CFG['RANDOM_SEED'],
         embeddingDimension=128,
-        featureProperties='features',
-        mutateProperty='features',
+        featureProperties=['features'],
+        mutateProperty='FastRP_embedding',
         relationshipWeightProperty='weight',
     )
 

@@ -122,11 +122,18 @@ DATASET_CFGS = {
         'TARGET_NODE_LABEL': 'Taxon',
     },
     DATASET_VERSION_9: {
-        'NODE_TYPES': [NODE_SOTU, NODE_TAXON, NODE_TISSUE],
-        'REL_TYPES': [REL_SOTU_HAS_HOST_STAT, REL_TAXON_HAS_PARENT,
-                     REL_SOTU_SEQUENCE_ALIGNMENT, REL_SOTU_HAS_INFERRED_TAXON,
-                     REL_SOTU_HAS_TISSUE_METADATA,
-                     ],
+        'NODE_TYPES': [
+            NODE_SOTU, 
+            NODE_TAXON,
+            NODE_TISSUE,
+        ],
+        'REL_TYPES': [
+            REL_SOTU_HAS_HOST_STAT,
+            REL_TAXON_HAS_PARENT,
+            REL_SOTU_SEQUENCE_ALIGNMENT, 
+            REL_SOTU_HAS_INFERRED_TAXON,
+             REL_SOTU_HAS_TISSUE_METADATA,
+        ],
         'TARGET_REL_TYPE': ['REL_SOTU_HAS_HOST_STAT'],
         'SOURCE_NODE_LABEL': 'SOTU',
         'TARGET_NODE_LABEL': 'Taxon',
