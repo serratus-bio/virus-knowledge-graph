@@ -17,20 +17,19 @@ def create_projection_from_dataset(
     sampling_ratio=MODEL_CFG['SAMPLING_RATIO'],
     dataset_cfg=DATASET_CFG,
     model_cfg=MODEL_CFG,
+    start_nodes=None
 ):
     graph_name = \
         f"{model_cfg['PROJECTION_NAME']}_{sampling_ratio}"
 
     if gds.graph.exists(graph_name)['exists']:
-        return gds.graph.get(graph_name)
-        # gds.graph.drop(gds.graph.get(graph_name))
+        # return gds.graph.get(graph_name)
+        gds.graph.drop(gds.graph.get(graph_name))
 
-    if sampling_ratio < 1:
-        dir_name = f"{DIR_CFG['DATASETS_DIR']}{sampling_ratio}/"
-    else:
-        # Use full feature set if sampling_ratio is 1
-        # dir_name = f"{DIR_CFG['FEATURE_STORE_DIR']}"
-        dir_name = f"{DIR_CFG['QUERY_CACHE_DIR']}"
+    dir_name = f"{DIR_CFG['DATASETS_DIR']}{sampling_ratio}/"
+    if not os.path.exists(dir_name) or start_nodes:
+        print("Using neo4j query cache with base features")
+        dir_name = f"{DIR_CFG['QUERY_CACHE_DIR']}" 
 
     nodes = feature_queries.get_all_node_features(
         dir_name=dir_name,
@@ -47,6 +46,15 @@ def create_projection_from_dataset(
             dataset_cfg['REL_TYPES']
         )
     )
+
+    if start_nodes:
+        nodes, relationships = filter_dataset_by_start_nodes(
+            start_nodes,
+            nodes,
+            relationships,
+            undirected_relationship_types,
+        )
+
     return gds.alpha.graph.construct(
         graph_name=graph_name,
         nodes=nodes,
@@ -379,3 +387,61 @@ def generate_shallow_embeddings(
     #     neighborInfluence=1.0,
     #     mutateProperty='FastRP_embedding',
     # )
+
+
+def filter_dataset_by_start_nodes(
+    start_nodes,
+    nodes,
+    relationships,
+    undirected_relationship_types
+):
+    print(relationships.columns)
+    print(relationships['relationshipType'].unique())
+    print(len(start_nodes))
+
+    # excl_mask = nodes.loc[
+    #     # (nodes['labels'] == "['Palmprint', 'SOTU']") #&
+    #     (nodes['nodeId'].isin(start_nodes))
+    # ]
+    print( len(nodes))
+    tmp = nodes[nodes['nodeId'].isin(start_nodes)]
+    print( len(tmp))
+
+    if 'HAS_HOST_STAT' in undirected_relationship_types:
+        excl_mask = relationships.loc[
+            (relationships['relationshipType'] == 'HAS_HOST_STAT') &
+            (~relationships['sourceNodeId'].isin(start_nodes))
+        ]
+        print(len(excl_mask), len(relationships.loc[
+            (relationships['relationshipType'] == 'HAS_HOST_STAT')]))
+        relationships = relationships[~relationships.index.isin(excl_mask.index)]
+    
+    if 'SEQUENCE_ALIGNMENT' in undirected_relationship_types:
+        excl_mask = relationships.loc[
+            (relationships['relationshipType'] == 'SEQUENCE_ALIGNMENT') &
+            (~relationships['sourceNodeId'].isin(start_nodes) |  ~relationships['targetNodeId'].isin(start_nodes)) 
+        ]
+        print(len(excl_mask), len(relationships.loc[
+            (relationships['relationshipType'] == 'SEQUENCE_ALIGNMENT')]))
+        relationships = relationships[~relationships.index.isin(excl_mask.index)]
+
+    if 'HAS_INFERRED_TAXON' in undirected_relationship_types:
+        excl_mask = relationships.loc[
+            (relationships['relationshipType'] == 'HAS_INFERRED_TAXON') &
+            (~relationships['sourceNodeId'].isin(start_nodes)) 
+        ]
+        print(len(excl_mask), len(relationships.loc[
+            (relationships['relationshipType'] == 'HAS_INFERRED_TAXON')]))
+        relationships = relationships[~relationships.index.isin(excl_mask.index)]
+
+    if 'HAS_TISSUE_METADATA' in undirected_relationship_types:
+        excl_mask = relationships.loc[
+            (relationships['relationshipType'] == 'HAS_TISSUE_METADATA') &
+            (~relationships['sourceNodeId'].isin(start_nodes)) 
+        ]
+        print(len(excl_mask), len(relationships.loc[
+            (relationships['relationshipType'] == 'HAS_TISSUE_METADATA')]))
+        relationships = relationships[~relationships.index.isin(excl_mask.index)]
+
+    print(relationships['relationshipType'].unique())
+    return nodes, relationships
