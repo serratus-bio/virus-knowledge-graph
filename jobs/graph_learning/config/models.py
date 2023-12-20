@@ -92,19 +92,19 @@ MODEL_CFGS = {
     },
     MODEL_VERSION_9: {
         **BASE_MODEL_CFG,
-        'PROJECTION_NAME': 'incl-best-1',
+        'PROJECTION_NAME': 'full-1',
         'DATASET_VERSION': DATASET_VERSION_9,
         'SAMPLING_RATIO': 0.1,
     },
     MODEL_VERSION_10: {
         **BASE_MODEL_CFG,
-        'PROJECTION_NAME': 'incl-best-2',
+        'PROJECTION_NAME': 'full-2',
         'DATASET_VERSION': DATASET_VERSION_9,
         'SAMPLING_RATIO': 0.5,
     },
     MODEL_VERSION_11: {
         **BASE_MODEL_CFG,
-        'PROJECTION_NAME': 'incl-best-3',
+        'PROJECTION_NAME': 'full-3',
         'DATASET_VERSION': DATASET_VERSION_9,
         'SAMPLING_RATIO': 1,
     },

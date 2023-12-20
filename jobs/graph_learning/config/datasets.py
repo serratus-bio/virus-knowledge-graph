@@ -33,6 +33,10 @@ REL_TAXON_HAS_PARENT = {
     'FILE_NAME': 'taxon_has_parent_edges.csv',
     'TYPES': ['HAS_PARENT'],
 }
+REL_TISSUE_HAS_PARENT = {
+    'FILE_NAME': 'tissue_has_parent_edges.csv',
+    'TYPES': ['HAS_PARENT'],
+}
 REL_PALMPRINT_HAS_SOTU = {
     'FILE_NAME': 'palmprint_has_sotu_edges.csv',
     'TYPES': ['HAS_SOTU'],
@@ -130,9 +134,10 @@ DATASET_CFGS = {
         'REL_TYPES': [
             REL_SOTU_HAS_HOST_STAT,
             REL_TAXON_HAS_PARENT,
+            REL_TISSUE_HAS_PARENT,
             REL_SOTU_SEQUENCE_ALIGNMENT, 
             REL_SOTU_HAS_INFERRED_TAXON,
-             REL_SOTU_HAS_TISSUE_METADATA,
+            REL_SOTU_HAS_TISSUE_METADATA,
         ],
         'TARGET_REL_TYPE': ['REL_SOTU_HAS_HOST_STAT'],
         'SOURCE_NODE_LABEL': 'SOTU',

@@ -60,8 +60,9 @@ def create_pyg_graph(
             index_col='appId',
             encoders={
                 # 'rankEncoded': IdentityEncoder(
-                #   dtype=torch.long, is_tensor=True),
-                'features': ListEncoder(),
+                #     dtype=torch.long, is_tensor=True),
+                # 'features': ListEncoder(),
+                'FastRP_embedding': ListEncoder(),
             }
         )
         data['taxon'].x = taxon_x
@@ -74,26 +75,40 @@ def create_pyg_graph(
             encoders={
                 # 'centroidEncoded': IdentityEncoder(
                 #   dtype=torch.long, is_tensor=True),
-                'features': ListEncoder(),
+                # 'features': ListEncoder(),
+                'FastRP_embedding': ListEncoder(),
             }
         )
         data['sotu'].x = torch.arange(0, len(sotu_mapping))
         mappings['sotu'] = sotu_mapping
 
-    if 'sotu_has_host_metadata_edges.csv' in rel_file_paths:
+    if 'tissue_nodes.csv' in node_file_paths:
+        tissue_x, tissue_mapping = load_node_tensor(
+            filename=f'{dir_name}/tissue_nodes.csv',
+            index_col='appId',
+            encoders={
+                # 'centroidEncoded': IdentityEncoder(
+                #   dtype=torch.long, is_tensor=True),
+                # 'features': ListEncoder(),
+                'FastRP_embedding': ListEncoder(),
+            }
+        )
+        data['tissue'].x = torch.arange(0, len(tissue_mapping))
+        mappings['tissue'] = tissue_mapping
+
+    if 'sotu_has_host_stat_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/sotu_has_host_metadata_edges.csv',
+            filename=f'{dir_name}/sotu_has_host_stat_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
             dst_mapping=taxon_mapping,
-            # encoders={
-            #     'weight': IdentityEncoder(dtype=torch.float, is_tensor=True),
-            #     # 'weight': BinaryEncoder(dtype=torch.long),
-            # },
+            encoders={
+                'weight': IdentityEncoder(dtype=torch.float, is_tensor=True),
+                # 'weight': BinaryEncoder(dtype=torch.long),
+            },
         )
         # edge_label = torch.div(edge_label, 100)
-
         data['sotu', 'has_host', 'taxon'].edge_index = edge_index
         data['sotu', 'has_host', 'taxon'].edge_label = edge_label
 
@@ -110,6 +125,20 @@ def create_pyg_graph(
         )
         data['taxon', 'has_parent', 'taxon'].edge_index = edge_index
         data['taxon', 'has_parent', 'taxon'].edge_label = edge_label
+
+    if 'tissue_has_parent_edges.csv' in rel_file_paths:
+        edge_index, edge_label = load_edge_tensor(
+            filename=f'{dir_name}/tissue_has_parent_edges.csv',
+            src_index_col='sourceAppId',
+            src_mapping=tissue_mapping,
+            dst_index_col='targetAppId',
+            dst_mapping=tissue_mapping,
+            encoders={
+                'weight': IdentityEncoder(dtype=torch.float, is_tensor=True)
+            },
+        )
+        data['tissue', 'has_parent', 'tissue'].edge_index = edge_index
+        data['tissue', 'has_parent', 'tissue'].edge_label = edge_label
 
     if 'sotu_sequence_alignment_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(

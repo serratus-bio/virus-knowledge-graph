@@ -4,9 +4,9 @@ from config.base import DIR_CFG
 
 
 def run():
-    print('Encoding base properties and storing in feature vector to support HGNNs in GDS')
-    feature_queries.encode_node_properties()
-    feature_queries.vectorize_node_properties()
+    # print('Encoding base properties and storing in feature vector to support HGNNs in GDS')
+    # feature_queries.encode_node_properties()
+    # feature_queries.vectorize_node_properties()
 
     print('Creating full graph projection using base features')
     G_full = gds_queries.create_projection_from_dataset(sampling_ratio=1)
@@ -28,7 +28,7 @@ def run():
             sampling_ratio=sampling_ratio,
         )
     
-        print('Exporting dataset with sampling ratio:', sampling_ratio')
+        print('Exporting dataset with sampling ratio:', sampling_ratio)
         gds_queries.export_projection(
             G_dataset,
             export_prefix=sampling_ratio,
