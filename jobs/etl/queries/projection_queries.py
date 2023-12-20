@@ -238,9 +238,9 @@ def get_tissue_has_parent_edges():
             MATCH (s:Tissue)-[r:HAS_PARENT]->(t:Tissue)
             RETURN
                 id(s) as sourceNodeId,
-                s.btoId as sourceBtoId,
+                s.btoId as sourceAppId,
                 id(t) as targetNodeId,
-                t.btoId as targetBtoId,
+                t.btoId as targetAppId,
                 type(r) as relationshipType,
                 1 as weight
             '''
