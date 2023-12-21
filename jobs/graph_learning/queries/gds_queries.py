@@ -94,7 +94,7 @@ def create_random_walk_subgraph(
         concurrency=1 if start_nodes is None else 4,
         randomSeed=model_cfg['RANDOM_SEED'] if start_nodes is None else None,
         samplingRatio=sampling_ratio,
-        nodeLabelStratification=False,
+        nodeLabelStratification=True,
         relationshipWeightProperty='weight',
         relationshipTypes=relationship_types,
         startNodes=start_nodes,
@@ -395,25 +395,17 @@ def filter_dataset_by_start_nodes(
     relationships,
     undirected_relationship_types
 ):
-    print(relationships.columns)
-    print(relationships['relationshipType'].unique())
-    print(len(start_nodes))
-
-    # excl_mask = nodes.loc[
-    #     # (nodes['labels'] == "['Palmprint', 'SOTU']") #&
-    #     (nodes['nodeId'].isin(start_nodes))
-    # ]
-    print( len(nodes))
-    tmp = nodes[nodes['nodeId'].isin(start_nodes)]
-    print( len(tmp))
+    excl_mask = nodes.loc[
+        (nodes.labels.apply(lambda x: 'SOTU' in x)) &
+        (~nodes['nodeId'].isin(start_nodes))
+    ]
+    nodes = nodes[~nodes['nodeId'].isin(excl_mask.nodeId)]
 
     if 'HAS_HOST_STAT' in undirected_relationship_types:
         excl_mask = relationships.loc[
             (relationships['relationshipType'] == 'HAS_HOST_STAT') &
             (~relationships['sourceNodeId'].isin(start_nodes))
         ]
-        print(len(excl_mask), len(relationships.loc[
-            (relationships['relationshipType'] == 'HAS_HOST_STAT')]))
         relationships = relationships[~relationships.index.isin(excl_mask.index)]
     
     if 'SEQUENCE_ALIGNMENT' in undirected_relationship_types:
@@ -421,8 +413,6 @@ def filter_dataset_by_start_nodes(
             (relationships['relationshipType'] == 'SEQUENCE_ALIGNMENT') &
             (~relationships['sourceNodeId'].isin(start_nodes) |  ~relationships['targetNodeId'].isin(start_nodes)) 
         ]
-        print(len(excl_mask), len(relationships.loc[
-            (relationships['relationshipType'] == 'SEQUENCE_ALIGNMENT')]))
         relationships = relationships[~relationships.index.isin(excl_mask.index)]
 
     if 'HAS_INFERRED_TAXON' in undirected_relationship_types:
@@ -430,8 +420,6 @@ def filter_dataset_by_start_nodes(
             (relationships['relationshipType'] == 'HAS_INFERRED_TAXON') &
             (~relationships['sourceNodeId'].isin(start_nodes)) 
         ]
-        print(len(excl_mask), len(relationships.loc[
-            (relationships['relationshipType'] == 'HAS_INFERRED_TAXON')]))
         relationships = relationships[~relationships.index.isin(excl_mask.index)]
 
     if 'HAS_TISSUE_METADATA' in undirected_relationship_types:
@@ -439,9 +427,6 @@ def filter_dataset_by_start_nodes(
             (relationships['relationshipType'] == 'HAS_TISSUE_METADATA') &
             (~relationships['sourceNodeId'].isin(start_nodes)) 
         ]
-        print(len(excl_mask), len(relationships.loc[
-            (relationships['relationshipType'] == 'HAS_TISSUE_METADATA')]))
         relationships = relationships[~relationships.index.isin(excl_mask.index)]
 
-    print(relationships['relationshipType'].unique())
     return nodes, relationships
