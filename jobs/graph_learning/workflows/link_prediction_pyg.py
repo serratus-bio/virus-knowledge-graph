@@ -9,6 +9,7 @@ def run():
     utils.store_run_artifact(
         run_uid, DATASET_CFG, 'data_cfg')
 
+    print('Creating Pytorch Geometric graph')
     data, mappings = pyg_queries.create_pyg_graph()
     utils.store_run_artifact(run_uid, data, 'data')
     utils.store_run_artifact(run_uid, mappings, 'mappings')
@@ -16,15 +17,15 @@ def run():
     model = pyg_queries.get_model(data)
     utils.store_run_artifact(run_uid, model, 'model')
 
-    print('Split data')
+    print('Splitting data int train, val, test sets')
     train_data, val_data, test_data = pyg_queries.split_data(data)
 
-    print('Init data loaders')
+    print('Initalize batch loaders')
     train_loader = pyg_queries.get_train_loader(train_data)
     val_loader = pyg_queries.get_val_loader(val_data)
     test_loader = pyg_queries.get_val_loader(train_data)
 
-    print('train and eval loop')
+    print('Running train and eval loop')
     stats = pyg_queries.train_and_eval_loop(
         model, train_loader, val_loader, test_loader)
     utils.store_run_artifact(

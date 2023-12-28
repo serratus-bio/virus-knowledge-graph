@@ -401,31 +401,27 @@ def filter_dataset_by_start_nodes(
     ]
     nodes = nodes[~nodes['nodeId'].isin(excl_mask.nodeId)]
 
-    if 'HAS_HOST_STAT' in undirected_relationship_types:
+    sotu_in_source = [
+        'HAS_HOST_STAT',
+        'HAS_INFERRED_TAXON',
+        'HAS_INFERRED_TAXON',
+        'HAS_TISSUE_METADATA',
+    ]
+    sotu_in_source_and_target = [
+        'SEQUENCE_ALIGNMENT'
+    ]
+
+    for rel_type in sotu_in_source:
         excl_mask = relationships.loc[
-            (relationships['relationshipType'] == 'HAS_HOST_STAT') &
+            (relationships['relationshipType'] == rel_type) &
             (~relationships['sourceNodeId'].isin(start_nodes))
         ]
         relationships = relationships[~relationships.index.isin(excl_mask.index)]
-    
-    if 'SEQUENCE_ALIGNMENT' in undirected_relationship_types:
-        excl_mask = relationships.loc[
-            (relationships['relationshipType'] == 'SEQUENCE_ALIGNMENT') &
-            (~relationships['sourceNodeId'].isin(start_nodes) |  ~relationships['targetNodeId'].isin(start_nodes)) 
-        ]
-        relationships = relationships[~relationships.index.isin(excl_mask.index)]
 
-    if 'HAS_INFERRED_TAXON' in undirected_relationship_types:
+    for rel_type in sotu_in_source_and_target:
         excl_mask = relationships.loc[
-            (relationships['relationshipType'] == 'HAS_INFERRED_TAXON') &
-            (~relationships['sourceNodeId'].isin(start_nodes)) 
-        ]
-        relationships = relationships[~relationships.index.isin(excl_mask.index)]
-
-    if 'HAS_TISSUE_METADATA' in undirected_relationship_types:
-        excl_mask = relationships.loc[
-            (relationships['relationshipType'] == 'HAS_TISSUE_METADATA') &
-            (~relationships['sourceNodeId'].isin(start_nodes)) 
+            (relationships['relationshipType'] == rel_type) &
+            (~relationships['sourceNodeId'].isin(start_nodes) | ~relationships['targetNodeId'].isin(start_nodes)) 
         ]
         relationships = relationships[~relationships.index.isin(excl_mask.index)]
 

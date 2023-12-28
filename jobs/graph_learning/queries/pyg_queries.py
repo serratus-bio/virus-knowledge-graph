@@ -5,7 +5,7 @@ from queries.feature_queries import (
     load_node_tensor,
 )
 from queries.utils import read_ddf_from_disk
-from models.models import Model
+from models.models_v3 import Model
 from config.base import (
     DIR_CFG,
     MODEL_CFG,
@@ -79,7 +79,7 @@ def create_pyg_graph(
                 'FastRP_embedding': ListEncoder(),
             }
         )
-        data['sotu'].x = torch.arange(0, len(sotu_mapping))
+        data['sotu'].x = sotu_x #torch.arange(0, len(sotu_mapping))
         mappings['sotu'] = sotu_mapping
 
     if 'tissue_nodes.csv' in node_file_paths:
@@ -93,7 +93,7 @@ def create_pyg_graph(
                 'FastRP_embedding': ListEncoder(),
             }
         )
-        data['tissue'].x = torch.arange(0, len(tissue_mapping))
+        data['tissue'].x = tissue_x # torch.arange(0, len(tissue_mapping))
         mappings['tissue'] = tissue_mapping
 
     if 'sotu_has_host_stat_edges.csv' in rel_file_paths:
@@ -103,10 +103,10 @@ def create_pyg_graph(
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
             dst_mapping=taxon_mapping,
-            encoders={
-                'weight': IdentityEncoder(dtype=torch.float, is_tensor=True),
-                # 'weight': BinaryEncoder(dtype=torch.long),
-            },
+            # encoders={
+            #     'weight': IdentityEncoder(dtype=torch.float, is_tensor=True),
+            #     'weight': BinaryEncoder(dtype=torch.long),
+            # },
         )
         # edge_label = torch.div(edge_label, 100)
         data['sotu', 'has_host', 'taxon'].edge_index = edge_index
@@ -154,9 +154,9 @@ def create_pyg_graph(
         data['sotu', 'sequence_alignment', 'sotu'].edge_index = edge_index
         data['sotu', 'sequence_alignment', 'sotu'].edge_label = edge_label
 
-    if 'sotu_has_inferred_taxon.csv' in rel_file_paths:
+    if 'sotu_has_inferred_taxon_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/sotu_has_inferred_taxon.csv',
+            filename=f'{dir_name}/sotu_has_inferred_taxon_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
@@ -228,8 +228,7 @@ def get_train_loader(train_data, batch_size=2048):
 
 def get_val_loader(val_data, batch_size=2048):
     # Define the validation seed edges:
-    edge_label_index = val_data['sotu',
-                                'has_host', 'taxon'].edge_label_index
+    edge_label_index = val_data['sotu', 'has_host', 'taxon'].edge_label_index
     edge_label = val_data['sotu', 'has_host', 'taxon'].edge_label
 
     val_loader = LinkNeighborLoader(
@@ -246,11 +245,25 @@ def get_val_loader(val_data, batch_size=2048):
 
 
 def get_model(data):
+    # V1
+    # model = Model(
+    #     num_sotus=data['sotu'].num_nodes,
+    #     num_taxons=data['taxon'].num_nodes,
+    #     hidden_channels=64,
+    #     out_channels=64,
+    # )
+
+    #V2
+    # model = Model(
+    #     metadata=data.metadata(),
+    #     hidden_channels=64,
+    # )
+
     model = Model(
-        num_sotus=data['sotu'].num_nodes,
-        num_taxons=data['taxon'].num_nodes,
-        hidden_channels=64,
-        out_channels=64,
+        num_features=data.num_node_features,
+        hidden_channels=128,
+        use_embeddings=True,
+        data=data,
     )
     return model
 
@@ -279,7 +292,7 @@ def train(model, train_loader, optimizer, device):
     total_neg = 0
     total = 0
     for batch in train_loader:
-        labels = batch['sotu', 'taxon'].edge_label
+        labels = batch['sotu', 'has_host', 'taxon'].edge_label
         total_neg += torch.count_nonzero(labels).item()
         total += labels.numel()
 
@@ -289,9 +302,10 @@ def train(model, train_loader, optimizer, device):
         pred = model(
             batch.x_dict,
             batch.edge_index_dict,
-            batch['sotu', 'taxon'].edge_label_index)
+            batch['sotu', 'has_host', 'taxon'].edge_label_index
+        )
 
-        target = batch['sotu', 'taxon'].edge_label.float()
+        target = batch['sotu', 'has_host', 'taxon'].edge_label.float()
         loss = F.binary_cross_entropy_with_logits(pred, target)
         loss.backward()
         optimizer.step()
@@ -313,9 +327,9 @@ def test(model, loader, device):
         pred = model(
             batch.x_dict,
             batch.edge_index_dict,
-            batch['sotu', 'taxon'].edge_label_index
+            batch['sotu', 'has_host', 'taxon'].edge_label_index
         ).sigmoid().view(-1).cpu()
-        target = batch['sotu', 'taxon'].edge_label.cpu()
+        target = batch['sotu', 'has_host', 'taxon'].edge_label.cpu()
 
         preds.append(pred)
         targets.append(target)
