@@ -1,3 +1,5 @@
+import os
+
 from queries.feature_queries import (
     IdentityEncoder,
     ListEncoder,
@@ -348,21 +350,21 @@ def train_and_eval_loop(model, train_loader, val_loader, test_loader):
 
     for epoch in range(1, MODEL_CFG['MAX_EPOCHS']):
         train_loss = train(model, train_loader, optimizer, device)
-        train_acc = test(model, test_loader, device)
+        train_acc = test(model, train_loader, device)
         val_acc = test(model, val_loader, device)
         test_acc = test(model, test_loader, device)
         epoch_stats = {
+            'epoch': epoch,
+            'train_loss': train_loss,
             'train_acc': train_acc,
             'val_acc': val_acc,
             'test_acc': test_acc,
-            'train_loss': train_loss, 
-            'epoch': epoch
         }
         training_stats = update_stats(training_stats, epoch_stats)
         if epoch % 10 == 0:
             print(f"Epoch: {epoch:03d}")
             print(f"Train loss: {train_loss:.4f}")
-            print(f"Train accuracy: {train_acc:.4f}")
+            print(f"Test accuracy: {train_acc:.4f}")
             print(f"Validation accuracy: {val_acc:.4f}")
             print(f"Validation accuracy: {test_acc:.4f}")
 
@@ -423,7 +425,7 @@ def save_model(
         + f"/{model_cfg['SAMPLING_RATIO']}/{run_uid}/"
     if not os.path.exists(results_dir):
         os.makedirs(results_dir, exist_ok=True)
-    torch.save(model.state_dict(), results_dir)
+    torch.save(model.state_dict(), results_dir + 'model_weights')
 
 
 

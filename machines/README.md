@@ -8,7 +8,7 @@ Aside from deploying the cloudformation resources, some manual actions are neede
    - Size: 100 GiB, Type: io1 (supports Multi-attach), IOPS: 1600+, Enable Multi-attach
 1. Start instance, then connect to it using ssh key (`neo4j.pem`) or EC2 Instance Connect.
 1. Install git and clone repo on machine
-   - `sudo yum update -y && sudo yum install git -y`
+   - `sudo yum update -y && sudo yum install git -y && sudo yum install make`
    - `mkdir workspace && cd workspace && git clone https://github.com/serratus-bio/virus-host-graph && cd virus-host-graph`
 1. Run `make install` and `make mount-vol` to mount volume to `/mnt/graphdata`
 1. For worker nodes, uncomment lines under "#Uncomment the following lines after mounting EBS" in `/etc/neo4j/neo4j.conf`
