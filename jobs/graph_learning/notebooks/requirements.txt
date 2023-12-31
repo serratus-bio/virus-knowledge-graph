@@ -5,3 +5,5 @@ scipy
 scikit-learn
 graphistry
 pydeseq2
+seaborn
+umap-learn

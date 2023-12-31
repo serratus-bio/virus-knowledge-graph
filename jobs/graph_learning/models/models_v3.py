@@ -14,6 +14,7 @@ class GNNEncoder(torch.nn.Module):
         return x
 
 
+# Classifier
 class EdgeDecoder(torch.nn.Module):
     def __init__(self, hidden_channels):
         super().__init__()

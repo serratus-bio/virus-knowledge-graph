@@ -61,8 +61,8 @@ def create_pyg_graph(
             encoders={
                 # 'rankEncoded': IdentityEncoder(
                 #     dtype=torch.long, is_tensor=True),
-                # 'features': ListEncoder(),
-                'FastRP_embedding': ListEncoder(),
+                'features': ListEncoder(),
+                # 'FastRP_embedding': ListEncoder(),
             }
         )
         data['taxon'].x = taxon_x
@@ -75,26 +75,26 @@ def create_pyg_graph(
             encoders={
                 # 'centroidEncoded': IdentityEncoder(
                 #   dtype=torch.long, is_tensor=True),
-                # 'features': ListEncoder(),
-                'FastRP_embedding': ListEncoder(),
+                'features': ListEncoder(),
+                # 'FastRP_embedding': ListEncoder(),
             }
         )
         data['sotu'].x = sotu_x #torch.arange(0, len(sotu_mapping))
         mappings['sotu'] = sotu_mapping
 
-    if 'tissue_nodes.csv' in node_file_paths:
-        tissue_x, tissue_mapping = load_node_tensor(
-            filename=f'{dir_name}/tissue_nodes.csv',
-            index_col='appId',
-            encoders={
-                # 'centroidEncoded': IdentityEncoder(
-                #   dtype=torch.long, is_tensor=True),
-                # 'features': ListEncoder(),
-                'FastRP_embedding': ListEncoder(),
-            }
-        )
-        data['tissue'].x = tissue_x # torch.arange(0, len(tissue_mapping))
-        mappings['tissue'] = tissue_mapping
+    # if 'tissue_nodes.csv' in node_file_paths:
+    #     tissue_x, tissue_mapping = load_node_tensor(
+    #         filename=f'{dir_name}/tissue_nodes.csv',
+    #         index_col='appId',
+    #         encoders={
+    #             # 'centroidEncoded': IdentityEncoder(
+    #             #   dtype=torch.long, is_tensor=True),
+    #             'features': ListEncoder(),
+    #             # 'FastRP_embedding': ListEncoder(),
+    #         }
+    #     )
+    #     data['tissue'].x = tissue_x # torch.arange(0, len(tissue_mapping))
+    #     mappings['tissue'] = tissue_mapping
 
     if 'sotu_has_host_stat_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
@@ -126,19 +126,19 @@ def create_pyg_graph(
         data['taxon', 'has_parent', 'taxon'].edge_index = edge_index
         data['taxon', 'has_parent', 'taxon'].edge_label = edge_label
 
-    if 'tissue_has_parent_edges.csv' in rel_file_paths:
-        edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/tissue_has_parent_edges.csv',
-            src_index_col='sourceAppId',
-            src_mapping=tissue_mapping,
-            dst_index_col='targetAppId',
-            dst_mapping=tissue_mapping,
-            encoders={
-                'weight': IdentityEncoder(dtype=torch.float, is_tensor=True)
-            },
-        )
-        data['tissue', 'has_parent', 'tissue'].edge_index = edge_index
-        data['tissue', 'has_parent', 'tissue'].edge_label = edge_label
+    # if 'tissue_has_parent_edges.csv' in rel_file_paths:
+    #     edge_index, edge_label = load_edge_tensor(
+    #         filename=f'{dir_name}/tissue_has_parent_edges.csv',
+    #         src_index_col='sourceAppId',
+    #         src_mapping=tissue_mapping,
+    #         dst_index_col='targetAppId',
+    #         dst_mapping=tissue_mapping,
+    #         encoders={
+    #             'weight': IdentityEncoder(dtype=torch.float, is_tensor=True)
+    #         },
+    #     )
+    #     data['tissue', 'has_parent', 'tissue'].edge_index = edge_index
+    #     data['tissue', 'has_parent', 'tissue'].edge_label = edge_label
 
     if 'sotu_sequence_alignment_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
@@ -210,13 +210,13 @@ def get_train_loader(train_data, batch_size=2048):
 
     train_loader = LinkNeighborLoader(
         data=train_data,
-        # In the first hop, we sample at most 20 neighbors.
-        # In the second hop, we sample at most 10 neighbors.
-        num_neighbors=[8, 4],
-        # neg_sampling_ratio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
-        neg_sampling='binary',
+        # In the first hop, we sample at most 100 neighbors.
+        # In the second hop, we sample at most 50 neighbors.
+        num_neighbors=[100, 50],
+        neg_sampling_ratio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
+        # neg_sampling='binary',
         # let 'binary' setting handle this
-        # edge_label=train_data[('sotu', 'has_host', 'taxon')].edge_label,
+        edge_label=train_data[('sotu', 'has_host', 'taxon')].edge_label,
         edge_label_index=(('sotu', 'has_host', 'taxon'),
                           edge_label_index),
         batch_size=batch_size,
@@ -233,7 +233,7 @@ def get_val_loader(val_data, batch_size=2048):
 
     val_loader = LinkNeighborLoader(
         data=val_data,
-        num_neighbors=[8, 4],
+        num_neighbors=[100, 50],
         edge_label_index=(('sotu', 'has_host', 'taxon'),
                           edge_label_index),
         edge_label=edge_label,
@@ -244,7 +244,7 @@ def get_val_loader(val_data, batch_size=2048):
     return val_loader
 
 
-def get_model(data):
+def get_model(data, state_dict_path):
     # V1
     # model = Model(
     #     num_sotus=data['sotu'].num_nodes,
@@ -259,12 +259,17 @@ def get_model(data):
     #     hidden_channels=64,
     # )
 
+    #V3
     model = Model(
         num_features=data.num_node_features,
         hidden_channels=128,
         use_embeddings=True,
         data=data,
     )
+
+    if state_dict_path:
+        model.load_state_dict(torch.load(state_dict_path))
+    
     return model
 
 
@@ -423,3 +428,19 @@ def run_exhaustive_lp_predictions(
     # write preds to column
     df = pd.DataFrame(outs)
     df.to_csv(file_path, index=False)
+
+
+
+def save_model(
+    run_uid,
+    model,
+    model_cfg=MODEL_CFG,
+):
+    results_dir = f"{DIR_CFG['RESULTS_DIR']}"\
+        + f"/{model_cfg['SAMPLING_RATIO']}/{run_uid}/"
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir, exist_ok=True)
+    torch.save(model.state_dict(), results_dir)
+
+
+
