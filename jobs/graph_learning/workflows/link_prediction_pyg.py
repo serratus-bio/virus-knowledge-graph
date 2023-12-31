@@ -30,3 +30,9 @@ def run():
         model, train_loader, val_loader, test_loader)
     utils.store_run_artifact(
         run_uid, stats, 'stats')
+
+    print('Storing model weights')
+    pyg_queries.save_model(
+        run_uid, model 
+    )
+    

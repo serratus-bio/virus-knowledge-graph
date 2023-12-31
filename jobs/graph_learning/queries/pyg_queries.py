@@ -5,7 +5,7 @@ from queries.feature_queries import (
     load_node_tensor,
 )
 from queries.utils import read_ddf_from_disk
-from models.models_v3 import Model
+from models.model_v3 import Model
 from config.base import (
     DIR_CFG,
     MODEL_CFG,
@@ -66,6 +66,8 @@ def create_pyg_graph(
             }
         )
         data['taxon'].x = taxon_x
+        data['taxon'].node_id = torch.arange(len(taxon_mapping))
+
         mappings['taxon'] = taxon_mapping
 
     if 'sotu_nodes.csv' in node_file_paths:
@@ -80,6 +82,8 @@ def create_pyg_graph(
             }
         )
         data['sotu'].x = sotu_x #torch.arange(0, len(sotu_mapping))
+        data['sotu'].node_id = torch.arange(len(sotu_mapping))
+
         mappings['sotu'] = sotu_mapping
 
     # if 'tissue_nodes.csv' in node_file_paths:
@@ -244,27 +248,13 @@ def get_val_loader(val_data, batch_size=2048):
     return val_loader
 
 
-def get_model(data, state_dict_path):
-    # V1
-    # model = Model(
-    #     num_sotus=data['sotu'].num_nodes,
-    #     num_taxons=data['taxon'].num_nodes,
-    #     hidden_channels=64,
-    #     out_channels=64,
-    # )
-
-    #V2
-    # model = Model(
-    #     metadata=data.metadata(),
-    #     hidden_channels=64,
-    # )
-
-    #V3
+def get_model(data, state_dict_path=None):
     model = Model(
-        num_features=data.num_node_features,
-        hidden_channels=128,
-        use_embeddings=True,
-        data=data,
+        num_sotus=data['sotu'].num_nodes,
+        num_taxons=data['taxon'].num_nodes,
+        metadata=data.metadata(),
+        hidden_channels=256,
+        out_channels=128,
     )
 
     if state_dict_path:
@@ -294,28 +284,18 @@ class EarlyStopper:
 def train(model, train_loader, optimizer, device):
     model.train()
     total_loss = total_examples = 0
-    total_neg = 0
-    total = 0
     for batch in train_loader:
-        labels = batch['sotu', 'has_host', 'taxon'].edge_label
-        total_neg += torch.count_nonzero(labels).item()
-        total += labels.numel()
-
-        batch = batch.to(device)
         optimizer.zero_grad()
+        batch = batch.to(device)
 
-        pred = model(
-            batch.x_dict,
-            batch.edge_index_dict,
-            batch['sotu', 'has_host', 'taxon'].edge_label_index
-        )
-
+        pred = model(batch)
         target = batch['sotu', 'has_host', 'taxon'].edge_label.float()
         loss = F.binary_cross_entropy_with_logits(pred, target)
+
         loss.backward()
         optimizer.step()
 
-        total_loss += float(loss)
+        total_loss += float(loss) * pred.numel()
         total_examples += pred.numel()
 
     return total_loss / total_examples
@@ -329,12 +309,8 @@ def test(model, loader, device):
     for batch in loader:
         batch = batch.to(device)
 
-        pred = model(
-            batch.x_dict,
-            batch.edge_index_dict,
-            batch['sotu', 'has_host', 'taxon'].edge_label_index
-        ).sigmoid().view(-1).cpu()
-        target = batch['sotu', 'has_host', 'taxon'].edge_label.cpu()
+        pred = model(batch)
+        target = batch['sotu', 'has_host', 'taxon'].edge_label
 
         preds.append(pred)
         targets.append(target)
@@ -374,14 +350,21 @@ def train_and_eval_loop(model, train_loader, val_loader, test_loader):
         train_loss = train(model, train_loader, optimizer, device)
         train_acc = test(model, test_loader, device)
         val_acc = test(model, val_loader, device)
-        epoch_stats = {'train_acc': train_acc, 'val_acc': val_acc,
-                       'train_loss': train_loss, 'epoch': epoch}
+        test_acc = test(model, test_loader, device)
+        epoch_stats = {
+            'train_acc': train_acc,
+            'val_acc': val_acc,
+            'test_acc': test_acc,
+            'train_loss': train_loss, 
+            'epoch': epoch
+        }
         training_stats = update_stats(training_stats, epoch_stats)
         if epoch % 10 == 0:
             print(f"Epoch: {epoch:03d}")
             print(f"Train loss: {train_loss:.4f}")
             print(f"Train accuracy: {train_acc:.4f}")
             print(f"Validation accuracy: {val_acc:.4f}")
+            print(f"Validation accuracy: {test_acc:.4f}")
 
         if epoch > MODEL_CFG['MIN_EPOCHS'] \
                 and early_stopper.early_stop(val_acc):

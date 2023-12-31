@@ -7,6 +7,7 @@ DATASET_VERSION_6 = 'data-v6'
 DATASET_VERSION_7 = 'data-v7'
 DATASET_VERSION_8 = 'data-v8'
 DATASET_VERSION_9 = 'data-v9'
+DATASET_VERSION_10 = 'data-v10'
 
 
 NODE_PALMPRINT = {
@@ -126,6 +127,22 @@ DATASET_CFGS = {
         'TARGET_NODE_LABEL': 'Taxon',
     },
     DATASET_VERSION_9: {
+        'NODE_TYPES': [
+            NODE_SOTU, 
+            NODE_TAXON,
+        ],
+        'REL_TYPES': [
+            REL_SOTU_HAS_HOST_STAT,
+            REL_TAXON_HAS_PARENT,
+            REL_TISSUE_HAS_PARENT,
+            REL_SOTU_SEQUENCE_ALIGNMENT, 
+            REL_SOTU_HAS_INFERRED_TAXON,
+        ],
+        'TARGET_REL_TYPE': ['REL_SOTU_HAS_HOST_STAT'],
+        'SOURCE_NODE_LABEL': 'SOTU',
+        'TARGET_NODE_LABEL': 'Taxon',
+    },
+    DATASET_VERSION_10: {
         'NODE_TYPES': [
             NODE_SOTU, 
             NODE_TAXON,
