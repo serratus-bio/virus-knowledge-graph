@@ -344,6 +344,7 @@ def update_stats(training_stats, epoch_stats):
 def train_and_eval_loop(model, train_loader, val_loader, test_loader):
     early_stopper = EarlyStopper(patience=3, min_delta=10)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Device: '{device}'")
     model = model.to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     training_stats = None
