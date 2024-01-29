@@ -4,7 +4,7 @@ from datasources.psql import get_connection
 import dask.dataframe as dd
 
 
-EXTRACT_DIR = '/mnt/graphdata/query_cache/'
+EXTRACT_DIR = '/mnt/graphdata/query_cache/sql/'
 
 
 def write_query_to_disk(query='', cache_file_path=''):
@@ -48,7 +48,7 @@ def get_sra_df():
     query = "SELECT * FROM public.srarun"
     return get_query_results(
         query=query,
-        cache_filename='sql_sra_nodes.csv'
+        cache_filename='sra_nodes.csv'
     )
 
 
@@ -56,7 +56,7 @@ def get_palmprint_df():
     query = "SELECT * FROM public.palmdb2"
     return get_query_results(
         query=query,
-        cache_filename='sql_palmprint_nodes.csv'
+        cache_filename='palmprint_nodes.csv'
     )
 
 
@@ -65,7 +65,7 @@ def get_palmprint_msa_df():
              "WHERE pident >= 40 AND palm_id1 != palm_id2")
     return get_query_results(
         query=query,
-        cache_filename='sql_palmprint_edges.csv'
+        cache_filename='palmprint_edges.csv'
     )
 
 
@@ -75,7 +75,7 @@ def get_sra_palmprint_df():
              "INNER JOIN srarun ON palm_sra2.run_id = srarun.run")
     return get_query_results(
         query=query,
-        cache_filename='sql_sra_palmprint_edges.csv'
+        cache_filename='sra_palmprint_edges.csv'
     )
 
 
@@ -84,7 +84,7 @@ def get_palmprint_sotu_df():
              "FROM public.palmdb2")
     return get_query_results(
         query=query,
-        cache_filename='sql_palmprint_sotu_edges.csv'
+        cache_filename='palmprint_sotu_edges.csv'
     )
 
 
@@ -98,7 +98,7 @@ def get_taxon_df():
              )
     return get_query_results(
         query=query,
-        cache_filename='sql_taxon_nodes.csv'
+        cache_filename='taxon_nodes.csv'
     )
 
 
@@ -106,18 +106,21 @@ def get_sra_has_host_metadata_df():
     query = "SELECT srarun.run as run_id, tax_id FROM srarun"
     return get_query_results(
         query=query,
-        cache_filename='sql_sra_host_metadata_edges.csv'
+        cache_filename='sra_host_metadata_edges.csv'
     )
 
 
 def get_sra_has_host_stat_df():
-    query = ("SELECT sra_stat.run as run_id, sra_stat.taxid as tax_id, "
-             "kmer, total_kmers, kmer_perc "
-             "FROM sra_stat "
+    query = ("SELECT DISTINCT stat.run as run_id, stat.taxid as tax_id, "
+             "stat.kmer, stat.total_kmers, stat.kmer_perc "
+             "FROM public.sra_stat as stat "
+             "INNER JOIN public.srarun as sra "
+             "ON sra.run = stat.run "
+             "WHERE stat.kmer_perc > 1.0 "
              )
     return get_query_results(
         query=query,
-        cache_filename='sql_sra_host_stat_edges.csv'
+        cache_filename='sra_host_stat_edges.csv'
     )
 
 
@@ -125,17 +128,17 @@ def get_palmprint_taxon_edges_df():
     query = "SELECT * FROM public.palm_tax"
     return get_query_results(
         query=query,
-        cache_filename='sql_palmprint_taxon_edges.csv'
+        cache_filename='palmprint_taxon_edges.csv'
     )
 
 
 def get_sra_tissue_df():
-    query = ("SELECT bt.biosample_id, bt.bto_id, bt.source, bt.text "
+    query = ("SELECT DISTINCT bt.biosample_id, bt.bto_id, bt.source, bt.text "
              "FROM public.biosample_tissue as bt "
              "INNER JOIN public.srarun as sr "
              "ON bt.biosample_id = sr.bio_sample "
              )
     return get_query_results(
         query=query,
-        cache_filename='sql_biosample_tissue_edges.csv'
+        cache_filename='biosample_tissue_edges.csv'
     )

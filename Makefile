@@ -27,6 +27,12 @@ neo4j-restart: neo4j-stop neo4j-start
 neo4j-logs:
 	tail -f  /var/log/neo4j/neo4j.log
 
+neo4j-check-consitency:
+	sudo /bin/neo4j-admin database check neo4j
+
+neo4j-check-memory:
+	du -hc /var/lib/neo4j/data/databases/neo4j/*store.db* | tail -n 1
+
 ## Docker
 
 docker-start:
@@ -44,10 +50,10 @@ etl:
 	docker-compose up --build etl
 
 etl-sql:
-	WORKFLOW="sql_to_graph" docker-compose up --build etl
+	WORKFLOW="sql_to_graph" docker-compose -p etl-sql up --build etl
 
 etl-projection:
-	WORKFLOW="graph_to_projection" docker-compose up --build etl
+	WORKFLOW="graph_to_projection" docker-compose -p etl-projection  up --build etl
 
 etl-clear-cache:
 	rm /mnt/graphdata/*.csv
@@ -67,13 +73,13 @@ ml-connect:
 	docker exec -it $(docker ps -aqf "name=etl")  /bin/bash
 
 ml-dataset:
-	WORKFLOW="make_datasets" docker-compose up --build graph_learning
+	WORKFLOW="make_datasets" docker-compose -p ml-dataset up --build graph_learning
 
 lp-pyg:
-	WORKFLOW="link_prediction_pyg" docker-compose up --build graph_learning
+	WORKFLOW="link_prediction_pyg" docker-compose -p lp-pyg up --build graph_learning
 
 lp-gds:
-	WORKFLOW="link_prediction_gds" docker-compose up --build graph_learning
+	WORKFLOW="link_prediction_gds" docker-compose -p lp-gds up --build graph_learning
 
 lp-nx:
-	WORKFLOW="link_prediction_nx" docker-compose up --build graph_learning
+	WORKFLOW="link_prediction_nx" docker-compose -p lp-nx up --build graph_learning

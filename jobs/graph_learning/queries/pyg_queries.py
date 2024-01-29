@@ -1,3 +1,5 @@
+import os
+
 from queries.feature_queries import (
     IdentityEncoder,
     ListEncoder,
@@ -5,7 +7,7 @@ from queries.feature_queries import (
     load_node_tensor,
 )
 from queries.utils import read_ddf_from_disk
-from models.models import Model
+from models.model_v3 import Model
 from config.base import (
     DIR_CFG,
     MODEL_CFG,
@@ -44,13 +46,13 @@ def create_pyg_graph(
     node_file_paths = list(
         map(
             (lambda cfg: cfg['FILE_NAME']),
-            dataset_cfg['NODE_META']
+            dataset_cfg['NODE_TYPES']
         )
     )
     rel_file_paths = list(
         map(
             (lambda cfg: cfg['FILE_NAME']),
-            dataset_cfg['REL_META']
+            dataset_cfg['REL_TYPES']
         )
     )
 
@@ -60,11 +62,14 @@ def create_pyg_graph(
             index_col='appId',
             encoders={
                 # 'rankEncoded': IdentityEncoder(
-                #   dtype=torch.long, is_tensor=True),
+                #     dtype=torch.long, is_tensor=True),
                 'features': ListEncoder(),
+                # 'FastRP_embedding': ListEncoder(),
             }
         )
         data['taxon'].x = taxon_x
+        data['taxon'].node_id = torch.arange(len(taxon_mapping))
+
         mappings['taxon'] = taxon_mapping
 
     if 'sotu_nodes.csv' in node_file_paths:
@@ -75,31 +80,47 @@ def create_pyg_graph(
                 # 'centroidEncoded': IdentityEncoder(
                 #   dtype=torch.long, is_tensor=True),
                 'features': ListEncoder(),
+                # 'FastRP_embedding': ListEncoder(),
             }
         )
-        data['sotu'].x = torch.arange(0, len(sotu_mapping))
+        data['sotu'].x = sotu_x #torch.arange(0, len(sotu_mapping))
+        data['sotu'].node_id = torch.arange(len(sotu_mapping))
+
         mappings['sotu'] = sotu_mapping
 
-    if 'sotu_has_host_metadata_edges.csv' in rel_file_paths:
+    # if 'tissue_nodes.csv' in node_file_paths:
+    #     tissue_x, tissue_mapping = load_node_tensor(
+    #         filename=f'{dir_name}/tissue_nodes.csv',
+    #         index_col='appId',
+    #         encoders={
+    #             # 'centroidEncoded': IdentityEncoder(
+    #             #   dtype=torch.long, is_tensor=True),
+    #             'features': ListEncoder(),
+    #             # 'FastRP_embedding': ListEncoder(),
+    #         }
+    #     )
+    #     data['tissue'].x = tissue_x # torch.arange(0, len(tissue_mapping))
+    #     mappings['tissue'] = tissue_mapping
+
+    if 'sotu_has_host_stat_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/sotu_has_host_metadata_edges.csv',
+            filename=f'{dir_name}/sotu_has_host_stat_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
             dst_mapping=taxon_mapping,
             # encoders={
             #     'weight': IdentityEncoder(dtype=torch.float, is_tensor=True),
-            #     # 'weight': BinaryEncoder(dtype=torch.long),
+            #     'weight': BinaryEncoder(dtype=torch.long),
             # },
         )
         # edge_label = torch.div(edge_label, 100)
-
         data['sotu', 'has_host', 'taxon'].edge_index = edge_index
         data['sotu', 'has_host', 'taxon'].edge_label = edge_label
 
-    if 'has_parent_edges.csv' in rel_file_paths:
+    if 'taxon_has_parent_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/has_parent_edges.csv',
+            filename=f'{dir_name}/taxon_has_parent_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=taxon_mapping,
             dst_index_col='targetAppId',
@@ -110,6 +131,20 @@ def create_pyg_graph(
         )
         data['taxon', 'has_parent', 'taxon'].edge_index = edge_index
         data['taxon', 'has_parent', 'taxon'].edge_label = edge_label
+
+    # if 'tissue_has_parent_edges.csv' in rel_file_paths:
+    #     edge_index, edge_label = load_edge_tensor(
+    #         filename=f'{dir_name}/tissue_has_parent_edges.csv',
+    #         src_index_col='sourceAppId',
+    #         src_mapping=tissue_mapping,
+    #         dst_index_col='targetAppId',
+    #         dst_mapping=tissue_mapping,
+    #         encoders={
+    #             'weight': IdentityEncoder(dtype=torch.float, is_tensor=True)
+    #         },
+    #     )
+    #     data['tissue', 'has_parent', 'tissue'].edge_index = edge_index
+    #     data['tissue', 'has_parent', 'tissue'].edge_label = edge_label
 
     if 'sotu_sequence_alignment_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
@@ -125,9 +160,9 @@ def create_pyg_graph(
         data['sotu', 'sequence_alignment', 'sotu'].edge_index = edge_index
         data['sotu', 'sequence_alignment', 'sotu'].edge_label = edge_label
 
-    if 'sotu_has_inferred_taxon.csv' in rel_file_paths:
+    if 'sotu_has_inferred_taxon_edges.csv' in rel_file_paths:
         edge_index, edge_label = load_edge_tensor(
-            filename=f'{dir_name}/sotu_has_inferred_taxon.csv',
+            filename=f'{dir_name}/sotu_has_inferred_taxon_edges.csv',
             src_index_col='sourceAppId',
             src_mapping=sotu_mapping,
             dst_index_col='targetAppId',
@@ -181,13 +216,13 @@ def get_train_loader(train_data, batch_size=2048):
 
     train_loader = LinkNeighborLoader(
         data=train_data,
-        # In the first hop, we sample at most 20 neighbors.
-        # In the second hop, we sample at most 10 neighbors.
-        num_neighbors=[8, 4],
-        # neg_sampling_ratio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
-        neg_sampling='binary',
+        # In the first hop, we sample at most 100 neighbors.
+        # In the second hop, we sample at most 50 neighbors.
+        num_neighbors=[100, 50],
+        neg_sampling_ratio=MODEL_CFG['NEGATIVE_SAMPLING_RATIO'],
+        # neg_sampling='binary',
         # let 'binary' setting handle this
-        # edge_label=train_data[('sotu', 'has_host', 'taxon')].edge_label,
+        edge_label=train_data[('sotu', 'has_host', 'taxon')].edge_label,
         edge_label_index=(('sotu', 'has_host', 'taxon'),
                           edge_label_index),
         batch_size=batch_size,
@@ -199,13 +234,12 @@ def get_train_loader(train_data, batch_size=2048):
 
 def get_val_loader(val_data, batch_size=2048):
     # Define the validation seed edges:
-    edge_label_index = val_data['sotu',
-                                'has_host', 'taxon'].edge_label_index
+    edge_label_index = val_data['sotu', 'has_host', 'taxon'].edge_label_index
     edge_label = val_data['sotu', 'has_host', 'taxon'].edge_label
 
     val_loader = LinkNeighborLoader(
         data=val_data,
-        num_neighbors=[8, 4],
+        num_neighbors=[100, 50],
         edge_label_index=(('sotu', 'has_host', 'taxon'),
                           edge_label_index),
         edge_label=edge_label,
@@ -216,13 +250,18 @@ def get_val_loader(val_data, batch_size=2048):
     return val_loader
 
 
-def get_model(data):
+def get_model(data, state_dict_path=None):
     model = Model(
         num_sotus=data['sotu'].num_nodes,
         num_taxons=data['taxon'].num_nodes,
-        hidden_channels=64,
-        out_channels=64,
+        metadata=data.metadata(),
+        hidden_channels=256,
+        out_channels=128,
     )
+
+    if state_dict_path:
+        model.load_state_dict(torch.load(state_dict_path))
+    
     return model
 
 
@@ -247,27 +286,18 @@ class EarlyStopper:
 def train(model, train_loader, optimizer, device):
     model.train()
     total_loss = total_examples = 0
-    total_neg = 0
-    total = 0
     for batch in train_loader:
-        labels = batch['sotu', 'taxon'].edge_label
-        total_neg += torch.count_nonzero(labels).item()
-        total += labels.numel()
-
-        batch = batch.to(device)
         optimizer.zero_grad()
+        batch = batch.to(device)
 
-        pred = model(
-            batch.x_dict,
-            batch.edge_index_dict,
-            batch['sotu', 'taxon'].edge_label_index)
-
-        target = batch['sotu', 'taxon'].edge_label.float()
+        pred = model(batch)
+        target = batch['sotu', 'has_host', 'taxon'].edge_label.float()
         loss = F.binary_cross_entropy_with_logits(pred, target)
+
         loss.backward()
         optimizer.step()
 
-        total_loss += float(loss)
+        total_loss += float(loss) * pred.numel()
         total_examples += pred.numel()
 
     return total_loss / total_examples
@@ -281,12 +311,8 @@ def test(model, loader, device):
     for batch in loader:
         batch = batch.to(device)
 
-        pred = model(
-            batch.x_dict,
-            batch.edge_index_dict,
-            batch['sotu', 'taxon'].edge_label_index
-        ).sigmoid().view(-1).cpu()
-        target = batch['sotu', 'taxon'].edge_label.cpu()
+        pred = model(batch)
+        target = batch['sotu', 'has_host', 'taxon'].edge_label
 
         preds.append(pred)
         targets.append(target)
@@ -318,22 +344,30 @@ def update_stats(training_stats, epoch_stats):
 def train_and_eval_loop(model, train_loader, val_loader, test_loader):
     early_stopper = EarlyStopper(patience=3, min_delta=10)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Device: '{device}'")
     model = model.to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     training_stats = None
 
     for epoch in range(1, MODEL_CFG['MAX_EPOCHS']):
         train_loss = train(model, train_loader, optimizer, device)
-        train_acc = test(model, test_loader, device)
+        train_acc = test(model, train_loader, device)
         val_acc = test(model, val_loader, device)
-        epoch_stats = {'train_acc': train_acc, 'val_acc': val_acc,
-                       'train_loss': train_loss, 'epoch': epoch}
+        test_acc = test(model, test_loader, device)
+        epoch_stats = {
+            'epoch': epoch,
+            'train_loss': train_loss,
+            'train_acc': train_acc,
+            'val_acc': val_acc,
+            'test_acc': test_acc,
+        }
         training_stats = update_stats(training_stats, epoch_stats)
         if epoch % 10 == 0:
             print(f"Epoch: {epoch:03d}")
             print(f"Train loss: {train_loss:.4f}")
-            print(f"Train accuracy: {train_acc:.4f}")
+            print(f"Test accuracy: {train_acc:.4f}")
             print(f"Validation accuracy: {val_acc:.4f}")
+            print(f"Validation accuracy: {test_acc:.4f}")
 
         if epoch > MODEL_CFG['MIN_EPOCHS'] \
                 and early_stopper.early_stop(val_acc):
@@ -380,3 +414,19 @@ def run_exhaustive_lp_predictions(
     # write preds to column
     df = pd.DataFrame(outs)
     df.to_csv(file_path, index=False)
+
+
+
+def save_model(
+    run_uid,
+    model,
+    model_cfg=MODEL_CFG,
+):
+    results_dir = f"{DIR_CFG['RESULTS_DIR']}"\
+        + f"/{model_cfg['SAMPLING_RATIO']}/{run_uid}/"
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir, exist_ok=True)
+    torch.save(model.state_dict(), results_dir + 'model_weights')
+
+
+

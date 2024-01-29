@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# get device name from `lsblk`
 DEVICE_NAME=nvme1n1
 MOUNT_DIR=/mnt/graphdata
 

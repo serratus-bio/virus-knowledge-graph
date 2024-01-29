@@ -17,9 +17,11 @@ def batch_insert_data(query, df):
 
 def add_constraints():
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SRA) ON n.runId')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SRA) ON n.bioSample')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Palmprint) ON n.palmId')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.taxId')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.scientificName')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Tissue) ON n.btoId')
 
 
 # SRA #
@@ -171,8 +173,9 @@ def add_sra_tissue_edges(rows):
     # alt_query = '''
     #     CALL apoc.periodic.iterate(
     #     "
-    #         LOAD CSV WITH HEADERS FROM 'file:///sql_biosample_tissue_edges.csv' AS row
+    #         LOAD CSV WITH HEADERS FROM 'file:///biosample_tissue_edges.csv' AS row
     #         MATCH (s:SRA), (t:Tissue)
+    #         WHERE s.bioSample = row.biosample_id AND t.btoId = row.bto_id
     #         RETURN s, t, row
     #     ","
     #         WITH s, t, row
@@ -231,10 +234,10 @@ def add_sra_has_host_stat_edges(rows):
             MATCH (s:SRA), (t:Taxon)
             WHERE s.runId = toString(row.run_id)
             AND t.taxId = toString(row.tax_id)
-            AND round(toFloat(row.kmer_perc / 100), 4) > 0
+            AND round(toFloat(row.kmer_perc) / 100, 4) > 0
             MERGE (s)-[r:HAS_HOST_STAT]->(t)
             SET r += {
-                percentIdentity: round(toFloat(row.kmer_perc / 100), 4),
+                percentIdentity: round(toFloat(row.kmer_perc) / 100, 4),
                 percentIdentityFull: CASE WHEN s.spots > 0
                     THEN round(toFloat(row.kmer) / toFloat(s.spots), 4)
                     ELSE 0.0 END,

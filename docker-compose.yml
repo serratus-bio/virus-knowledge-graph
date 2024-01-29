@@ -1,7 +1,6 @@
 version: "3.4"
 services:
   etl:
-    container_name: etl_container
     build:
       context: ./jobs/etl
       dockerfile: Dockerfile
@@ -16,7 +15,6 @@ services:
     volumes:
       - /mnt/graphdata:/mnt/graphdata
   graph_learning:
-    container_name: graph_learning_container
     build:
       context: ./jobs/graph_learning
       dockerfile: Dockerfile
@@ -26,6 +24,13 @@ services:
       resources:
         limits:
           memory: 28000M
+        # reservations:
+        #   devices:
+        #   - driver: nvidia
+        #     capabilities:
+        #       - gpu
+        #       - utility # nvidia-smi
+        #       - compute # CUDA
     env_file:
       - ./jobs/graph_learning/.env
     volumes:

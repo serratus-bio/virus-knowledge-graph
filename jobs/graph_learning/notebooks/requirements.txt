@@ -2,7 +2,8 @@ python-dotenv
 matplotlib
 numpy
 scipy
-sklearn
+scikit-learn
 graphistry
-rpy2
 pydeseq2
+seaborn
+umap-learn
