@@ -1,31 +1,29 @@
 version: "3.4"
 services:
   etl:
-    # container_name: etl_container
     build:
       context: ./jobs/etl
       dockerfile: Dockerfile
       args:
         WORKFLOW: "${WORKFLOW}"
     deploy:
-      # resources:
-      #   limits:
-      #     memory: 16000M
+      resources:
+        limits:
+          memory: 16000M
     env_file:
       - ./jobs/etl/.env
     volumes:
       - /mnt/graphdata:/mnt/graphdata
   graph_learning:
-    # container_name: graph_learning_container
     build:
       context: ./jobs/graph_learning
       dockerfile: Dockerfile
       args:
         WORKFLOW: "${WORKFLOW}"
     deploy:
-      # resources:
-      #   limits:
-      #     memory: 28000M
+      resources:
+        limits:
+          memory: 28000M
         # reservations:
         #   devices:
         #   - driver: nvidia
