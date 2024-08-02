@@ -22,6 +22,7 @@ def add_constraints():
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.taxId')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.scientificName')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Tissue) ON n.btoId')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SOTU) ON n.sotu')
 
 
 # SRA #
