@@ -34,3 +34,15 @@ Aside from deploying the cloudformation resources, some manual actions are neede
   - Check status: `neo4j status`, `sudo service neo4j status` or `curl http://localhost:7474/`
   - Rveiw log files: `/var/log/neo4j/`
   - Restart instance: `neo4j stop && neo4j start` or `sudo service neo4j restart`
+
+
+### Neo4j community edition setup
+
+- Role-based security is an Enterprise Edition feature, high-availability clusters are also enterprise only
+- In the future, we may want to upgrade to enterprise or rely on infrastructure as code (IaC) + GH actions (CI/CD) to write updates to the database while allowing users read-only access when writing is completed
+
+### Cloudformation
+
+- [Reference](https://github.com/neo4j-partners/amazon-cloud-formation-neo4j)
+
+![architecture diagram](./cloudformation/aws-community.png)

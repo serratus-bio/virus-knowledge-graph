@@ -8,12 +8,6 @@ install:
 mount-vol:
 	./machines/mount-volume.sh
 
-neo4j-backup:
-	./machines/neo4j-backup.sh
-
-neo4j-restore:
-	./machines/neo4j-restore.sh
-
 ## Neo4j
 
 neo4j-stop:
@@ -32,6 +26,12 @@ neo4j-check-consitency:
 
 neo4j-check-memory:
 	du -hc /var/lib/neo4j/data/databases/neo4j/*store.db* | tail -n 1
+
+neo4j-backup:
+	./machines/neo4j-backup.sh
+
+neo4j-restore:
+	./machines/neo4j-restore.sh
 
 ## Docker
 

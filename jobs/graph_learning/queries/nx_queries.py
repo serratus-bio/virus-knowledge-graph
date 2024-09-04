@@ -110,3 +110,24 @@ def feature_importance(columns, classifier):
     keys = [value[0] for value in sorted_features]
     values = [value[1] for value in sorted_features]
     return pd.DataFrame(data={'feature': keys, 'value': values})
+
+
+def train_test_classifier(train_fts, val_fts):
+    classifier = get_classifier()
+    
+    cols = [
+        'jaccard_coefficient',
+        'preferential_attachment',
+        'adamic_adar_index',
+        'resource_allocation_index',
+        'common_neighbor_centrality',
+    ]
+    x_train = train_fts[cols].values.astype(float)
+    y_train = train_fts['actual'].values.astype(float)
+    classifier.fit(x_train, y_train)
+
+    preds = classifier.predict(val_fts[cols])
+    y_val = val_fts['actual'].values.astype(float)
+    evals = evaluate(preds, y_val)
+    fts_importance = feature_importance(cols, classifier)
+    return evals, fts_importance
