@@ -172,7 +172,7 @@ def get_sotu_sequnce_aligment_edges(
 ):
     query = '''
         MATCH (s:SOTU)-[r:SEQUENCE_ALIGNMENT]->(t:SOTU)
-        WHERE r.percentIdentity > 0.7
+        // WHERE r.percentIdentity > 0.7
         RETURN
             id(s) as sourceNodeId,
             s.palmId as sourceAppId,

@@ -25,6 +25,14 @@
 - Each unique palmprint is assigned a unique identifier, i.e. its `palm_id`
 - ([uclust](https://drive5.com/usearch/manual/uclust_algo.html)) identifies `palm_id` centroids as representatives of a species-like operational taxonomical unit (sOTU). The sOTU is described with its existing `palm_id`
 
+```
+usearch -calc_distmx otu_centroids.fa -tabbedout palmdb.40id_edge.txt \
+        -maxdist 0.6 -termdist 0.7
+```
+
+Input file is palmDB (https://github.com/rcedgar/palmdb)
+OTU centroids from the 03-14-21 snapshot
+
 ### NCBI
 
 - Taxonomy data reference [README](https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/new_taxdump/taxdump_readme.txt)

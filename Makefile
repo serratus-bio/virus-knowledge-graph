@@ -10,6 +10,9 @@ mount-vol:
 
 ## Neo4j
 
+neo4j-status:
+	neo4j status
+
 neo4j-stop:
 	sudo systemctl stop neo4j
 
