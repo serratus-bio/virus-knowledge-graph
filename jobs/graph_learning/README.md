@@ -1,5 +1,23 @@
 # Graph learning
 
+## Commands
+
+### Setup
+
+- `make etl-env`: Create template .env file. Used to provide ML image with Neo4j read creditials.
+
+### ML workflows
+
+- `make ml-dataset`: Create random-walk based dataset using configured projection schema and sampling ratio.
+- `make lp-pyg`: Run Pytorch Geometric link-prediction task on dataset.
+- `make lp-gds`: Run Neo4j GDS link-prediciton task on dataset.
+- `make lp-nx`: Run networkx link-prediction task on dataset.
+
+### Container management
+
+- `make ml`: build docker image without running any commands.
+- `make ml-connect`: connect to running docker image.
+
 ## Neo4j Graph Data Science (GDS)
 
 ### Overview

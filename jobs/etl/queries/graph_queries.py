@@ -171,32 +171,32 @@ def add_tissue_edges(rows):
 
 
 def add_sra_tissue_edges(rows):
+    ## Alt query: runs faster on low-memory instance (using file path /var/lib/neo4j/import)
     # alt_query = '''
     #     CALL apoc.periodic.iterate(
     #     "
     #         LOAD CSV WITH HEADERS FROM 'file:///biosample_tissue_edges.csv' AS row
+    #         RETURN row
+    #     ","
     #         MATCH (s:SRA), (t:Tissue)
     #         WHERE s.bioSample = row.biosample_id AND t.btoId = row.bto_id
-    #         RETURN s, t, row
-    #     ","
-    #         WITH s, t, row
     #         MERGE (s)-[r:HAS_TISSUE_METADATA]->(t)
     #         SET r += {
     #             sourceKey: row.source,
     #             sourceValue: row.text
     #         }
     #     ",
-    #     {batchSize:100000, parallel:True, retries: 3})
+    #     {batchSize:10000, parallel:False, retries: 0})
     #     YIELD batches, total, errorMessages
     #     RETURN batches, total, errorMessages
     # '''
-    # conn.query( query=alt_query)
+    # conn.query(query=alt_query)
 
     query = '''
         UNWIND $rows as row
         MATCH (s:SRA), (t:Tissue)
         WHERE s.bioSample = row.biosample_id AND t.btoId = row.bto_id
-        CREATE (s)-[r:HAS_TISSUE_METADATA]->(t)
+        MERGE (s)-[r:HAS_TISSUE_METADATA]->(t)
         SET r += {
             sourceKey: row.source,
             sourceValue: row.text
