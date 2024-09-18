@@ -1,19 +1,27 @@
-## Machine Setup
+### Neo4j community edition setup
 
-Aside from deploying the cloudformation resources, some manual actions are needed to set up the machine.
+- The free Neo4j community edition we're doesn't support Role-based security or multiple access levels for a single server, i.e. read-only and read-write access.
+- To workaround this, we have two seperate instances:
+  - `neo4j-graph-worker`: is a high-mem isntance with write access, config settings and additional plugins to support ML and ETL workloads
+  - `neo4j-graph-server`: is a t3-med instance with read-only access
+- Both instances can synchronize by using backup and restore, either from S3 or EBS multi-attach storage
 
-1. Create CloudFormation stack using [template](./cloudformation/neo4j-community.template.yaml).
-1. Copy created EC2 instance id and stop instance.
-1. Create EBS volume if not already created and associate to previously created EC2 instance.
+## Worker machine and ETL Setup
+
+Some optional actions are needed to set up worker instance for running initial ETL.
+
+1. Create CloudFormation stack using [template](./cloudformation/neo4j-community.template.yaml)
+   - Existing ssh key: `neo4j`
+1. If not already created, create shared EBS volume. Attach to EC2 instance created in CF Stack.
+   - Existing EBS volume: `vol-0a228a503a868b12d`
    - Size: 100 GiB, Type: io1 (supports Multi-attach), IOPS: 1600+, Enable Multi-attach
-1. Start instance, then connect to it using ssh key (`neo4j.pem`) or EC2 Instance Connect.
+1. Connect to instance using selected ssh key (`neo4j.pem`) or EC2 Instance Connect.
 1. Install git and clone repo on machine
    - `sudo yum update -y && sudo yum install git -y && sudo yum install make`
-   - `mkdir workspace && cd workspace && git clone https://github.com/serratus-bio/virus-host-graph && cd virus-host-graph`
+   - `mkdir workspace && cd workspace && git clone https://github.com/serratus-bio/virus-knowledge-graph && cd virus-knowledge-graph`
 1. Run `make install` and `make mount-vol` to mount volume to `/mnt/graphdata`
-1. For worker nodes, uncomment lines under "#Uncomment the following lines after mounting EBS" in `/etc/neo4j/neo4j.conf`
 1. Restore data (if backup already on disk) or run full ETL job
-   - `make restore`
+   - `make neo4j-restore`
    - OR: set up .env and run `make etl-run`
 
 ### Memory management
@@ -34,12 +42,6 @@ Aside from deploying the cloudformation resources, some manual actions are neede
   - Check status: `neo4j status`, `sudo service neo4j status` or `curl http://localhost:7474/`
   - Rveiw log files: `/var/log/neo4j/`
   - Restart instance: `neo4j stop && neo4j start` or `sudo service neo4j restart`
-
-
-### Neo4j community edition setup
-
-- Role-based security is an Enterprise Edition feature, high-availability clusters are also enterprise only
-- In the future, we may want to upgrade to enterprise or rely on infrastructure as code (IaC) + GH actions (CI/CD) to write updates to the database while allowing users read-only access when writing is completed
 
 ### Cloudformation
 

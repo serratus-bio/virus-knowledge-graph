@@ -288,9 +288,6 @@ Resources:
             - "    unzip /tmp/neo4j-graph-data-science-*.zip  -d /var/lib/neo4j/plugins \n"
             - "    echo \"Disable page cache requirements\"\n"
             - "    sed -i s/server.memory.pagecache.size=10g/#server.memory.pagecache.size=10g/g /etc/neo4j/neo4j.conf\n"
-            - "    echo \"# Uncomment the following lines after mounting EBS\" >> /etc/neo4j/neo4j.conf\n"
-            - "    echo \"#gds.export.location=/mnt/graphdata\" >> /etc/neo4j/neo4j.conf\n"
-            - "    echo \"#gds.model.store_location=/home/ec2-user/workspace/virus-host-graph\" >> /etc/neo4j/neo4j.conf\n"
             - "  fi\n"
             - "}\n"
 
