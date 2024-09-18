@@ -2,10 +2,10 @@
 
 ## Docs
 
-See [Machines README](./machines/README) for machine setup and neo4j config managment.
-See [ETL README](./jobs/etl/README) for ETL jobs.
-See [ML README](./jobs/graphlearning/README) for ML jobs.
-See [Makefile](./Makefile) for all available commands.
+- [Machines README](./machines/README.md) for machine setup and neo4j config managment.
+- [ETL README](./jobs/etl/README.md) for ETL jobs.
+- [ML README](./jobs/graphlearning/README.md) for ML jobs.
+- [Makefile](./Makefile) for all available commands.
 
 ## Accessing Neo4j
 
@@ -21,4 +21,3 @@ Find URL in [Cloudformation stack "Outputs"](https://us-east-1.console.aws.amazo
 
 - Download [https://neo4j.com/download/](https://neo4j.com/download/)
 - Create new project with remote connection DBMS connection `neo4j@neo4j://{URL}:7687`
-
