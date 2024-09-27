@@ -6,6 +6,7 @@ conn = get_connection()
 def batch_insert_data(query, df):
     results = []
     for partition in df.partitions:
+        print('Processing partition')
         results.append(conn.query(
             query,
             parameters={
@@ -16,8 +17,11 @@ def batch_insert_data(query, df):
 
 
 def add_constraints():
+    # index creation also creates unique constraints
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SRA) ON n.runId')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SRA) ON n.bioSample')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:SRA) ON n.bioProject')
+    conn.query('CREATE INDEX IF NOT EXISTS FOR (n:BioProject) ON n.bioProject')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Palmprint) ON n.palmId')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.taxId')
     conn.query('CREATE INDEX IF NOT EXISTS FOR (n:Taxon) ON n.scientificName')
@@ -44,6 +48,43 @@ def add_sra_nodes(rows):
                 sampleName: row.sample_name,
                 submission: row.submission,
                 projectId: row.project_id
+            }
+            '''
+    return batch_insert_data(query, rows)
+
+
+def add_biosample_attribute(rows):
+    query = '''
+            UNWIND $rows as row
+            MATCH (n:SRA {bioSample: row.biosample})
+            SET n += {
+                bioSampleTitle: row.title
+            }
+    '''
+    return batch_insert_data(query, rows)
+
+
+def add_biosample_sex_attribute(rows):
+    query = '''
+            UNWIND $rows as row
+            MATCH (n:SRA {bioSample: row.biosample})
+            SET n += {
+                bioSampleSex: row.sex
+            }
+    '''
+    return batch_insert_data(query, rows)
+
+
+def add_bioproject_nodes(rows):
+    query = '''
+            UNWIND $rows as row
+            MATCH (n:SRA {bioProject: row.bioproject})
+            USING INDEX n:SRA(bioProject)
+            MERGE (n)-[:HAS_BIOPROJECT]->(m:BioProject {bioProject: row.bioproject})
+            SET m += {
+                name: row.name,
+                title: row.title,
+                description: row.description
             }
             '''
     return batch_insert_data(query, rows)
@@ -215,8 +256,18 @@ def add_sra_palmprint_edges(rows):
             WHERE s.runId = row.run_id AND t.palmId = row.palm_id
             MERGE (s)-[r:HAS_PALMPRINT]->(t)
             SET r.percentIdentity = toFloat(row.percent_identity)/100
-            '''
+    '''
     return batch_insert_data(query, rows)
+
+
+def add_sra_has_sotu_edges():
+    query = '''
+            MATCH (s:SRA)-[:HAS_PALMPRINT]->(p:Palmprint)-[:HAS_SOTU]->(t:SOTU)
+            MERGE (s)-[r:HAS_SOTU]->(t)
+    '''
+    conn.query(
+        query=query
+    )
 
 
 def add_sra_has_host_metadata_edges(rows):

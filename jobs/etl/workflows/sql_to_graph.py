@@ -1,14 +1,21 @@
-from queries import serratus_queries
-from queries import graph_queries
-from queries import owl_queries
+from queries import (
+    serratus_queries,
+    logan_queries,
+    graph_queries,
+    owl_queries,
+)
 
 
 def run():
     graph_queries.add_constraints()
 
-    print('Processing SRA')
+    print('Processing SRA runs')
     df_sra = serratus_queries.get_sra_df()
     graph_queries.add_sra_nodes(df_sra)
+
+    print('Processing BioProjects')
+    df_bioproject = logan_queries.get_bioproject_df()
+    graph_queries.add_bioproject_nodes(df_bioproject)
 
     print('Processing Palmprints')
     df_palmprint = serratus_queries.get_palmprint_df()
@@ -37,6 +44,7 @@ def run():
     print('Processing heterogenous edges')
     df_sra_palmprint = serratus_queries.get_sra_palmprint_df()
     graph_queries.add_sra_palmprint_edges(df_sra_palmprint)
+    graph_queries.add_sra_has_sotu_edges()
 
     df_sra_taxon = serratus_queries.get_sra_has_host_metadata_df()
     graph_queries.add_sra_has_host_metadata_edges(df_sra_taxon)
@@ -47,3 +55,12 @@ def run():
     df_palmprint_taxon_edges = \
         serratus_queries.get_palmprint_taxon_edges_df()
     graph_queries.add_palmprint_taxon_edges(df_palmprint_taxon_edges)
+
+    print('Set BioSample attribute')
+    df_biosample = logan_queries.get_biosample_df()
+    graph_queries.add_biosample_attribute(df_biosample)
+
+    print('Set BioSample sex attribute')
+    df_biosample_sex = logan_queries.get_biosample_sex_df()
+    graph_queries.add_biosample_sex_attribute(df_biosample_sex)
+
