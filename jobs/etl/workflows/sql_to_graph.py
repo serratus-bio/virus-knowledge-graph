@@ -64,3 +64,6 @@ def run():
     df_biosample_sex = logan_queries.get_biosample_sex_df()
     graph_queries.add_biosample_sex_attribute(df_biosample_sex)
 
+    print('Set BioSample geo attribute')
+    df_biosample_geo = logan_queries.get_biosample_geo_df()
+    graph_queries.add_biosample_geo_attribute(df_biosample_geo)

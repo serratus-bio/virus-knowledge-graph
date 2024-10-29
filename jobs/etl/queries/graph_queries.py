@@ -75,12 +75,46 @@ def add_biosample_sex_attribute(rows):
     return batch_insert_data(query, rows)
 
 
+def add_biosample_geo_attribute(rows):
+    # Note: geo attributes are stored as arrays since there can be multiple attribute values with geo information
+    #  We first clear the existing attributes and then append the new ones in a list
+    query = '''
+        CALL apoc.periodic.iterate(
+        "MATCH (n:SRA) RETURN n",
+        "SET n += {
+            bioSampleGeoAttributeNames: [],
+            bioSampleGeoAttributeValues: [],
+            bioSampleGeoId: [],
+            bioSampleGeoBiomeId: [],
+            bioSampleGeoBiomeName: []
+        }",
+        {batchSize:10000, parallel:True, retries: 0})
+    '''
+    conn.query(
+        query=query
+    )
+
+    query = '''
+        UNWIND $rows as row
+        MATCH (n:SRA {bioSample: row.biosample})
+        SET n += {
+            bioSampleGeoAttributeNames: coalesce(n.bioSampleGeoAttributeNames, []) + coalesce(row.attribute_name, []),
+            bioSampleGeoAttributeValues: coalesce(n.bioSampleGeoAttributeValues, []) + coalesce(row.attribute_value, []),
+            bioSampleGeoId: coalesce(n.bioSampleGeoId, []) + coalesce(row.gm4326_id, []),
+            bioSampleGeoBiomeId: coalesce(n.bioSampleGeoBiomeId, []) + coalesce(row.gp4326_wwf_tew_id, []),
+            bioSampleGeoBiomeName: coalesce(n.bioSampleGeoBiomeName, []) + coalesce(row.biome_name, [])
+        }
+    '''
+    return batch_insert_data(query, rows)
+
+
 def add_bioproject_nodes(rows):
     query = '''
             UNWIND $rows as row
             MATCH (n:SRA {bioProject: row.bioproject})
             USING INDEX n:SRA(bioProject)
-            MERGE (n)-[:HAS_BIOPROJECT]->(m:BioProject {bioProject: row.bioproject})
+            MERGE (m:BioProject {bioProject: row.bioproject})
+            MERGE (n)-[:HAS_BIOPROJECT]->(m)
             SET m += {
                 name: row.name,
                 title: row.title,
