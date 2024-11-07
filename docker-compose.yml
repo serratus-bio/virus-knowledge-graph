@@ -9,7 +9,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 16000M
+          memory: 16000M #975000M
     env_file:
       - ./jobs/etl/.env
     volumes:
@@ -24,13 +24,6 @@ services:
       resources:
         limits:
           memory: 28000M
-        # reservations:
-        #   devices:
-        #   - driver: nvidia
-        #     capabilities:
-        #       - gpu
-        #       - utility # nvidia-smi
-        #       - compute # CUDA
     env_file:
       - ./jobs/graph_learning/.env
     volumes:

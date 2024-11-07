@@ -1,47 +1,52 @@
 import os
 
-from datasources.psql import get_logan_connection
+from datasources.psql import (
+    get_logan_connection,
+    get_logan_write_connection,
+)
 from .serratus_queries import (
     get_query_results,
 )
 
+
 def get_biosample_df():
-    query = '''
+    query = """
         SELECT accession as biosample, title
         FROM public.biosample
-    '''
+    """
     return get_query_results(
         query=query,
-        cache_filename='sql_biosample_nodes.csv',
+        cache_filename="sql_biosample_nodes.csv",
         conn=get_logan_connection(),
     )
 
+
 def get_bioproject_df():
-    query = '''
+    query = """
         SELECT accession as bioProject, name, title, description
         FROM public.bioproject
-    '''
+    """
     return get_query_results(
         query=query,
-        cache_filename='sql_bioproject_nodes.csv',
+        cache_filename="sql_bioproject_nodes.csv",
         conn=get_logan_connection(),
     )
 
 
 def get_biosample_sex_df():
-    query = '''
+    query = """
         SELECT biosample, sex
         FROM public.biosample_sex
-    '''
+    """
     return get_query_results(
         query=query,
-        cache_filename='sql_biosample_sex.csv',
+        cache_filename="sql_biosample_sex.csv",
         conn=get_logan_connection(),
     )
 
 
 def get_biosample_geo_df():
-    query = '''
+    query = """
         SELECT
             accession as biosample,
             attribute_name,
@@ -69,9 +74,54 @@ def get_biosample_geo_df():
             END AS biome_name
         FROM public.bgl_gm4326_gp4326
         WHERE palm_virome is TRUE
-    '''
+    """
     return get_query_results(
         query=query,
-        cache_filename='sql_biosample_geo.csv',
+        cache_filename="sql_biosample_geo.csv",
         conn=get_logan_connection(),
     )
+
+
+def write_biosample_disease():
+    conn = get_logan_write_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('DROP TABLE IF EXISTS public.biosample_disease')
+    cursor.execute('''
+        CREATE TABLE public.biosample_disease (
+            biosample VARCHAR,
+            source VARCHAR,
+            text VARCHAR,
+            do_id VARCHAR,
+            do_label VARCHAR
+        )
+    ''')
+    conn.commit()
+
+    filename = "/mnt/graphdata/ncbi-data/biosample_disease.csv"
+    conn = get_logan_write_connection()
+
+    cursor = conn.cursor()
+    copy_sql = """
+        COPY public.biosample_disease (biosample, source, text, do_id, do_label)
+        FROM stdin WITH CSV HEADER
+        DELIMITER as ','
+    """
+    with open(filename, 'r') as f:
+        try:
+            cursor.copy_expert(sql=copy_sql, file=f)
+            conn.commit()
+        except Exception as error:
+            print("Error: %s" % error)
+            conn.rollback()
+            cursor.close()
+            return error
+
+    cursor.execute('''
+        CREATE INDEX biosample_disease_biosample_idx
+        ON public.biosample_disease (biosample)
+    ''')
+    conn.commit()
+
+    conn.close()
+    return True

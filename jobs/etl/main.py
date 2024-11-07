@@ -1,9 +1,17 @@
 import argparse
 
-from workflows import sql_to_graph, graph_to_projection
+from workflows import (
+    sra_to_sql,
+    sql_to_graph,
+    graph_to_projection,
+)
 
 
 def main(args):
+    if args.workflow == 'sra_to_sql':
+        print('Running workflow: SRA -> SQL')
+        sra_to_sql.run()
+
     if args.workflow == 'sql_to_graph':
         print('Running workflow: SQL -> Neo4j ')
         sql_to_graph.run()
