@@ -2,56 +2,56 @@ from queries import projection_queries
 
 
 def run():
-    print('Processing Taxon nodes')
+    print("Processing Taxon nodes")
     query_results = projection_queries.get_taxon_nodes()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='taxon_nodes.csv',
+        file_name="taxon_nodes.csv",
     )
 
-    print('Processing Taxon HAS_PARENT edges')
+    print("Processing Taxon HAS_PARENT edges")
     query_results = projection_queries.get_taxon_has_parent_edges()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='taxon_has_parent_edges.csv',
+        file_name="taxon_has_parent_edges.csv",
     )
 
-    print('Processing Palmprint nodes')
+    print("Processing Palmprint nodes")
     query_results = projection_queries.get_palmprint_nodes()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='palmprint_nodes.csv',
+        file_name="palmprint_nodes.csv",
     )
 
-    print('Processing Palmprint HAS_SOTU edges')
+    print("Processing Palmprint HAS_SOTU edges")
     query_results = projection_queries.get_has_sotu_edges()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='palmprint_has_sotu_edges.csv',
+        file_name="palmprint_has_sotu_edges.csv",
     )
 
-    print('Processing Palmprint HAS_HOST_METADATA edges')
+    print("Processing Palmprint HAS_HOST_METADATA edges")
     query_results = projection_queries.get_palmprint_has_host_metadata_edges()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='palmprint_has_host_metadata_edges.csv',
+        file_name="palmprint_has_host_metadata_edges.csv",
     )
 
-    print('Processing SOTU nodes')
+    print("Processing SOTU nodes")
     query_results = projection_queries.get_sotu_nodes()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='sotu_nodes.csv',
+        file_name="sotu_nodes.csv",
     )
 
-    print('Processing SOTU HAS_HOST_METADATA edges')
+    print("Processing SOTU HAS_HOST_METADATA edges")
     query_results = projection_queries.get_sotu_has_host_metadata_edges()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='sotu_has_host_metadata_edges.csv',
+        file_name="sotu_has_host_metadata_edges.csv",
     )
 
-    print('Processing SOTU SEQUENCE_ALIGNMENT edges')
+    print("Processing SOTU SEQUENCE_ALIGNMENT edges")
     query_results = []
     cursor = 0
     page_size = 100000
@@ -62,58 +62,58 @@ def run():
         )
         projection_queries.write_to_disk(
             query_results=query_results,
-            file_name='sotu_sequence_alignment_edges.csv',
-            mode='a' if cursor > 0 else 'w',
+            file_name="sotu_sequence_alignment_edges.csv",
+            mode="a" if cursor > 0 else "w",
         )
         cursor += page_size
         if len(query_results) < page_size:
             break
 
-    print('Processing SOTU HAS_INFERRED_TAXON edges')
+    print("Processing SOTU HAS_INFERRED_TAXON edges")
     query_results = projection_queries.get_sotu_has_inferred_taxon()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='sotu_has_inferred_taxon_edges.csv',
+        file_name="sotu_has_inferred_taxon_edges.csv",
     )
 
-    print('Processing SOTU HAS_HOST_STAT edges')
+    print("Processing SOTU HAS_HOST_STAT edges")
     query_results = projection_queries.get_sotu_has_host_stat_edges()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='sotu_has_host_stat_edges.csv',
+        file_name="sotu_has_host_stat_edges.csv",
     )
 
-    print('Processing Tissue nodes')
+    print("Processing Tissue nodes")
     query_results = projection_queries.get_tissue_nodes()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='tissue_nodes.csv',
+        file_name="tissue_nodes.csv",
     )
 
-    print('Processing Tissue HAS_PARENT edges')
+    print("Processing Tissue HAS_PARENT edges")
     query_results = projection_queries.get_tissue_has_parent_edges()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='tissue_has_parent_edges.csv',
+        file_name="tissue_has_parent_edges.csv",
     )
 
-    print('Processing SOTU HAS_TISSUE_METADATA edges')
+    print("Processing SOTU HAS_TISSUE_METADATA edges")
     query_results = projection_queries.get_sotu_has_tissue_metadata_edges()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='sotu_has_tissue_metadata_edges.csv',
+        file_name="sotu_has_tissue_metadata_edges.csv",
     )
 
-    print('Processing Apicomplexa SOTU nodes')
+    print("Processing Apicomplexa SOTU nodes")
     query_results = projection_queries.get_apicomplexa_sotu_nodes()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='sotu_apicomplexa_nodes.csv',
+        file_name="sotu_apicomplexa_nodes.csv",
     )
 
-    print('Processing Lenarviricota SOTU nodes')
+    print("Processing Lenarviricota SOTU nodes")
     query_results = projection_queries.get_lenarviricota_sotu_nodes()
     projection_queries.write_to_disk(
         query_results=query_results,
-        file_name='sotu_lenarviricota_nodes.csv',
+        file_name="sotu_lenarviricota_nodes.csv",
     )

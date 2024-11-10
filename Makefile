@@ -1,6 +1,6 @@
 ## Machine
 
-setup: install mount-vol env-etl env-ml docker-start
+setup: install mount-vol docker-start etl-env ml-env
 
 install:
 	./machines/install.sh
@@ -51,6 +51,9 @@ etl-env:
 
 etl:
 	docker-compose up --build etl
+
+etl-sra:
+	WORKFLOW="sra_to_sql" docker-compose -p etl-sra up --build etl
 
 etl-sql:
 	WORKFLOW="sql_to_graph" docker-compose -p etl-sql up --build etl

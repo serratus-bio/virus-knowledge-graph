@@ -6,23 +6,23 @@ from datasources.neo4j import get_connection
 
 conn = get_connection()
 
-QUERY_CACHE_DIR = '/mnt/graphdata/query_cache/neo4j/'
+QUERY_CACHE_DIR = "/mnt/graphdata/query_cache/neo4j/"
 
 
 def write_to_disk(
     query_results,
-    file_name='',
-    mode='w',
+    file_name="",
+    mode="w",
 ):
     df = pd.DataFrame([dict(record) for record in query_results])
-    dir_name = QUERY_CACHE_DIR 
+    dir_name = QUERY_CACHE_DIR
     file_path = dir_name + file_name
-    header = True if mode == 'w' else False
+    header = True if mode == "w" else False
     df.to_csv(file_path, index=False, mode=mode, header=header)
 
 
 def get_palmprint_nodes():
-    query = '''
+    query = """
             MATCH (n:Palmprint)
             RETURN
                 id(n) as nodeId,
@@ -30,12 +30,12 @@ def get_palmprint_nodes():
                 n.palmId as palmId,
                 labels(n) as labels,
                 n.centroid as centroid
-            '''
+            """
     return conn.query(query=query)
 
 
 def get_sotu_nodes():
-    query = '''
+    query = """
             MATCH (:Palmprint)-[r:HAS_SOTU*0..1]->(n:SOTU)
             RETURN
                 id(n) as nodeId,
@@ -44,12 +44,12 @@ def get_sotu_nodes():
                 labels(n) as labels,
                 n.centroid as centroid,
                 count(r) as numPalmprints
-            '''
+            """
     return conn.query(query=query)
 
 
 def get_has_sotu_edges():
-    query = '''
+    query = """
             MATCH (s:Palmprint)-[r:HAS_SOTU]->(t:SOTU)
             RETURN
                 id(s) as sourceNodeId,
@@ -58,12 +58,12 @@ def get_has_sotu_edges():
                 t.palmId as targetAppId,
                 type(r) as relationshipType,
                 1 as weight
-            '''
+            """
     return conn.query(query=query)
 
 
 def get_taxon_nodes():
-    query = '''
+    query = """
             MATCH (n:Taxon)
             RETURN
                 id(n) as nodeId,
@@ -74,12 +74,12 @@ def get_taxon_nodes():
                 apoc.node.degree(n, "HAS_PARENT") as hasParentDegree,
                 apoc.node.degree(n, "HAS_PARENT>") as hasParentOutDegree,
                 apoc.node.degree(n, "<HAS_PARENT") as hasParentInDegree
-            '''
+            """
     return conn.query(query=query)
 
 
 def get_taxon_has_parent_edges():
-    query = '''
+    query = """
             MATCH (s:Taxon)-[r:HAS_PARENT]->(t:Taxon)
             RETURN
                 id(s) as sourceNodeId,
@@ -88,14 +88,14 @@ def get_taxon_has_parent_edges():
                 t.taxId as targetAppId,
                 type(r) as relationshipType,
                 1 as weight
-            '''
+            """
     return conn.query(query=query)
 
 
 def get_palmprint_has_host_metadata_edges():
     # Get inferred Palmprint -> Taxon edges from Palmprint -> SRA -> Taxon
     # exclude all hosts that are descendants of unclassified Taxon 12908
-    query = '''
+    query = """
             MATCH (s:Palmprint)<-[r:HAS_PALMPRINT]-(:SRA)
                 -[:HAS_HOST_METADATA]->(t:Taxon)
             WHERE not (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
@@ -108,14 +108,14 @@ def get_palmprint_has_host_metadata_edges():
                 count(*) AS count,
                 avg(r.percentIdentity) as avgPercentIdentity,
                 avg(r.percentIdentity) as weight
-            '''
+            """
     return conn.query(query=query)
 
 
 def get_sotu_has_host_metadata_edges():
     # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
     # exclude all hosts that are descendants of unclassified Taxon 12908
-    query = '''
+    query = """
             MATCH (s:SOTU)<-[:HAS_SOTU]-(:Palmprint)
                     <-[r:HAS_PALMPRINT]-(:SRA)-[:HAS_HOST_METADATA]->(t:Taxon)
             WHERE not (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
@@ -131,14 +131,14 @@ def get_sotu_has_host_metadata_edges():
                 count(*) AS count,
                 avg(r.percentIdentity) as avgPercentIdentity,
                 avg(r.percentIdentity) as weight
-            '''
+            """
     return conn.query(query=query)
 
 
 def get_sotu_has_host_stat_edges():
     # Get inferred SOTU -> Taxon edges from Palmprint -> SOTU -> SRA -> Taxon
     # Hardcode stat_threshold to 0.5
-    query = '''
+    query = """
         CALL {
             MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
                 <-[r:HAS_PALMPRINT]-(s:SRA)-[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {rank: 'order'})
@@ -162,15 +162,15 @@ def get_sotu_has_host_stat_edges():
             avg(q.percentIdentity) as avgPercentIdentityStatKmers,
             avg(q.percentIdentityFull) as avgPercentIdentityStatSpots,
             avg(q.percentIdentity) * avg(r.percentIdentity) as weight
-    '''
+    """
     return conn.query(query=query)
 
 
 def get_sotu_sequnce_aligment_edges(
-        page_size=10000,
-        cursor=0,
+    page_size=10000,
+    cursor=0,
 ):
-    query = '''
+    query = """
         MATCH (s:SOTU)-[r:SEQUENCE_ALIGNMENT]->(t:SOTU)
         // WHERE r.percentIdentity > 0.7
         RETURN
@@ -184,13 +184,13 @@ def get_sotu_sequnce_aligment_edges(
         ORDER BY r.percentIdentity DESC
         SKIP $cursor
         LIMIT $page_size
-        '''
+        """
     return conn.query(
         query,
         parameters={
-            'page_size': page_size,
-            'cursor': cursor,
-        }
+            "page_size": page_size,
+            "cursor": cursor,
+        },
     )
 
 
@@ -198,7 +198,7 @@ def get_sotu_has_inferred_taxon():
     # Get inferred SOTU -> Taxon has potential taxon edges
     # from Palmprint -> SOTU -> Taxon
     # exclude all hosts that are descendants of unclassified Taxon 12908
-    query = '''
+    query = """
             MATCH (s:SOTU)<-[:HAS_SOTU]-(:Palmprint)
                     -[r:HAS_INFERRED_TAXON]->(t:Taxon)
             WHERE NOT (t)-[:HAS_PARENT*]->(:Taxon {taxId: '12908'})
@@ -213,12 +213,12 @@ def get_sotu_has_inferred_taxon():
                 count(*) AS count,
                 avg(r.percentIdentity) as avgPercentIdentity,
                 avg(r.percentIdentity) as weight
-            '''
+            """
     return conn.query(query=query)
 
 
 def get_tissue_nodes():
-    query = '''
+    query = """
             MATCH (n:Tissue)
             RETURN
                 id(n) as nodeId,
@@ -229,12 +229,12 @@ def get_tissue_nodes():
                 apoc.node.degree(n, "HAS_PARENT") as hasParentDegree,
                 apoc.node.degree(n, "HAS_PARENT>") as hasParentOutDegree,
                 apoc.node.degree(n, "<HAS_PARENT") as hasParentInDegree
-            '''
+            """
     return conn.query(query=query)
 
 
 def get_tissue_has_parent_edges():
-    query = '''
+    query = """
             MATCH (s:Tissue)-[r:HAS_PARENT]->(t:Tissue)
             RETURN
                 id(s) as sourceNodeId,
@@ -243,14 +243,13 @@ def get_tissue_has_parent_edges():
                 t.btoId as targetAppId,
                 type(r) as relationshipType,
                 1 as weight
-            '''
+            """
     return conn.query(query=query)
-
 
 
 def get_sotu_has_tissue_metadata_edges():
     # Get inferred SOTU -> Tissue edges from Palmprint -> SOTU -> SRA -> Tissue
-    query = '''
+    query = """
         CALL {
             MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
                 <-[r:HAS_PALMPRINT]-(s:SRA)-[q:HAS_TISSUE_METADATA]->(t:Tissue)
@@ -270,13 +269,12 @@ def get_sotu_has_tissue_metadata_edges():
             count(*) AS count,
             avg(r.percentIdentity) as avgPercentIdentityPalmprint,
             avg(r.percentIdentity) as weight
-    '''
+    """
     return conn.query(query=query)
 
 
-
 def get_apicomplexa_sotu_nodes():
-    query = '''
+    query = """
         CALL {
             MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
                 <-[r:HAS_PALMPRINT]-(s:SRA)-[q:HAS_HOST_STAT]->()-[:HAS_PARENT*0..]->(t:Taxon {taxId: '5794'})
@@ -296,12 +294,12 @@ def get_apicomplexa_sotu_nodes():
             labels(p) as labels,
             p.centroid as centroid,
             count(r) as numPalmprints
-        '''
+        """
     return conn.query(query=query)
 
 
 def get_lenarviricota_sotu_nodes():
-    query = '''
+    query = """
         CALL {
             MATCH (p:SOTU)<-[:HAS_SOTU]-(:Palmprint)
                 -[q:HAS_INFERRED_TAXON]->()-[:HAS_PARENT*0..]->(t:Taxon {taxId: '2732407'})
@@ -321,6 +319,5 @@ def get_lenarviricota_sotu_nodes():
             labels(p) as labels,
             p.centroid as centroid,
             count(q) as numPalmprints
-        '''
+        """
     return conn.query(query=query)
-    
