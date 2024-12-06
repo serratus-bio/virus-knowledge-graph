@@ -78,6 +78,9 @@ ml:
 ml-connect:
 	docker exec -it $(docker ps -aqf "name=etl")  /bin/bash
 
+ml-graphrag:
+	WORKFLOW="graphrag" docker-compose -p ml-graphrag up --build graph_learning
+
 ml-dataset:
 	WORKFLOW="make_datasets" docker-compose -p ml-dataset up --build graph_learning
 

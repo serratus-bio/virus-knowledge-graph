@@ -11,5 +11,8 @@ torch-sparse
 torch-geometric
 pyg-lib
 # torchvision
+psycopg2==2.9.6
+openai
+json-repair
 scikit-learn
 scipy
