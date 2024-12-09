@@ -5,6 +5,7 @@ from workflows import (
     link_prediction_gds,
     link_prediction_pyg,
     link_prediction_nx,
+    graphrag,
 )
 
 
@@ -24,6 +25,10 @@ def main(args):
     if args.workflow == 'link_prediction_nx':
         print('Running NetworkX traditional link prediction workflow')
         link_prediction_nx.run()
+
+    if args.workflow == 'graphrag':
+        print('Running GraphRAG workflow')
+        graphrag.run()
 
 
 if __name__ == "__main__":

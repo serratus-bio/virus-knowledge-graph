@@ -21,7 +21,8 @@
 
 ## 5. Select kernel inside jupyter notebook
 
-- Note, might need to reboot before kernel appears in dropdown.
+- Note: Might need to reboot before kernel appears in dropdown
+- Note: In VSCode, make sure workspace directory has access to virtual env folder
 
 ## 6. Add path to jupyter sys and read dotenv
 
@@ -36,3 +37,30 @@ if '../' not in sys.path:
 ```
 
 ## 7. Import local modules to use in notebook
+
+---
+
+# Installation on Boltzmann GPU cluster
+
+```sh
+conda remove -n rnalab --all
+pip cache purge
+
+conda create --name rnalab python=3.8 ipython
+conda activate rnalab
+conda install -y ipykernel
+ipython kernel install --user --name=rnalab
+
+conda install -y cuda -c nvidia
+conda install -y cudatoolkit
+conda install -y cudnn
+
+nvcc --version
+
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+python -c "import torch; print(torch.__version__)"
+#2.3.0+cu121
+pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
+pip install -r requirements.txt
+pip install faiss-gpu
+```

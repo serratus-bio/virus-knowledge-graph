@@ -1,6 +1,7 @@
 import os
+from collections import Counter
 
-from datasources.neo4j import gds
+from datasources.neo4j import get_gds_connection
 from queries import feature_queries, utils
 from config.base import (
     DIR_CFG,
@@ -10,7 +11,189 @@ from config.base import (
 
 
 def run_query(query):
+    gds = get_gds_connection()
     return gds.run_cypher(query)
+
+### GraphRAG ###
+
+def create_heterogenous_projection(projection_name):
+    gds = get_gds_connection()
+    if gds.graph.exists(projection_name)['exists']:
+        gds.graph.drop(gds.graph.get(projection_name))
+
+    # KG has defaultWeight attribute for all relationships with value 0.5
+    default_weight_params = {'properties': { 'weight': { 'property': 'defaultWeight' } } } 
+    projection = gds.graph.project(
+        graph_name=projection_name,
+        node_spec=['*'],
+        relationship_spec={
+            'HAS_BIOPROJECT': { 'orientation': 'UNDIRECTED', **default_weight_params },
+            'HAS_DISEASE_METADATA': { 'orientation': 'UNDIRECTED',  **default_weight_params },
+            'HAS_HOST_METADATA': { 'orientation': 'UNDIRECTED',  **default_weight_params },
+            'HAS_HOST_STAT': { 'orientation': 'UNDIRECTED', 'properties': { 'weight': { 'property': 'percentIdentity' } } },
+            'HAS_INFERRED_TAXON': { 'orientation': 'UNDIRECTED',  'properties': { 'weight': { 'property': 'percentIdentity' } } },
+            # 'HAS_PALMPRINT': { 'orientation': 'UNDIRECTED' },
+            'HAS_PARENT': { 'orientation': 'UNDIRECTED',  **default_weight_params },
+            'HAS_SOTU': { 'orientation': 'UNDIRECTED',  **default_weight_params },
+            'HAS_TISSUE_METADATA': { 'orientation': 'UNDIRECTED',  **default_weight_params },
+            'SEQUENCE_ALIGNMENT': { 'orientation': 'UNDIRECTED', 'properties': { 'weight': { 'property': 'percentIdentity' } } },
+        }
+    )
+    return projection
+
+
+def create_leiden_communities(projection_name, seed_property=None, edge_weight_property=None, max_levels=10):
+    gds = get_gds_connection()
+    projection = gds.graph.get(projection_name)
+    communities = gds.leiden.stream(
+        projection,
+        relationshipWeightProperty=edge_weight_property,
+        seedProperty=seed_property,
+        minCommunitySize=1,
+        maxLevels=max_levels,
+        includeIntermediateCommunities=True,
+        consecutiveIds=False,
+        gamma=5.0, # Default: 1.0, Resolution parameter for modularity, higher -> more communities
+        theta=0.01, # Default: 0.01, Randomness when breaking communities
+        tolerance=0.0001, # Default: 0.0001, Min change in modularity between iterations
+    )
+    if 'componentId' in communities.columns:
+        communities['communityId'] = communities['componentId']
+    return communities
+
+
+def get_sra_node_mapping():
+    query = """
+        MATCH (n:SRA)
+        RETURN n.runId as runId, id(n) as nodeId
+    """
+    df = run_query(query)
+    return df
+
+
+def get_run_to_community_df(communities, data_dir):
+    run_node_mapping = get_sra_node_mapping()
+    run_node_mapping = run_node_mapping.set_index('nodeId')
+
+    selected_community = communities.copy()
+    target_level = -1
+    selected_community['communityId'] = communities['intermediateCommunityIds'].apply(lambda x: x[target_level])
+    selected_community = selected_community[['nodeId', 'communityId']]
+
+
+    run_to_community_df = run_node_mapping.merge(selected_community, left_on='nodeId', right_on='nodeId', how='left')
+    run_to_community_df = run_to_community_df[['runId', 'communityId']]
+    run_to_community_df = run_to_community_df.rename(columns={'communityId': 'community_id', 'runId': 'run'})
+
+    # drop communities with only 1 member
+    community_counts = run_to_community_df['community_id'].value_counts()
+    single_communities = community_counts[community_counts == 1].index
+    run_to_community_df = run_to_community_df[~run_to_community_df['community_id'].isin(single_communities)]
+
+    print(run_to_community_df['community_id'].nunique())
+    print(run_to_community_df['community_id'].value_counts().describe())
+
+    run_to_community_df.to_csv(f'{data_dir}/run_to_community.csv', index=False)
+    return run_to_community_df
+
+
+def get_top_nested(data, k):
+    counter = Counter()
+    for key in data:
+        for sub_key in key:
+            counter.update(sub_key)
+    top_k = counter.most_common(k)
+    top_k = [x[0] for x in top_k]
+    return top_k
+
+
+def get_sra_data(run_str):
+    query = f'''
+        MATCH (run:SRA)-[:HAS_BIOPROJECT]->(bioproject:BioProject)
+        WHERE run.runId in [{run_str}]
+        RETURN
+            COLLECT(DISTINCT run.bioSampleTitle) as bioSampleTitles,
+            COLLECT(DISTINCT run.bioSampleGeoAttributeValues) as geoAttributeValues,
+            COLLECT(DISTINCT run.bioSampleGeoBiomeName) as geoBiomeNames,
+            COLLECT(DISTINCT bioproject.bioProject) as bioproject,
+            COLLECT(DISTINCT bioproject.title) as bioProjectTitles,
+            COLLECT(DISTINCT bioproject.description) as bioProjectDescriptions
+    '''
+    response = run_query(query)
+    return response
+
+def get_stat_host_counts(run_str, limit=10):
+    query = f'''
+        MATCH (run:SRA)-[:HAS_HOST_STAT]->(host_stat:Taxon)
+        WHERE run.runId in [{run_str}]
+        RETURN host_stat.taxOrder as statOrganism, COUNT(run) as count
+        LIMIT {limit}
+    '''
+    response = run_query(query)
+    return response
+
+def get_host_label_counts(run_str, limit=10):
+    query = f'''
+        MATCH (run:SRA)-[:HAS_HOST_METADATA]->(host_label:Taxon)
+        WHERE run.runId in [{run_str}]
+        RETURN 
+            CASE host_label.rank
+                    WHEN 'species' THEN host_label.taxSpecies 
+                    WHEN 'genus' THEN host_label.taxGenus
+                    WHEN 'family' THEN host_label.taxFamily
+                    WHEN 'order' THEN host_label.taxOrder
+                    WHEN 'phylum' THEN host_label.taxPhylum
+                    WHEN 'kingdom' THEN host_label.taxKingdom
+                    ELSE 'N/A'
+            END as label, COUNT(run) as count
+        LIMIT {limit}
+    '''
+    response = run_query(query)
+    return response
+
+def get_disease_counts(run_str, limit=10):
+    query = f'''
+        MATCH (run:SRA)-[:HAS_DISEASE_METADATA]->(disease:Disease)
+        WHERE run.runId in [{run_str}]
+        RETURN disease.name as disease, COUNT(run) as count
+        LIMIT {limit}
+    '''
+    response = run_query(query)
+    return response
+
+def get_tissue_counts(run_str, limit=10):
+    query = f'''
+        MATCH (run:SRA)-[:HAS_TISSUE_METADATA]->(tissue:Tissue)
+        WHERE run.runId in [{run_str}]
+        RETURN tissue.scientificName as tissue, COUNT(run) as count
+        LIMIT {limit}
+    '''
+    response = run_query(query)
+    return response
+
+def get_sotu_species_counts(run_str, limit=15):
+    query = f'''
+        MATCH (run:SRA)-[:HAS_SOTU]->(sotu:SOTU)
+        WHERE run.runId in [{run_str}]
+        RETURN sotu.taxSpecies as species, COUNT(run) as count
+        LIMIT 15
+    '''
+    response = run_query(query)
+    return response
+
+
+def get_sotu_family_counts(run_str, limit=15):
+    query = f'''
+        MATCH (run:SRA)-[:HAS_SOTU]->(sotu:SOTU)
+        WHERE run.runId in [{run_str}]
+        RETURN sotu.taxFamily as family, COUNT(run) as count
+        LIMIT {limit}
+    '''
+    response = run_query(query)
+    return response
+
+
+### Link Prediction ###
 
 
 def create_projection_from_dataset(
@@ -21,7 +204,7 @@ def create_projection_from_dataset(
 ):
     graph_name = \
         f"{model_cfg['PROJECTION_NAME']}_{sampling_ratio}"
-
+    gds = get_gds_connection()
     if gds.graph.exists(graph_name)['exists']:
         # return gds.graph.get(graph_name)
         gds.graph.drop(gds.graph.get(graph_name))
@@ -76,7 +259,8 @@ def create_random_walk_subgraph(
     if start_nodes:
         graph_name = \
         f"{model_cfg['PROJECTION_NAME']}_{sampling_ratio}_start1"
-  
+    
+    gds = get_gds_connection()
     if gds.graph.exists(graph_name)['exists']:
         # return gds.graph.get(graph_name)
         gds.graph.drop(gds.graph.get(graph_name))
@@ -107,6 +291,7 @@ def create_lp_pipeline(
         model_cfg=MODEL_CFG,
 ):
     pipeline_name = model_cfg['PIPELINE_NAME']
+    gds = get_gds_connection()
     if gds.beta.pipeline.exists(pipeline_name)['exists']:
         gds.beta.pipeline.drop(gds.pipeline.get(pipeline_name))
 
@@ -218,6 +403,7 @@ def add_training_method(pipeline):
 
 def train_model(G, pipeline, model_cfg=MODEL_CFG, dataset_cfg=DATASET_CFG):
     model_name = model_cfg['MODEL_NAME']
+    gds = get_gds_connection()
     if gds.beta.model.exists(model_name)['exists']:
         gds.beta.model.drop(gds.model.get(model_name))
 
@@ -363,6 +549,7 @@ def generate_shallow_embeddings(
     G,
     model_cfg=MODEL_CFG,
 ):
+    gds = get_gds_connection()
     return gds.fastRP.mutate(
         G=G,
         nodeLabels=['Taxon', 'Tissue', 'SOTU'],
