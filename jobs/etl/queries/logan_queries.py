@@ -125,3 +125,39 @@ def write_biosample_disease():
 
     conn.close()
     return True
+
+
+def get_palm_virome_run_df():
+    query = """
+        SELECT DISTINCT run
+        FROM public.palm_virome
+    """
+    return get_query_results(
+        query=query,
+        cache_filename="sql_palm_virome_run.csv",
+        conn=get_logan_connection(),
+    )
+
+
+def get_palm_virome_sotu_df():
+    query = """
+        SELECT DISTINCT sotu
+        FROM public.palm_virome
+    """
+    return get_query_results(
+        query=query,
+        cache_filename="sql_palm_virome_sotu.csv",
+        conn=get_logan_connection(),
+    )
+
+
+def get_palm_virome_bioproject_df():
+    query = """
+        SELECT DISTINCT bio_project as bioproject
+        FROM public.palm_virome
+    """
+    return get_query_results(
+        query=query,
+        cache_filename="sql_palm_virome_bioproject.csv",
+        conn=get_logan_connection(),
+    )

@@ -25,7 +25,7 @@ def create_heterogenous_projection(projection_name):
     default_weight_params = {'properties': { 'weight': { 'property': 'defaultWeight' } } } 
     projection = gds.graph.project(
         graph_name=projection_name,
-        node_spec=['*'],
+        node_spec=['OpenVirome'],
         relationship_spec={
             'HAS_BIOPROJECT': { 'orientation': 'UNDIRECTED', **default_weight_params },
             'HAS_DISEASE_METADATA': { 'orientation': 'UNDIRECTED',  **default_weight_params },
@@ -49,7 +49,7 @@ def create_leiden_communities(projection_name, seed_property=None, edge_weight_p
         projection,
         relationshipWeightProperty=edge_weight_property,
         seedProperty=seed_property,
-        minCommunitySize=1,
+        minCommunitySize=2,
         maxLevels=max_levels,
         includeIntermediateCommunities=True,
         consecutiveIds=False,
@@ -89,10 +89,11 @@ def get_run_to_community_df(communities, data_dir):
     community_counts = run_to_community_df['community_id'].value_counts()
     single_communities = community_counts[community_counts == 1].index
     run_to_community_df = run_to_community_df[~run_to_community_df['community_id'].isin(single_communities)]
+    run_to_community_df = run_to_community_df.dropna()
+    run_to_community_df['community_id'] = run_to_community_df['community_id'].astype(int)
 
     print(run_to_community_df['community_id'].nunique())
     print(run_to_community_df['community_id'].value_counts().describe())
-
     run_to_community_df.to_csv(f'{data_dir}/run_to_community.csv', index=False)
     return run_to_community_df
 

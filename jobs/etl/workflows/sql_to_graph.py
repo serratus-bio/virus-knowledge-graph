@@ -73,3 +73,13 @@ def run():
     print("Set BioSample geo attribute")
     df_biosample_geo = logan_queries.get_biosample_geo_df()
     graph_queries.add_biosample_geo_attribute(df_biosample_geo)
+
+    print("Set default edge weight")
+    graph_queries.set_default_edge_weight()
+
+    print("Set OpenVirome label")
+    df_palm_virome_sotu = logan_queries.get_palm_virome_sotu_df()
+    df_palm_virome_run = logan_queries.get_palm_virome_run_df()
+    df_palm_virome_bioproject = logan_queries.get_palm_virome_bioproject_df()
+
+    graph_queries.add_open_virome_labels(df_palm_virome_sotu, df_palm_virome_run, df_palm_virome_bioproject)

@@ -88,7 +88,6 @@ def run():
             existing_summaries = [int(community) for community in existing_summaries]
 
     unique_communities = [community for community in unique_communities if community not in existing_summaries]
-    # unique_communities = unique_communities[:1]
     print(f"Processing {len(unique_communities)} communities")
 
     results = []
@@ -125,16 +124,15 @@ def run():
     columns = ['community', 'title', 'label', 'summary', 'findings', 'mwas']
     community_summaries = pd.DataFrame(results, columns=columns)
     community_summaries = community_summaries.dropna()
-    community_summaries.to_csv(f'{data_dir}/virome_community_summaries.csv', index=False)
 
     community_summaries = community_summaries.to_dict(orient='records')
 
-    # merge with existing summaries
-    if os.path.exists(f"{data_dir}/virome_community_summaries.json"):
-        with open(f'{data_dir}/virome_community_summaries.json', 'r') as f:
-            existing_summaries = json.load(f)
-            existing_summaries.extend(community_summaries)
-            community_summaries = existing_summaries
+    # merge with existing summaries if running multiple times
+    # if os.path.exists(f"{data_dir}/virome_community_summaries.json"):
+    #     with open(f'{data_dir}/virome_community_summaries.json', 'r') as f:
+    #         existing_summaries = json.load(f)            
+    #         existing_summaries.extend(community_summaries)
+    #         community_summaries = existing_summaries
 
     with open(f'{data_dir}/virome_community_summaries.json', 'w') as f:
         json.dump(community_summaries, f, indent=4)
