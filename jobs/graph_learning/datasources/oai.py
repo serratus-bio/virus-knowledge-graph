@@ -13,7 +13,6 @@ def get_oai_client():
 def get_llm_response(conversation):
     oai_client = get_oai_client()
     response = oai_client.chat.completions.create(
-        # gpt-4o-mini
         model='gpt-4o-mini',
         messages=conversation,
     )

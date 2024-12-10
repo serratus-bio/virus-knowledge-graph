@@ -9,7 +9,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 16000M #975000M
+          memory: 30000M #975000M
     env_file:
       - ./jobs/etl/.env
     volumes:

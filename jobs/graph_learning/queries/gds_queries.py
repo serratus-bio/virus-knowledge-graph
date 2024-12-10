@@ -194,6 +194,59 @@ def get_sotu_family_counts(run_str, limit=15):
     return response
 
 
+def get_max_biosafety_level(run_str):
+    query = f'''
+        MATCH (run:SRA)-[:HAS_HOST_METADATA]->(host_label:Taxon)
+        WHERE run.runId in [{run_str}]
+        WITH run, host_label
+        OPTIONAL MATCH (run:SRA)-[:HAS_HOST_STAT]->(host_stat:Taxon)
+        WITH run, host_label, host_stat
+        OPTIONAL MATCH (run)-[:HAS_SOTU]->(sotu:SOTU)-[:HAS_INFERRED_TAXON]->(sotu_taxon:Taxon)
+        WITH run, host_label, host_stat, sotu_taxon
+        RETURN
+            CASE apoc.meta.cypher.type(host_label.AnimalRiskGroup)
+                WHEN 'NULL' THEN 'N/A'
+                WHEN 'FLOAT' THEN 'N/A'
+                ELSE host_label.AnimalRiskGroup
+            END as host_label_animal_risk_groups,
+            CASE apoc.meta.cypher.type(host_label.HumanRiskGroup)
+                WHEN 'NULL' THEN 'N/A'
+                WHEN 'FLOAT' THEN 'N/A'
+                ELSE host_label.HumanRiskGroup
+            END as host_label_human_risk_groups,
+            CASE apoc.meta.cypher.type(host_stat.AnimalRiskGroup)
+                WHEN 'NULL' THEN 'N/A'
+                WHEN 'FLOAT' THEN 'N/A'
+                ELSE host_stat.AnimalRiskGroup
+            END as host_stat_animal_risk_groups,
+            CASE apoc.meta.cypher.type(host_stat.HumanRiskGroup)
+                WHEN 'NULL' THEN 'N/A'
+                WHEN 'FLOAT' THEN 'N/A'
+                ELSE host_stat.HumanRiskGroup
+            END as host_stat_human_risk_groups,
+            CASE apoc.meta.cypher.type(sotu_taxon.AnimalRiskGroup)
+                WHEN 'NULL' THEN 'N/A'
+                WHEN 'FLOAT' THEN 'N/A'
+                ELSE sotu_taxon.AnimalRiskGroup
+            END as sotu_taxon_animal_risk_groups,
+            CASE apoc.meta.cypher.type(sotu_taxon.HumanRiskGroup)
+                WHEN 'NULL' THEN 'N/A'
+                WHEN 'FLOAT' THEN 'N/A'
+                ELSE sotu_taxon.HumanRiskGroup
+            END as sotu_taxon_human_risk_groups
+    '''
+    response = run_query(query)
+    # Get the max biosafety level from the response, RG4 > RG3 > RG2 > RG1
+    bsl_priority = {'RG4': 4, 'RG3': 3, 'RG2': 2, 'RG1': 1, 'N/A': 0}
+    max_bsl = 'N/A'
+    for row in response:
+        for value in response[row]:
+            if value in bsl_priority:
+                if bsl_priority[value] > bsl_priority[max_bsl]:
+                    max_bsl = value
+    return max_bsl
+
+
 ### Link Prediction ###
 
 

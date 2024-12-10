@@ -48,10 +48,15 @@ def process_handler(community, run_str):
     )
     community_summary_str, community_summary = oai_queries.try_parse_json_object(community_summary_str)
     community_summary['community'] = community
+    
     sotu_families = gds_queries.get_sotu_family_counts(run_str, limit=100)
     sotu_families = sotu_families['family'].tolist()
     top_mwas_results = logan_queries.get_mwas_results(bioproject_ids, sotu_families)
     community_summary['mwas'] = top_mwas_results
+
+    max_bsl = gds_queries.get_max_biosafety_level(run_str)
+    community_summary['max_biosafety'] = max_bsl
+
     return community_summary
 
 
