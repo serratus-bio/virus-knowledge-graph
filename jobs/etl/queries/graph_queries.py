@@ -217,6 +217,26 @@ def add_taxon_edges(rows):
     return batch_insert_data(query, rows)
 
 
+def add_taxon_bsl_attribute(rows):
+    query = """
+            UNWIND $rows as row
+            MATCH (n:Taxon {taxId: row.tax_id})
+            SET n += {
+                HumanRiskGroup: row.HumanRiskGroup,
+                AnimalRiskGroup: row.AnimalRiskGroup
+            }
+            """
+    batch_insert_data(query, rows)
+    query = """
+            UNWIND $rows as row
+            MATCH (n:Taxon)-[:HAS_PARENT*]->(m:Taxon {taxId: row.tax_id})
+            SET n += {
+                HumanRiskGroup: row.HumanRiskGroup,
+                AnimalRiskGroup: row.AnimalRiskGroup
+            }
+            """
+    return batch_insert_data(query, rows)
+
 # Tissues #
 
 

@@ -4,6 +4,7 @@ from queries import (
     sra_queries,
     graph_queries,
     owl_queries,
+    ncbi_queries,
 )
 
 
@@ -81,5 +82,8 @@ def run():
     df_palm_virome_sotu = logan_queries.get_palm_virome_sotu_df()
     df_palm_virome_run = logan_queries.get_palm_virome_run_df()
     df_palm_virome_bioproject = logan_queries.get_palm_virome_bioproject_df()
-
     graph_queries.add_open_virome_labels(df_palm_virome_sotu, df_palm_virome_run, df_palm_virome_bioproject)
+
+    print('Set Taxon BioSafety level attribute')
+    df_taxon_bsl = ncbi_queries.get_taxon_bsl_attribute(df_taxon)
+    graph_queries.add_taxon_bsl_attribute(df_taxon_bsl)
