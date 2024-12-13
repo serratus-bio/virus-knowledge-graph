@@ -20,6 +20,7 @@ USE_MULTIPROCESSING = True
 
 def process_handler(community, run_str):
     print(f"Processing community {community}")
+
     sra_data = gds_queries.get_sra_data(run_str)
     geo_attr_values = gds_queries.get_top_nested(sra_data['geoAttributeValues'], 10)
     geo_biomes = gds_queries.get_top_nested(sra_data['geoBiomeNames'], 10)
@@ -74,11 +75,10 @@ def run():
     run_to_community_df = gds_queries.get_run_to_community_df(communities, data_dir)
 
     print("Write communities to Logan db")
-    filename = f"{data_dir}/run_to_community.csv"
-    logan_queries.write_community_labels(filename)
+    logan_queries.write_community_labels(f"{data_dir}/run_to_community.csv")
 
     print("Processing community summaries")
-    run_to_community_df = pd.read_csv(filename)
+    run_to_community_df = pd.read_csv(f"{data_dir}/run_to_community.csv")
     run_to_community_df = run_to_community_df.set_index('run')
     palm_virome_runs = logan_queries.get_sotu_to_run(data_dir)
     run_to_community_df = run_to_community_df[run_to_community_df.index.isin(palm_virome_runs['run'])]
@@ -93,12 +93,13 @@ def run():
             existing_summaries = [int(community) for community in existing_summaries]
 
     unique_communities = [community for community in unique_communities if community not in existing_summaries]
+
     print(f"Processing {len(unique_communities)} communities")
 
     results = []
 
     if USE_MULTIPROCESSING:
-        max_workers = 10
+        max_workers = 5
         with ProcessPoolExecutor(max_workers) as executor:
             futures = []
             for community in unique_communities:
@@ -122,8 +123,6 @@ def run():
                 results.append(result)
             except Exception as e:
                 print(f"Error: {e}")
-
-
 
     print('Writing results to disk')
     columns = ['community', 'title', 'label', 'summary', 'findings', 'mwas']

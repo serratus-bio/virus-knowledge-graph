@@ -174,8 +174,9 @@ def get_tissue_counts(run_str, limit=10):
 
 def get_sotu_species_counts(run_str, limit=15):
     query = f'''
-        MATCH (run:SRA)-[:HAS_SOTU]->(sotu:SOTU)
+        MATCH (run:SRA)-[r:HAS_SOTU]->(sotu:SOTU)
         WHERE run.runId in [{run_str}]
+        AND r.OpenVirome = true
         RETURN sotu.taxSpecies as species, COUNT(run) as count
         LIMIT 15
     '''
@@ -185,8 +186,9 @@ def get_sotu_species_counts(run_str, limit=15):
 
 def get_sotu_family_counts(run_str, limit=15):
     query = f'''
-        MATCH (run:SRA)-[:HAS_SOTU]->(sotu:SOTU)
+        MATCH (run:SRA)-[r:HAS_SOTU]->(sotu:SOTU)
         WHERE run.runId in [{run_str}]
+        AND r.OpenVirome = true
         RETURN sotu.taxFamily as family, COUNT(run) as count
         LIMIT {limit}
     '''
@@ -201,7 +203,8 @@ def get_max_biosafety_level(run_str):
         WITH run, host_label
         OPTIONAL MATCH (run:SRA)-[:HAS_HOST_STAT]->(host_stat:Taxon)
         WITH run, host_label, host_stat
-        OPTIONAL MATCH (run)-[:HAS_SOTU]->(sotu:SOTU)-[:HAS_INFERRED_TAXON]->(sotu_taxon:Taxon)
+        OPTIONAL MATCH (run)-[r:HAS_SOTU]->(sotu:SOTU)-[:HAS_INFERRED_TAXON]->(sotu_taxon:Taxon)
+        WHERE r.OpenVirome = true
         WITH run, host_label, host_stat, sotu_taxon
         RETURN
             CASE apoc.meta.cypher.type(host_label.AnimalRiskGroup)

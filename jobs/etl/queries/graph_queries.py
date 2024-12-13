@@ -421,48 +421,10 @@ def set_default_edge_weight():
     return conn.query(query)    
 
 
-def add_open_virome_labels(sotus, runs, bioprojects):
-    sotu_list = sotus.compute()['sotu'].to_list()
-    query = """
-            UNWIND $sotus as sotu
-            MATCH (n:SOTU {sotu: sotu})
-            SET n:OpenVirome
-            """
-    conn.query(query=query, parameters={"sotus": sotu_list})
-
-    runs_list = runs.compute()['run'].to_list()
-    query = """
-            UNWIND $runs as run
-            MATCH (n:SRA {runId: run})
-            SET n:OpenVirome
-            """
-    conn.query(query=query, parameters={"runs": runs_list})
-
-    bioprojects_list = bioprojects.compute()['bioproject'].to_list()
-    query = """
-            UNWIND $bioprojects as bioproject
-            MATCH (n:BioProject {bioProject: bioproject})
-            SET n:OpenVirome
-            """
-    conn.query(query=query, parameters={"bioprojects": bioprojects_list})
-
-    query = """
-            MATCH (n:Tissue)
-            SET n:OpenVirome
-            """
-    conn.query(query=query)
-
-    query = """
-            MATCH (n:Taxon)
-            SET n:OpenVirome
-            """
-    conn.query(query=query)
-
-    query = """
-            MATCH (n:Disease)
-            SET n:OpenVirome
-            """
-    
-    conn.query(query=query)
-
-    return True
+def add_open_virome_labels(rows):
+    query = '''
+        UNWIND $rows as row
+        MATCH (b:BioProject)<-[:HAS_BIOPROJECT]-(n:SRA {runId: row.run})-[r:HAS_SOTU]->(s:SOTU {sotu: row.sotu})
+        SET n:OpenVirome, s:OpenVirome, b:OpenVirome, r.OpenVirome = true
+        '''
+    return batch_insert_data(query, rows)
