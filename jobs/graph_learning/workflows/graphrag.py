@@ -125,7 +125,7 @@ def run():
                 print(f"Error: {e}")
 
     print('Writing results to disk')
-    columns = ['community', 'title', 'label', 'summary', 'findings', 'mwas']
+    columns = ['community', 'title', 'label', 'summary', 'findings', 'mwas', 'max_biosafety']
     community_summaries = pd.DataFrame(results, columns=columns)
     community_summaries = community_summaries.dropna()
 
