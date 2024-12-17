@@ -17,6 +17,7 @@ Warnings:
 
 1. Turn on `neo4j-graph-worker` instance
 1. Make updates to graph with [write user](https://us-east-1.console.aws.amazon.com/secretsmanager/secret?name=Neo4j-Graph&region=us-east-1)
+1. Connect to instance using ssh (`neo4j.pem` can be retrieved from [AWS secrets](https://us-east-1.console.aws.amazon.com/secretsmanager/secret?name=neo4j.pem&region=us-east-1))
 1. Run [backup script](./neo4j-backup.sh)  to create backup file
 1. (Optional) upload backup to s3
 1. Connect to `neo4j-graph-server` and run the [restore script](./neo4j-restore.sh)
